@@ -47,7 +47,7 @@ class MyFirstWidget extends StatelessWidget {
 
   MyFirstWidget({Key? key}) : super(key: key);
 
-  Type get myRuntimeType => runtimeType;
+  Type myRuntimeType() => runtimeType;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,7 @@ class MySecondWidget extends StatefulWidget {
 class _MySecondWidgetState extends State<MySecondWidget> {
   int count = 0;
 
-  Type get myRuntimeType => runtimeType;
+  Type myRuntimeType() => runtimeType;
 
   @override
   Widget build(BuildContext context) {
