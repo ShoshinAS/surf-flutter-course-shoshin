@@ -24,10 +24,52 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MySecondWidget(),
     );
   }
 }
+
+class MyFirstWidget extends StatelessWidget {
+  int count = 0;
+
+  MyFirstWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    count++;
+    print('Count: $count');
+    return Container(
+      child: Center(
+        child: Text('Hello!')
+      )
+    );
+  }
+}
+
+class MySecondWidget extends StatefulWidget {
+
+  const MySecondWidget({Key? key}) : super(key: key);
+
+  @override
+  State<MySecondWidget> createState() => _MySecondWidgetState();
+
+}
+
+class _MySecondWidgetState extends State<MySecondWidget> {
+  int count = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    count++;
+    print('Count: ${count}');
+    return Container(
+      child: Center(
+        child: Text('Hello!')
+      )
+    );
+  }
+}
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
