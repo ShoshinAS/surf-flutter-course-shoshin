@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const App());
 }
+
+class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Test App',
+      home: MyFirstWidget(),
+    );
+  }
+}
+
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -34,10 +47,14 @@ class MyFirstWidget extends StatelessWidget {
 
   MyFirstWidget({Key? key}) : super(key: key);
 
+  Type get myRuntimeType => runtimeType;
+
   @override
   Widget build(BuildContext context) {
     count++;
     print('Count: $count');
+    print(context.runtimeType);
+    print(myRuntimeType);
     return Container(
       child: Center(
         child: Text('Hello!')
@@ -58,10 +75,14 @@ class MySecondWidget extends StatefulWidget {
 class _MySecondWidgetState extends State<MySecondWidget> {
   int count = 0;
 
+  Type get myRuntimeType => runtimeType;
+
   @override
   Widget build(BuildContext context) {
     count++;
     print('Count: ${count}');
+    print(context.runtimeType);
+    print(myRuntimeType);
     return Container(
       child: Center(
         child: Text('Hello!')
