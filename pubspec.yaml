@@ -20,10 +20,27 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^1.0.0
+  surf_lint_rules: ^1.5.0
+  dart_code_metrics: ^4.13.0
 
 flutter:
   uses-material-design: true
 
   assets:
     - res/
+
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: res/fonts/Roboto-Black.ttf
+        - asset: res/fonts/Roboto-BlackItalic.ttf
+        - asset: res/fonts/Roboto-Bold.ttf
+        - asset: res/fonts/Roboto-BoldItalic.ttf
+        - asset: res/fonts/Roboto-Italic.ttf
+        - asset: res/fonts/Roboto-Light.ttf
+        - asset: res/fonts/Roboto-LightItalic.ttf
+        - asset: res/fonts/Roboto-Medium.ttf
+        - asset: res/fonts/Roboto-MediumItalic.ttf
+        - asset: res/fonts/Roboto-Regular.ttf
+        - asset: res/fonts/Roboto-Thin.ttf
+        - asset: res/fonts/Roboto-ThinItalic.ttf
