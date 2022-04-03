@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:places/mocks.dart';
+import 'package:places/ui/screen/sight_card.dart';
 
 class SightListScreen extends StatefulWidget {
   final _BackgroundColor = Colors.white;
@@ -69,7 +71,24 @@ class _SightListScreenState extends State<SightListScreen> {
         elevation: 0,
         toolbarHeight: 112,
       ),
-      body: const Center(),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 16,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SightCard(mocks[0]),
+                SightCard(mocks[1]),
+                SightCard(mocks[2]),
+              ],
+            ),
+          ),
+        ),
+      ),
       resizeToAvoidBottomInset: false,
     );
   }

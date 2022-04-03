@@ -4,7 +4,7 @@ class Sight{
   double lon = 0.0;
   String url = '';
   String details = '';
-  int type = 0;
+  String type = '';
 
   Sight({
     required this.name,
@@ -12,6 +12,6 @@ class Sight{
     required this.lon,
     required this.url,
     required this.details,
-    required this.type
+    required this.type,
 });
 }
