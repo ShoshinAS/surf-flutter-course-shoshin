@@ -2,20 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:places/mocks.dart';
 import 'package:places/ui/screen/sight_card.dart';
 
-class SightListScreen extends StatefulWidget {
-  final _BackgroundColor = Colors.white;
+class SightListScreen extends StatelessWidget {
 
   const SightListScreen({Key? key}) : super(key: key);
 
   @override
-  State<SightListScreen> createState() => _SightListScreenState();
-}
-
-class _SightListScreenState extends State<SightListScreen> {
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: widget._BackgroundColor,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Padding(
           padding: const EdgeInsets.fromLTRB(16, 40, 16, 0),
@@ -67,7 +61,7 @@ class _SightListScreenState extends State<SightListScreen> {
             textAlign: TextAlign.left,
           ),
         ),
-        backgroundColor: widget._BackgroundColor,
+        backgroundColor: Colors.white,
         elevation: 0,
         toolbarHeight: 112,
       ),
