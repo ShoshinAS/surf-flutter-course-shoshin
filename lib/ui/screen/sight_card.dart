@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:places/domain/sight.dart';
 
+// Виджет отображает карточку интересного места в списке
 class SightCard extends StatelessWidget {
   final Sight sight;
 

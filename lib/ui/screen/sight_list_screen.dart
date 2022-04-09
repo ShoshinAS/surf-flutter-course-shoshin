@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:places/mocks.dart';
+import 'package:places/domain/sight.dart';
+import 'package:places/strings.dart';
 import 'package:places/ui/screen/sight_card.dart';
 
+// Виджет отображает экран со списком интересных мест
 class SightListScreen extends StatelessWidget {
 
-  const SightListScreen({Key? key}) : super(key: key);
+  final List<Sight> sightList;
+
+  const SightListScreen({Key? key, required this.sightList}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,11 +18,11 @@ class SightListScreen extends StatelessWidget {
         title: Padding(
           padding: const EdgeInsets.fromLTRB(16, 40, 16, 0),
           child: RichText(
-            text: const TextSpan(
+            text: TextSpan(
               children: [
                 TextSpan(
-                  text: 'С',
-                  style: TextStyle(
+                  text: AppStrings.appBarTitle1.substring(0, 1),
+                  style: const TextStyle(
                     color: Color(0XFF4CAF50),
                     fontSize: 32,
                     fontFamily: 'Roboto',
@@ -26,8 +30,8 @@ class SightListScreen extends StatelessWidget {
                   ),
                   children: [
                     TextSpan(
-                      text: 'писок\n',
-                      style: TextStyle(
+                      text: '${AppStrings.appBarTitle1.substring(1)}\n',
+                      style: const TextStyle(
                         color: Color(0XFF3B3E5B),
                         fontSize: 32,
                         fontFamily: 'Roboto',
@@ -37,8 +41,8 @@ class SightListScreen extends StatelessWidget {
                   ],
                 ),
                 TextSpan(
-                  text: 'и',
-                  style: TextStyle(
+                  text: AppStrings.appBarTitle2.substring(0, 1),
+                  style: const TextStyle(
                     color: Color(0XFFFCDD3D),
                     fontSize: 32,
                     fontFamily: 'Roboto',
@@ -46,8 +50,8 @@ class SightListScreen extends StatelessWidget {
                   ),
                   children: [
                     TextSpan(
-                      text: 'нтересных мест',
-                      style: TextStyle(
+                      text: AppStrings.appBarTitle2.substring(1),
+                      style: const TextStyle(
                         color: Color(0XFF3B3E5B),
                         fontSize: 32,
                         fontFamily: 'Roboto',
@@ -74,11 +78,7 @@ class SightListScreen extends StatelessWidget {
           ),
           child: SingleChildScrollView(
             child: Column(
-              children: [
-                SightCard(mocks[0]),
-                SightCard(mocks[1]),
-                SightCard(mocks[2]),
-              ],
+              children: sightList.map(SightCard.new).toList(),
             ),
           ),
         ),
