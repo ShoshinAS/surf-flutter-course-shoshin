@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:places/domain/sight.dart';
+import 'package:places/strings.dart';
+import 'package:places/ui/screen/sight_card.dart';
 
-class SightListScreen extends StatefulWidget {
-  final _BackgroundColor = Colors.white;
+// Виджет отображает экран со списком интересных мест
+class SightListScreen extends StatelessWidget {
 
-  const SightListScreen({Key? key}) : super(key: key);
+  final List<Sight> sightList;
 
-  @override
-  State<SightListScreen> createState() => _SightListScreenState();
-}
+  const SightListScreen({Key? key, required this.sightList}) : super(key: key);
 
-class _SightListScreenState extends State<SightListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: widget._BackgroundColor,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Padding(
           padding: const EdgeInsets.fromLTRB(16, 40, 16, 0),
           child: RichText(
-            text: const TextSpan(
+            text: TextSpan(
               children: [
                 TextSpan(
-                  text: 'С',
-                  style: TextStyle(
+                  text: AppStrings.appBarTitle1.substring(0, 1),
+                  style: const TextStyle(
                     color: Color(0XFF4CAF50),
                     fontSize: 32,
                     fontFamily: 'Roboto',
@@ -30,8 +30,8 @@ class _SightListScreenState extends State<SightListScreen> {
                   ),
                   children: [
                     TextSpan(
-                      text: 'писок\n',
-                      style: TextStyle(
+                      text: '${AppStrings.appBarTitle1.substring(1)}\n',
+                      style: const TextStyle(
                         color: Color(0XFF3B3E5B),
                         fontSize: 32,
                         fontFamily: 'Roboto',
@@ -41,8 +41,8 @@ class _SightListScreenState extends State<SightListScreen> {
                   ],
                 ),
                 TextSpan(
-                  text: 'и',
-                  style: TextStyle(
+                  text: AppStrings.appBarTitle2.substring(0, 1),
+                  style: const TextStyle(
                     color: Color(0XFFFCDD3D),
                     fontSize: 32,
                     fontFamily: 'Roboto',
@@ -50,8 +50,8 @@ class _SightListScreenState extends State<SightListScreen> {
                   ),
                   children: [
                     TextSpan(
-                      text: 'нтересных мест',
-                      style: TextStyle(
+                      text: AppStrings.appBarTitle2.substring(1),
+                      style: const TextStyle(
                         color: Color(0XFF3B3E5B),
                         fontSize: 32,
                         fontFamily: 'Roboto',
@@ -65,11 +65,24 @@ class _SightListScreenState extends State<SightListScreen> {
             textAlign: TextAlign.left,
           ),
         ),
-        backgroundColor: widget._BackgroundColor,
+        backgroundColor: Colors.white,
         elevation: 0,
         toolbarHeight: 112,
       ),
-      body: const Center(),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 16,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: sightList.map(SightCard.new).toList(),
+            ),
+          ),
+        ),
+      ),
       resizeToAvoidBottomInset: false,
     );
   }
