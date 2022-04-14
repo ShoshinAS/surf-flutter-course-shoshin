@@ -5,7 +5,6 @@ import 'package:places/ui/screen/sight_card.dart';
 
 // Виджет отображает экран со списком интересных мест
 class SightListScreen extends StatelessWidget {
-
   final List<Sight> sightList;
 
   const SightListScreen({Key? key, required this.sightList}) : super(key: key);
@@ -14,67 +13,13 @@ class SightListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 40, 16, 0),
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: AppStrings.appBarTitle1.substring(0, 1),
-                  style: const TextStyle(
-                    color: Color(0XFF4CAF50),
-                    fontSize: 32,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.bold,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: '${AppStrings.appBarTitle1.substring(1)}\n',
-                      style: const TextStyle(
-                        color: Color(0XFF3B3E5B),
-                        fontSize: 32,
-                        fontFamily: 'Roboto',
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                TextSpan(
-                  text: AppStrings.appBarTitle2.substring(0, 1),
-                  style: const TextStyle(
-                    color: Color(0XFFFCDD3D),
-                    fontSize: 32,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.bold,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: AppStrings.appBarTitle2.substring(1),
-                      style: const TextStyle(
-                        color: Color(0XFF3B3E5B),
-                        fontSize: 32,
-                        fontFamily: 'Roboto',
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            textAlign: TextAlign.left,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        toolbarHeight: 112,
+      appBar: const CustomAppBar(
+        height: 152,
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 16,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
           ),
           child: SingleChildScrollView(
             child: Column(
@@ -84,6 +29,52 @@ class SightListScreen extends StatelessWidget {
         ),
       ),
       resizeToAvoidBottomInset: false,
+    );
+  }
+}
+
+// Виджет отображает заголовок списка интересных мест
+// Предназначен для использования в качестве appBar
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+
+  final double height;
+
+  @override
+  Size get preferredSize => Size.fromHeight(height);
+
+  const CustomAppBar({
+    Key? key, required this.height,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      alignment: Alignment.bottomLeft,
+      child: RichText(
+        text: const TextSpan(
+          children: [
+            TextSpan(
+              text: '${AppStrings.appBarTitle1}\n',
+              style: TextStyle(
+                color: Color(0XFF3B3E5B),
+                fontSize: 32,
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextSpan(
+              text: AppStrings.appBarTitle2,
+              style: TextStyle(
+                color: Color(0XFF3B3E5B),
+                fontSize: 32,
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

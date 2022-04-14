@@ -9,13 +9,11 @@ class SightCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 204,
+    return AspectRatio(
+      aspectRatio: 3/2,
       child: Column(
         children: [
-          SizedBox(
-            height: 96,
-            width: double.maxFinite,
+          Expanded(
             child: Stack(
               children: [
                 Container(
@@ -52,24 +50,26 @@ class SightCard extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            height: 92,
-            width: double.maxFinite,
-            decoration: const BoxDecoration(
-              color: Color(0XFFF5F5F5),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(10),
-                bottomRight: Radius.circular(10),
+          Expanded(
+            child: Container(
+              constraints: const BoxConstraints(
+                maxHeight: 92,
               ),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                    left: 16,
-                    right: 16,
-                    top: 16,
-                    bottom: 36,
-                    child: Text(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: const BoxDecoration(
+                color: Color(0XFFF5F5F5),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Text(
                       sight.name,
                       style: const TextStyle(
                         fontFamily: 'Roboto',
@@ -77,27 +77,31 @@ class SightCard extends StatelessWidget {
                         color: Color(0XFF3B3E5B),
                         fontWeight: FontWeight.w500,
                       ),
-                      maxLines: 2,
                     ),
-                ),
-                Positioned(
-                  left: 16,
-                  right: 16,
-                  top: 58,
-                  bottom: 16,
-                  child: Text(
-                    sight.details,
-                    style: const TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 14,
-                      color: Color(0XFF7C7E92),
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 1,
+                  const SizedBox(
+                    height: 2,
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: Text(
+                      sight.details,
+                      style: const TextStyle(
+                        fontFamily: 'Roboto',
+                        fontSize: 14,
+                        color: Color(0XFF7C7E92),
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.clip,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                ],
+              ),
             ),
+          ),
+          const SizedBox(
+            height: 16,
           ),
         ],
       ),
