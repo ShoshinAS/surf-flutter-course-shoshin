@@ -16,7 +16,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: AppStrings.appTitle,
       home: SightListScreen(sightList: mocks),
-      //home: SightDetails(mocks[0]),
+      //home: SightDetails(mocks[5]),
     );
   }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:places/domain/sight.dart';
 import 'package:places/strings.dart';
+import 'package:places/ui/colors.dart';
 import 'package:places/ui/screen/sight_card.dart';
+import 'package:places/ui/typography.dart';
 
 // Виджет отображает экран со списком интересных мест
 class SightListScreen extends StatelessWidget {
@@ -12,7 +14,7 @@ class SightListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.backgroundColor,
       appBar: const CustomAppBar(
         height: 152,
       ),
@@ -53,12 +55,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       alignment: Alignment.bottomLeft,
       child: const Text(
         AppStrings.appBarTitle,
-        style: TextStyle(
-          color: Color(0XFF3B3E5B),
-          fontSize: 32,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.bold,
-        ),
+        style: AppTypography.styleLargeTitle,
       ),
     );
   }
