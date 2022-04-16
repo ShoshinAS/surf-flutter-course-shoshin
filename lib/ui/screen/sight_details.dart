@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:places/domain/sight.dart';
 import 'package:places/mocks.dart';
 import 'package:places/strings.dart';
+import 'package:places/ui/colors.dart';
+import 'package:places/ui/typography.dart';
 
 // Виджет отображает детальную информацию об интересном месте
 // для отображения на отдельном экране
@@ -13,13 +15,34 @@ class SightDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.backgroundColor,
       body: Column(
         children: [
-          const SightImage(),
-          SightDescription(sight: sight),
-          const RouteButton(),
-          const Divider(),
+          SightImage(sight: sight),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 24),
+                SightDetailsName(sight: sight),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    SightDetailsType(sight: sight),
+                    const SizedBox(width: 16),
+                    const SightOpeningHours(),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                SightDescription(sight: sight),
+                const SizedBox(height: 24),
+                const RouteButton(),
+                const SizedBox(height: 24),
+                const Divider(),
+              ],
+            ),
+          ),
           const BottomPanel(),
         ],
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,7 +52,7 @@ class SightDetails extends StatelessWidget {
   }
 }
 
-// Виджет отображает краткую информацию об интересном месте
+// Виджет отображает краткое описание интересного места на экране информации
 class SightDescription extends StatelessWidget {
 
   final Sight sight;
@@ -41,39 +64,10 @@ class SightDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SightName(sight: sight),
-        Padding(
-          padding: const EdgeInsets.only(
-            top: 2,
-            left: 16,
-          ),
-          child: Row(
-            children: [
-              SightType(sight: sight),
-              const SightOpeningHours(),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(
-            top: 24,
-            left: 16,
-            right: 16,
-          ),
-          child: Text(
-            sight.details,
-            style: const TextStyle(
-              color: Color(0xFF3B3E5B),
-              fontSize: 14,
-              fontFamily: 'Roboto',
-              height: 18 / 14,
-            ),
-            maxLines: 4,
-          ),
-        ),
-      ],
+    return Text(
+      sight.details,
+      style: AppTypography.styleSmall,
+      overflow: TextOverflow.clip,
     );
   }
 }
@@ -86,29 +80,18 @@ class SightOpeningHours extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.only(
-        left: 16,
-      ),
-      child: Text(
+    return const Text(
         MockStrings.openingHours,
-        style: TextStyle(
-          color: Color(0xFF7C7E92),
-          fontSize: 14,
-          fontFamily: 'Roboto',
-          height: 18 / 14,
-        ),
-      ),
-    );
+        style: AppTypography.styleSmallGray,
+      );
   }
 }
 
 // Виджет отображает информацию о типе интересного места
-class SightType extends StatelessWidget {
-
+class SightDetailsType extends StatelessWidget {
   final Sight sight;
 
-  const SightType({
+  const SightDetailsType({
     Key? key,
     required this.sight,
   }) : super(key: key);
@@ -117,45 +100,25 @@ class SightType extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       sight.type,
-      style: const TextStyle(
-        color: Color(0xFF3B3E5B),
-        fontSize: 14,
-        fontFamily: 'Roboto',
-        fontWeight: FontWeight.bold,
-        height: 18 / 14,
-      ),
+      style: AppTypography.styleSmallBold,
     );
   }
 }
 
 // Виджет отображает имя интересного места
-class SightName extends StatelessWidget {
-
+class SightDetailsName extends StatelessWidget {
   final Sight sight;
 
-  const SightName({
+  const SightDetailsName({
     Key? key,
     required this.sight,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: 24,
-        left: 16,
-        right: 16,
-      ),
-      child: Text(
-        sight.name,
-        style: const TextStyle(
-          color: Color(0xFF3B3E5B),
-          fontSize: 24,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.bold,
-          height: 28.8 / 24,
-        ),
-      ),
+    return Text(
+      sight.name,
+      style: AppTypography.styleTitle,
     );
   }
 }
@@ -189,8 +152,11 @@ class BottomPanel extends StatelessWidget {
 // Виджет отображает изображение интересного места
 // с кнопкой возврата на предыдущий экран
 class SightImage extends StatelessWidget {
+  final Sight sight;
+
   const SightImage({
     Key? key,
+    required this.sight,
   }) : super(key: key);
 
   @override
@@ -198,14 +164,15 @@ class SightImage extends StatelessWidget {
     return Expanded(
       child: Stack(
         children: [
-          Container(
-            //height: 360,
-            color: Colors.red,
+          Image.network(
+            sight.url,
+            fit: BoxFit.cover,
+            height: 360,
           ),
           Positioned(
             child: Container(
               decoration: const BoxDecoration(
-                color: Colors.green,
+                color: AppColors.sightCardColor,
                 borderRadius: BorderRadius.all(
                   Radius.circular(10),
                 ),
@@ -214,7 +181,7 @@ class SightImage extends StatelessWidget {
               width: 32,
               alignment: Alignment.center,
               child: Container(
-                color: Colors.cyanAccent,
+                color: AppColors.sightCardColor,
                 width: 5,
                 height: 10,
               ),
@@ -237,15 +204,10 @@ class Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 24,
-      margin: const EdgeInsets.only(
-        left: 16,
-        right: 16,
-      ),
       decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: Color(0x7C7E928F),
+            color: AppColors.dividerColor,
             width: 0.8,
           ),
         ),
@@ -263,40 +225,24 @@ class RouteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(
-        top: 24,
-        left: 16,
-        right: 16,
-      ),
       alignment: Alignment.center,
       height: 48,
       decoration: const BoxDecoration(
-        color: Color(0xFF4CAF50),
+        color: AppColors.routeButtonColor,
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            color: Colors.white,
+            color: AppColors.sightCardColor,
             width: 20,
             height: 18,
           ),
-          const Padding(
-            padding: EdgeInsets.only(
-              left: 10,
-            ),
-            child: Text(
+          const SizedBox(width: 10),
+          const Text(
               AppStrings.route,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontFamily: 'Roboto',
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.03,
-                height: 18 / 14,
-              ),
-            ),
+              style: AppTypography.styleButton,
           ),
         ],
       ),
@@ -309,8 +255,8 @@ class BottomButton extends StatelessWidget {
   final String text;
   final bool active;
 
-  Color get _textColor =>
-      active ? const Color(0xFF3B3E5B) : const Color(0x7C7E928F);
+  TextStyle get _textStyle =>
+      active ? AppTypography.styleSmall : AppTypography.styleSmallInactive;
 
   const BottomButton({
     required this.text,
@@ -330,19 +276,12 @@ class BottomButton extends StatelessWidget {
             Container(
               width: 20,
               height: 20,
-              color: Colors.greenAccent,
-              margin: const EdgeInsets.only(
-                right: 10,
-              ),
+              color: AppColors.sightCardColor,
             ),
+            const SizedBox(width: 10),
             Text(
               text,
-              style: TextStyle(
-                color: _textColor,
-                fontSize: 14,
-                fontFamily: 'Roboto',
-                height: 18 / 14,
-              ),
+              style: _textStyle,
             ),
           ],
         ),

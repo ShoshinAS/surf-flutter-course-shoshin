@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:places/domain/sight.dart';
+import 'package:places/ui/colors.dart';
+import 'package:places/ui/typography.dart';
 
 // Виджет отображает карточку интересного места в списке
 class SightCard extends StatelessWidget {
@@ -9,95 +11,174 @@ class SightCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 204,
+    return AspectRatio(
+      aspectRatio: 3/2,
       child: Column(
         children: [
-          Stack(
-            children: [
-              Container(
-                height: 96,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                  ),
-                ),
-              ),
-              Positioned(
-                child: Text(
-                  sight.type,
-                  style: const TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                top: 16,
-                left: 16,
-              ),
-              Positioned(
-                child: Container(
-                  color: Colors.red,
-                  width: 20,
-                  height: 18,
-                ),
-                top: 19,
-                right: 18,
-              ),
-            ],
+          Expanded(
+            child: Stack(
+              children: [
+                SightCardImage(sight: sight),
+                SightCardType(sight: sight),
+                const SightCardLike(),
+              ],
+            ),
           ),
-          Stack(
-            children: [
-              Container(
-                height: 92,
-                width: double.maxFinite,
-                decoration: const BoxDecoration(
-                  color: Color(0XFFF5F5F5),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
-                  ),
-                ),
-              ),
-              Positioned(
-                  left: 16,
-                  right: 16,
-                  top: 16,
-                  bottom: 36,
-                  child: Text(
-                    sight.name,
-                    style: const TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 16,
-                      color: Color(0XFF3B3E5B),
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 2,
-                  ),
-              ),
-              Positioned(
-                left: 16,
-                right: 16,
-                top: 58,
-                bottom: 16,
-                child: Text(
-                  sight.details,
-                  style: const TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 14,
-                    color: Color(0XFF7C7E92),
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 1,
-                ),
-              ),
-            ],
+          Expanded(
+            child: SightCardDescription(sight: sight),
           ),
+          const SizedBox(height: 16),
         ],
+      ),
+    );
+  }
+}
+
+// Виджет отображает блок текстового описания интересного места в списке
+class SightCardDescription extends StatelessWidget {
+
+  final Sight sight;
+
+  const SightCardDescription({
+    Key? key,
+    required this.sight,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(
+        maxHeight: 92,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: const BoxDecoration(
+        color: AppColors.sightCardColor,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(10),
+          bottomRight: Radius.circular(10),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 16),
+          SightCardName(sight: sight),
+          const SizedBox(height: 2),
+          SightCardDetails(sight: sight),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+}
+
+// Виджет отображает краткое описание интересного места в списке
+class SightCardDetails extends StatelessWidget {
+
+  final Sight sight;
+
+  const SightCardDetails({
+    Key? key,
+    required this.sight,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Text(
+        sight.details,
+        style: AppTypography.styleSmall,
+        overflow: TextOverflow.fade,
+        maxLines: 3,
+      ),
+    );
+  }
+}
+
+// Виджет отображает имя интересного места в списке
+class SightCardName extends StatelessWidget {
+
+  final Sight sight;
+
+  const SightCardName({
+    Key? key,
+    required this.sight,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+        sight.name,
+        style: AppTypography.styleText,
+      );
+  }
+}
+
+// Виджет отображает кнопку лайка
+class SightCardLike extends StatelessWidget {
+  const SightCardLike({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      child: Container(
+        color: AppColors.sightCardColor,
+        width: 20,
+        height: 18,
+      ),
+      top: 19,
+      right: 18,
+    );
+  }
+}
+
+// Виджет отображает тип интересного места в списке
+class SightCardType extends StatelessWidget {
+
+  final Sight sight;
+
+  const SightCardType({
+    Key? key,
+    required this.sight,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      child: Text(
+        sight.type,
+        style: AppTypography.styleSmallBoldWhite,
+      ),
+      top: 16,
+      left: 16,
+    );
+  }
+}
+
+// Виджет отображает картинку интересного места в списке
+class SightCardImage extends StatelessWidget {
+
+  final Sight sight;
+
+  const SightCardImage({
+    Key? key,
+    required this.sight,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+            image: NetworkImage(sight.url),
+            fit: BoxFit.cover,
+        ),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
       ),
     );
   }
