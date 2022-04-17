@@ -12,7 +12,7 @@ class SightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 3/2,
+      aspectRatio: 3 / 2,
       child: Column(
         children: [
           Expanded(
@@ -36,7 +36,6 @@ class SightCard extends StatelessWidget {
 
 // Виджет отображает блок текстового описания интересного места в списке
 class SightCardDescription extends StatelessWidget {
-
   final Sight sight;
 
   const SightCardDescription({
@@ -74,7 +73,6 @@ class SightCardDescription extends StatelessWidget {
 
 // Виджет отображает краткое описание интересного места в списке
 class SightCardDetails extends StatelessWidget {
-
   final Sight sight;
 
   const SightCardDetails({
@@ -97,7 +95,6 @@ class SightCardDetails extends StatelessWidget {
 
 // Виджет отображает имя интересного места в списке
 class SightCardName extends StatelessWidget {
-
   final Sight sight;
 
   const SightCardName({
@@ -108,9 +105,9 @@ class SightCardName extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-        sight.name,
-        style: AppTypography.styleText,
-      );
+      sight.name,
+      style: AppTypography.styleText,
+    );
   }
 }
 
@@ -136,7 +133,6 @@ class SightCardLike extends StatelessWidget {
 
 // Виджет отображает тип интересного места в списке
 class SightCardType extends StatelessWidget {
-
   final Sight sight;
 
   const SightCardType({
@@ -159,7 +155,6 @@ class SightCardType extends StatelessWidget {
 
 // Виджет отображает картинку интересного места в списке
 class SightCardImage extends StatelessWidget {
-
   final Sight sight;
 
   const SightCardImage({
@@ -169,16 +164,29 @@ class SightCardImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-            image: NetworkImage(sight.url),
-            fit: BoxFit.cover,
-        ),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(10),
-          topRight: Radius.circular(10),
-        ),
+    return ClipRRect(
+      child: Image.network(
+        sight.url,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) {
+            return child;
+          }
+
+          return Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                  loadingProgress.expectedTotalBytes!
+                  : null,
+            ),
+          );
+        },
+      ),
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(10),
+        topRight: Radius.circular(10),
       ),
     );
   }
