@@ -20,7 +20,7 @@ class SightCard extends StatelessWidget {
               children: [
                 SightCardImage(sight: sight),
                 SightCardType(sight: sight),
-                const SightCardLike(),
+                const SightCardAddToFavorites(),
               ],
             ),
           ),
@@ -111,9 +111,9 @@ class SightCardName extends StatelessWidget {
   }
 }
 
-// Виджет отображает кнопку лайка
-class SightCardLike extends StatelessWidget {
-  const SightCardLike({
+// Виджет отображает кнопку добавления в избранное
+class SightCardAddToFavorites extends StatelessWidget {
+  const SightCardAddToFavorites({
     Key? key,
   }) : super(key: key);
 
