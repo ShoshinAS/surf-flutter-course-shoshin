@@ -242,7 +242,7 @@ class RouteButton extends StatelessWidget {
       alignment: Alignment.center,
       height: 48,
       decoration: const BoxDecoration(
-        color: AppColors.routeButtonColor,
+        color: AppColors.greenColor,
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
       child: Row(

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:places/domain/sight.dart';
 import 'package:places/strings.dart';
 import 'package:places/ui/colors.dart';
+import 'package:places/ui/screen/app_bar.dart';
+import 'package:places/ui/screen/bottom_navigation_bar.dart';
 import 'package:places/ui/screen/sight_card.dart';
 import 'package:places/ui/typography.dart';
 
@@ -15,9 +17,10 @@ class SightListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      appBar: const CustomAppBar(
-        height: 152,
-      ),
+      appBar: const CustomAppBar(AppStrings.appBarTitle,
+          height: 152,
+          style: AppTypography.styleLargeTitle,
+          alignment: Alignment.bottomLeft,),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -25,38 +28,15 @@ class SightListScreen extends StatelessWidget {
           ),
           child: SingleChildScrollView(
             child: Column(
-              children: sightList.map(SightCard.new).toList(),
+              children: sightList
+                  .map(SightCardInList.new)
+                  .toList(),
             ),
           ),
         ),
       ),
+      bottomNavigationBar: const AppBottomNavigationBar(),
       resizeToAvoidBottomInset: false,
-    );
-  }
-}
-
-// Виджет отображает заголовок списка интересных мест
-// Предназначен для использования в качестве appBar
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final double height;
-
-  @override
-  Size get preferredSize => Size.fromHeight(height);
-
-  const CustomAppBar({
-    Key? key,
-    required this.height,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      alignment: Alignment.bottomLeft,
-      child: const Text(
-        AppStrings.appBarTitle,
-        style: AppTypography.styleLargeTitle,
-      ),
     );
   }
 }

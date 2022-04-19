@@ -75,7 +75,12 @@ final List<Sight> mocks = [
 
 ];
 
+final List<Sight> wantToVisitSights = [mocks[0], mocks[1], mocks[2]];
+final List<Sight> visitedSights = [mocks[3], mocks[4], mocks[5]];
+
 /// Строковые константы приложения
 class MockStrings {
   static const openingHours = 'закрыто до 09:00';
+  static const scheduledDate = 'Запланировано на 12 окт. 2020';
+  static const visitDate = 'Цель достигнута 12 окт. 2020';
 }

@@ -75,4 +75,20 @@ class AppTypography{
     height: 18 / 14,
   );
 
+  static const styleSubtitle = TextStyle(
+    color: AppColors.fontColorSubtitle,
+    fontSize: 18,
+    fontFamily: 'Roboto',
+    fontWeight: FontWeight.w500,
+    height: 24 / 18,
+  );
+
+  static const styleSmallGreen = TextStyle(
+    color: AppColors.greenColor,
+    fontFamily: 'Roboto',
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 18 / 14,
+  );
+
 }
