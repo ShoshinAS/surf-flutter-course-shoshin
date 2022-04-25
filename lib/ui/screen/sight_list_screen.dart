@@ -5,6 +5,7 @@ import 'package:places/ui/colors.dart';
 import 'package:places/ui/screen/app_bar.dart';
 import 'package:places/ui/screen/bottom_navigation_bar.dart';
 import 'package:places/ui/screen/sight_card.dart';
+import 'package:places/ui/screen/sight_list.dart';
 import 'package:places/ui/typography.dart';
 
 // Виджет отображает экран со списком интересных мест
@@ -22,18 +23,9 @@ class SightListScreen extends StatelessWidget {
           style: AppTypography.styleLargeTitle,
           alignment: Alignment.bottomLeft,),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
+        child: SightList(
+            children: sightList.map(SightCardInList.new).toList(),
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: sightList
-                  .map(SightCardInList.new)
-                  .toList(),
-            ),
-          ),
-        ),
       ),
       bottomNavigationBar: const AppBottomNavigationBar(),
       resizeToAvoidBottomInset: false,

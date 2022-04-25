@@ -14,11 +14,15 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      theme: ThemeData(
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+      ),
       title: AppStrings.appTitle,
       //home: SightListScreen(sightList: mocks),
       //home: SightDetails(mocks[1]),
-      home: VisitingScreen(),
+      home: const VisitingScreen(),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:places/ui/assets.dart';
 
 class AppBottomNavigationBar extends StatelessWidget {
   const AppBottomNavigationBar({
@@ -13,11 +14,11 @@ class AppBottomNavigationBar extends StatelessWidget {
       showUnselectedLabels: false,
       items: [
         BottomNavigationBarItem(
-          icon: SvgPicture.asset('res/icons/list.svg'),
+          icon: SvgPicture.asset(AppAssets.iconList),
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: SvgPicture.asset('res/icons/heart_full.svg'),
+          icon: SvgPicture.asset(AppAssets.iconHeartFull),
           label: '',
         ),
       ],

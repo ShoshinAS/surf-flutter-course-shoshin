@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/domain/sight.dart';
 import 'package:places/mocks.dart';
+import 'package:places/ui/assets.dart';
 import 'package:places/ui/colors.dart';
 import 'package:places/ui/typography.dart';
 
@@ -52,7 +53,7 @@ class SightCardInList extends SightCard {
       : super(
           sight,
           key: key,
-          buttons: [const _SightCardButton('res/icons/heart.svg')],
+          buttons: [const _SightCardButton(AppAssets.iconHear)],
         );
 }
 
@@ -67,8 +68,8 @@ class SightCardInScheduledList extends SightCard {
             style: AppTypography.styleSmallGreen,
           ),
           buttons: [
-            const _SightCardButton('res/icons/calendar.svg'),
-            const _SightCardButton('res/icons/remove.svg'),
+            const _SightCardButton(AppAssets.iconCalendar),
+            const _SightCardButton(AppAssets.iconRemove),
           ],
         );
 }
@@ -82,8 +83,8 @@ class SightCardInVisitedList extends SightCard {
           extraInformation: const Text(MockStrings.visitDate,
               style: AppTypography.styleSmall,),
           buttons: [
-            const _SightCardButton('res/icons/share.svg'),
-            const _SightCardButton('res/icons/remove.svg'),
+            const _SightCardButton(AppAssets.iconShare),
+            const _SightCardButton(AppAssets.iconRemove),
           ],
         );
 }
