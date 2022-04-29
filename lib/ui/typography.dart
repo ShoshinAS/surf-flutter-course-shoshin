@@ -18,6 +18,15 @@ class AppTypography{
     fontWeight: FontWeight.w700,
     height: 16 / 14,
   );
+
+  static const styleSmallBoldInactive = TextStyle(
+    fontFamily: 'Roboto',
+    fontSize: 14,
+    color: AppColors.fontColorInactive,
+    fontWeight: FontWeight.w700,
+    height: 16 / 14,
+  );
+
   static const styleLargeTitle = TextStyle(
     fontFamily: 'Roboto',
     fontSize: 32,
@@ -72,6 +81,30 @@ class AppTypography{
     fontFamily: 'Roboto',
     fontWeight: FontWeight.w700,
     letterSpacing: 0.03,
+    height: 18 / 14,
+  );
+
+  static const styleSubtitle = TextStyle(
+    color: AppColors.fontColorSubtitle,
+    fontSize: 18,
+    fontFamily: 'Roboto',
+    fontWeight: FontWeight.w500,
+    height: 24 / 18,
+  );
+
+  static const styleSubtitleGray = TextStyle(
+    color: AppColors.fontColorGray,
+    fontSize: 18,
+    fontFamily: 'Roboto',
+    fontWeight: FontWeight.w500,
+    height: 24 / 18,
+  );
+
+  static const styleSmallGreen = TextStyle(
+    color: AppColors.greenColor,
+    fontFamily: 'Roboto',
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
     height: 18 / 14,
   );
 

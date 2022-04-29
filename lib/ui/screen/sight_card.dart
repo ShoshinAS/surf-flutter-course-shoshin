@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/domain/sight.dart';
+import 'package:places/mocks.dart';
+import 'package:places/ui/assets.dart';
 import 'package:places/ui/colors.dart';
 import 'package:places/ui/typography.dart';
 
-// Виджет отображает карточку интересного места в списке
-class SightCard extends StatelessWidget {
+// Виджет реализует абстрактный класс для отображения карточки интересного места в списке
+abstract class SightCard extends StatelessWidget {
   final Sight sight;
+  final Widget extraInformation;
+  final List<Widget> buttons;
 
-  const SightCard(this.sight, {Key? key}) : super(key: key);
+  const SightCard(this.sight,
+      {Key? key,
+      this.extraInformation = const Text(''),
+      this.buttons = const [],})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,14 +27,18 @@ class SightCard extends StatelessWidget {
           Expanded(
             child: Stack(
               children: [
-                SightCardImage(sight: sight),
-                SightCardType(sight: sight),
-                const SightCardAddToFavorites(),
+                _SightCardImage(sight: sight),
+                _SightCardType(sight: sight),
+                _SightCardButtonPanel(buttons: buttons),
               ],
             ),
           ),
           Expanded(
-            child: SightCardDescription(sight: sight),
+            child: _SightCardDescription(
+              header: _SightCardName(sight: sight),
+              firstLine: extraInformation,
+              secondLine: const _SightCardOpeningTime(),
+            ),
           ),
           const SizedBox(height: 16),
         ],
@@ -34,13 +47,97 @@ class SightCard extends StatelessWidget {
   }
 }
 
-// Виджет отображает блок текстового описания интересного места в списке
-class SightCardDescription extends StatelessWidget {
-  final Sight sight;
+// Виджет отображает карточку интересного места в списке
+class SightCardInList extends SightCard {
+  SightCardInList(Sight sight, {Key? key})
+      : super(
+          sight,
+          key: key,
+          buttons: [const _SightCardButton(AppAssets.iconHear)],
+        );
+}
 
-  const SightCardDescription({
+// Виджет отображает карточку интересного места в списке "Хочу посетить"
+class SightCardInScheduledList extends SightCard {
+  SightCardInScheduledList(Sight sight, {Key? key})
+      : super(
+          sight,
+          key: key,
+          extraInformation: const Text(
+            MockStrings.scheduledDate,
+            style: AppTypography.styleSmallGreen,
+          ),
+          buttons: [
+            const _SightCardButton(AppAssets.iconCalendar),
+            const _SightCardButton(AppAssets.iconRemove),
+          ],
+        );
+}
+
+// Виджет отображает карточку интересного места в списке "Посетил"
+class SightCardInVisitedList extends SightCard {
+  SightCardInVisitedList(Sight sight, {Key? key})
+      : super(
+          sight,
+          key: key,
+          extraInformation: const Text(MockStrings.visitDate,
+              style: AppTypography.styleSmall,),
+          buttons: [
+            const _SightCardButton(AppAssets.iconShare),
+            const _SightCardButton(AppAssets.iconRemove),
+          ],
+        );
+}
+
+// Виджет отображает группу кнопок, расположенную поверх изображения
+class _SightCardButtonPanel extends StatelessWidget {
+  final List<Widget> buttons;
+
+  const _SightCardButtonPanel({Key? key, required this.buttons})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      child: Row(
+        children: buttons,
+      ),
+      top: 16,
+      right: 16,
+    );
+  }
+}
+
+// Виджет отображает кнопку на панели _SightCardButtonPanel
+class _SightCardButton extends StatelessWidget {
+  final String icon;
+  const _SightCardButton(this.icon, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: 16,
+      ),
+      child: SvgPicture.asset(
+        icon,
+        color: AppColors.fontColorWhite,
+      ),
+    );
+  }
+}
+
+// Виджет отображает блок текстового описания интересного места в списке
+class _SightCardDescription extends StatelessWidget {
+  final Widget header;
+  final Widget firstLine;
+  final Widget secondLine;
+
+  const _SightCardDescription({
     Key? key,
-    required this.sight,
+    required this.header,
+    required this.firstLine,
+    required this.secondLine,
   }) : super(key: key);
 
   @override
@@ -48,6 +145,7 @@ class SightCardDescription extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(
         maxHeight: 92,
+        minWidth: double.infinity,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: const BoxDecoration(
@@ -61,9 +159,11 @@ class SightCardDescription extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 16),
-          SightCardName(sight: sight),
+          header,
           const SizedBox(height: 2),
-          SightCardDetails(sight: sight),
+          Expanded(child: firstLine),
+          const SizedBox(height: 2),
+          secondLine,
           const SizedBox(height: 16),
         ],
       ),
@@ -72,32 +172,25 @@ class SightCardDescription extends StatelessWidget {
 }
 
 // Виджет отображает краткое описание интересного места в списке
-class SightCardDetails extends StatelessWidget {
-  final Sight sight;
-
-  const SightCardDetails({
+class _SightCardOpeningTime extends StatelessWidget {
+  const _SightCardOpeningTime({
     Key? key,
-    required this.sight,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Text(
-        sight.details,
-        style: AppTypography.styleSmall,
-        overflow: TextOverflow.fade,
-        maxLines: 3,
-      ),
+    return const Text(
+      MockStrings.openingHours,
+      style: AppTypography.styleSmall,
     );
   }
 }
 
 // Виджет отображает имя интересного места в списке
-class SightCardName extends StatelessWidget {
+class _SightCardName extends StatelessWidget {
   final Sight sight;
 
-  const SightCardName({
+  const _SightCardName({
     Key? key,
     required this.sight,
   }) : super(key: key);
@@ -111,31 +204,11 @@ class SightCardName extends StatelessWidget {
   }
 }
 
-// Виджет отображает кнопку добавления в избранное
-class SightCardAddToFavorites extends StatelessWidget {
-  const SightCardAddToFavorites({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      child: Container(
-        color: AppColors.sightCardColor,
-        width: 20,
-        height: 18,
-      ),
-      top: 19,
-      right: 18,
-    );
-  }
-}
-
 // Виджет отображает тип интересного места в списке
-class SightCardType extends StatelessWidget {
+class _SightCardType extends StatelessWidget {
   final Sight sight;
 
-  const SightCardType({
+  const _SightCardType({
     Key? key,
     required this.sight,
   }) : super(key: key);
@@ -154,10 +227,10 @@ class SightCardType extends StatelessWidget {
 }
 
 // Виджет отображает картинку интересного места в списке
-class SightCardImage extends StatelessWidget {
+class _SightCardImage extends StatelessWidget {
   final Sight sight;
 
-  const SightCardImage({
+  const _SightCardImage({
     Key? key,
     required this.sight,
   }) : super(key: key);
@@ -178,7 +251,7 @@ class SightCardImage extends StatelessWidget {
             child: CircularProgressIndicator(
               value: loadingProgress.expectedTotalBytes != null
                   ? loadingProgress.cumulativeBytesLoaded /
-                  loadingProgress.expectedTotalBytes!
+                      loadingProgress.expectedTotalBytes!
                   : null,
             ),
           );

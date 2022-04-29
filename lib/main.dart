@@ -3,6 +3,7 @@ import 'package:places/mocks.dart';
 import 'package:places/strings.dart';
 import 'package:places/ui/screen/sight_details.dart';
 import 'package:places/ui/screen/sight_list_screen.dart';
+import 'package:places/ui/screen/visiting_screen.dart';
 
 void main() {
   runApp(const App());
@@ -14,9 +15,14 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+      ),
       title: AppStrings.appTitle,
       //home: SightListScreen(sightList: mocks),
-      home: SightDetails(mocks[1]),
+      //home: SightDetails(mocks[1]),
+      home: const VisitingScreen(),
     );
   }
 }
