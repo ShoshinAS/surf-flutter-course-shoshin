@@ -7,4 +7,6 @@ class AppAssets {
   static const iconCalendar = 'res/icons/calendar.svg';
   static const iconRemove = 'res/icons/remove.svg';
   static const iconShare = 'res/icons/share.svg';
+  static const iconArrow = 'res/icons/arrow.svg';
+  static const iconGo = 'res/icons/go.svg';
 }

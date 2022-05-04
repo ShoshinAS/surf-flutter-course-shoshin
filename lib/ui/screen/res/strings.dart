@@ -8,8 +8,9 @@ class AppStrings {
   static const favoriteTitle = 'Избранное';
   static const wantToVisitTitle = 'Хочу посетить';
   static const visitedTitle = 'Посетил';
-  static const emptyFavoritesDescription = 'Отмечайте понравившиеся\nместа и они появиятся здесь.';
-  static const emptyVisitedDescription = 'Завершите маршрут\nчтобы место попало сюда.';
+  static const emptyFavoritesDescription =
+      'Отмечайте понравившиеся\nместа и они появиятся здесь.';
+  static const emptyVisitedDescription =
+      'Завершите маршрут\nчтобы место попало сюда.';
   static const empty = 'Пусто';
-
 }
