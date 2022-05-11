@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-
-class Sight{
+class Sight {
   String name = '';
   double lat = 0.0;
   double lon = 0.0;
@@ -15,13 +13,5 @@ class Sight{
     required this.url,
     required this.details,
     required this.type,
-});
-}
-class asd extends StatelessWidget {
-  const asd({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child:Text("test"));
-  }
+  });
 }

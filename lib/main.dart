@@ -16,8 +16,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      //theme: darkTheme,
       theme: lightTheme,
+      darkTheme: darkTheme,
       title: AppStrings.appTitle,
       //home: SightListScreen(sightList: mocks),
       //home: SightDetails(mocks[1]),
