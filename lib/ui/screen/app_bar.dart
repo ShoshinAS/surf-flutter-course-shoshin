@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String data;
   final double height;
-  final TextStyle? style;
+  final TextStyle? titleTextStyle;
   final Alignment? alignment;
   final PreferredSizeWidget? bottom;
 
@@ -16,7 +16,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.data, {
     Key? key,
     required this.height,
-    this.style,
+    required this.titleTextStyle,
     this.alignment,
     this.bottom,
   }) : super(key: key);
@@ -31,7 +31,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           alignment: alignment,
           child: Text(
             data,
-            style: style,
+            style:
+                titleTextStyle ?? Theme.of(context).appBarTheme.titleTextStyle,
           ),
         ),
         Container(

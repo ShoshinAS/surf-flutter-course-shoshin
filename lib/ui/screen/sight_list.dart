@@ -14,7 +14,7 @@ class SightList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: children.isNotEmpty
           ? SingleChildScrollView(child: Column(children: children))
           : emptyScreen,

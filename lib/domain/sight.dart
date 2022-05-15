@@ -1,4 +1,4 @@
-class Sight{
+class Sight {
   String name = '';
   double lat = 0.0;
   double lon = 0.0;
@@ -13,5 +13,5 @@ class Sight{
     required this.url,
     required this.details,
     required this.type,
-});
+  });
 }

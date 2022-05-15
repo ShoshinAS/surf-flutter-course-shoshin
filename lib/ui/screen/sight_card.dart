@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/domain/sight.dart';
 import 'package:places/mocks.dart';
-import 'package:places/ui/assets.dart';
-import 'package:places/ui/colors.dart';
-import 'package:places/ui/typography.dart';
+import 'package:places/ui/screen/res/assets.dart';
+import 'package:places/ui/screen/res/colors.dart';
 
 // Виджет реализует абстрактный класс для отображения карточки интересного места в списке
 abstract class SightCard extends StatelessWidget {
@@ -12,11 +11,12 @@ abstract class SightCard extends StatelessWidget {
   final Widget extraInformation;
   final List<Widget> buttons;
 
-  const SightCard(this.sight,
-      {Key? key,
-      this.extraInformation = const Text(''),
-      this.buttons = const [],})
-      : super(key: key);
+  const SightCard(
+    this.sight, {
+    Key? key,
+    this.extraInformation = const Text(''),
+    this.buttons = const [],
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +24,7 @@ abstract class SightCard extends StatelessWidget {
       aspectRatio: 3 / 2,
       child: Column(
         children: [
+          const SizedBox(height: 16),
           Expanded(
             child: Stack(
               children: [
@@ -63,15 +64,26 @@ class SightCardInScheduledList extends SightCard {
       : super(
           sight,
           key: key,
-          extraInformation: const Text(
-            MockStrings.scheduledDate,
-            style: AppTypography.styleSmallGreen,
-          ),
+          extraInformation: const ScheduledDate(),
           buttons: [
             const _SightCardButton(AppAssets.iconCalendar),
             const _SightCardButton(AppAssets.iconRemove),
           ],
         );
+}
+
+class ScheduledDate extends StatelessWidget {
+  const ScheduledDate({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      MockStrings.scheduledDate,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+    );
+  }
 }
 
 // Виджет отображает карточку интересного места в списке "Посетил"
@@ -80,13 +92,26 @@ class SightCardInVisitedList extends SightCard {
       : super(
           sight,
           key: key,
-          extraInformation: const Text(MockStrings.visitDate,
-              style: AppTypography.styleSmall,),
+          extraInformation: const VisitDate(),
           buttons: [
             const _SightCardButton(AppAssets.iconShare),
             const _SightCardButton(AppAssets.iconRemove),
           ],
         );
+}
+
+class VisitDate extends StatelessWidget {
+  const VisitDate({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      MockStrings.visitDate,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+    );
+  }
 }
 
 // Виджет отображает группу кнопок, расположенную поверх изображения
@@ -121,7 +146,7 @@ class _SightCardButton extends StatelessWidget {
       ),
       child: SvgPicture.asset(
         icon,
-        color: AppColors.fontColorWhite,
+        color: Colors.white,
       ),
     );
   }
@@ -148,9 +173,9 @@ class _SightCardDescription extends StatelessWidget {
         minWidth: double.infinity,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: const BoxDecoration(
-        color: AppColors.sightCardColor,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(10),
           bottomRight: Radius.circular(10),
         ),
@@ -179,9 +204,11 @@ class _SightCardOpeningTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
+    return Text(
       MockStrings.openingHours,
-      style: AppTypography.styleSmall,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
     );
   }
 }
@@ -199,7 +226,9 @@ class _SightCardName extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       sight.name,
-      style: AppTypography.styleText,
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
     );
   }
 }
@@ -218,7 +247,9 @@ class _SightCardType extends StatelessWidget {
     return Positioned(
       child: Text(
         sight.type,
-        style: AppTypography.styleSmallBoldWhite,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: AppColors.white,
+            ),
       ),
       top: 16,
       left: 16,

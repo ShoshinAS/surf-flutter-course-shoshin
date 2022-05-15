@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/domain/sight.dart';
 import 'package:places/mocks.dart';
-import 'package:places/strings.dart';
-import 'package:places/ui/colors.dart';
-import 'package:places/ui/typography.dart';
+import 'package:places/ui/screen/res/assets.dart';
+import 'package:places/ui/screen/res/strings.dart';
+import 'package:places/ui/screen/res/typography.dart';
 
 // Виджет отображает детальную информацию об интересном месте
 // для отображения на отдельном экране
@@ -15,7 +16,7 @@ class SightDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Column(
         children: [
           SightImage(sight: sight),
@@ -54,7 +55,6 @@ class SightDetails extends StatelessWidget {
 
 // Виджет отображает краткое описание интересного места на экране информации
 class SightDescription extends StatelessWidget {
-
   final Sight sight;
 
   const SightDescription({
@@ -66,7 +66,9 @@ class SightDescription extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       sight.details,
-      style: AppTypography.styleSmall,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onBackground,
+          ),
       overflow: TextOverflow.clip,
     );
   }
@@ -80,10 +82,12 @@ class SightOpeningHours extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
-        MockStrings.openingHours,
-        style: AppTypography.styleSmallGray,
-      );
+    return Text(
+      MockStrings.openingHours,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+    );
   }
 }
 
@@ -100,7 +104,9 @@ class SightDetailsType extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       sight.type,
-      style: AppTypography.styleSmallBold,
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
     );
   }
 }
@@ -141,8 +147,16 @@ class BottomPanel extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       child: Row(
         children: const [
-          BottomButton(text: AppStrings.plan, active: false),
-          BottomButton(text: AppStrings.toFavourites, active: true),
+          BottomButton(
+            text: AppStrings.plan,
+            active: false,
+            icon: AppAssets.iconCalendar,
+          ),
+          BottomButton(
+            text: AppStrings.toFavourites,
+            active: true,
+            icon: AppAssets.iconHear,
+          ),
         ],
       ),
     );
@@ -177,7 +191,7 @@ class SightImage extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
+                          loadingProgress.expectedTotalBytes!
                       : null,
                 ),
               );
@@ -185,19 +199,18 @@ class SightImage extends StatelessWidget {
           ),
           Positioned(
             child: Container(
-              decoration: const BoxDecoration(
-                color: AppColors.sightCardColor,
-                borderRadius: BorderRadius.all(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.tertiary,
+                borderRadius: const BorderRadius.all(
                   Radius.circular(10),
                 ),
               ),
               height: 32,
               width: 32,
               alignment: Alignment.center,
-              child: Container(
-                color: AppColors.sightCardColor,
-                width: 5,
-                height: 10,
+              child: SvgPicture.asset(
+                AppAssets.iconArrow,
+                color: Theme.of(context).colorScheme.onTertiary,
               ),
             ),
             left: 16,
@@ -217,11 +230,11 @@ class Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
+    return DecoratedBox(
+      decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: AppColors.dividerColor,
+            color: Theme.of(context).colorScheme.outline,
             width: 0.8,
           ),
         ),
@@ -241,22 +254,24 @@ class RouteButton extends StatelessWidget {
     return Container(
       alignment: Alignment.center,
       height: 48,
-      decoration: const BoxDecoration(
-        color: AppColors.greenColor,
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary,
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            color: AppColors.sightCardColor,
-            width: 20,
-            height: 18,
+          SvgPicture.asset(
+            AppAssets.iconGo,
+            width: 24,
+            height: 24,
           ),
           const SizedBox(width: 10),
-          const Text(
-              AppStrings.route,
-              style: AppTypography.styleButton,
+          Text(
+            AppStrings.route,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
           ),
         ],
       ),
@@ -268,18 +283,21 @@ class RouteButton extends StatelessWidget {
 class BottomButton extends StatelessWidget {
   final String text;
   final bool active;
-
-  TextStyle get _textStyle =>
-      active ? AppTypography.styleSmall : AppTypography.styleSmallInactive;
+  final String icon;
 
   const BottomButton({
     required this.text,
     required this.active,
+    required this.icon,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final color = active
+        ? Theme.of(context).colorScheme.onBackground
+        : Theme.of(context).colorScheme.outline;
+
     return Expanded(
       child: Container(
         height: 40,
@@ -287,15 +305,18 @@ class BottomButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
+            SvgPicture.asset(
+              icon,
               width: 20,
               height: 20,
-              color: AppColors.sightCardColor,
+              color: color,
             ),
             const SizedBox(width: 10),
             Text(
               text,
-              style: _textStyle,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: color,
+                  ),
             ),
           ],
         ),

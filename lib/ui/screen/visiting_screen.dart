@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/mocks.dart';
-import 'package:places/strings.dart';
-import 'package:places/ui/assets.dart';
-import 'package:places/ui/colors.dart';
 import 'package:places/ui/screen/app_bar.dart';
 import 'package:places/ui/screen/bottom_navigation_bar.dart';
+import 'package:places/ui/screen/res/assets.dart';
+import 'package:places/ui/screen/res/strings.dart';
+import 'package:places/ui/screen/res/typography.dart';
 import 'package:places/ui/screen/sight_card.dart';
 import 'package:places/ui/screen/sight_list.dart';
-import 'package:places/ui/typography.dart';
 
 // виджет отображает экран Хочу посетить / Интересные места
 class VisitingScreen extends StatelessWidget {
@@ -19,12 +18,13 @@ class VisitingScreen extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: AppColors.backgroundColor,
-        appBar: const CustomAppBar(
+        appBar: CustomAppBar(
           AppStrings.favoriteTitle,
-          style: AppTypography.styleSubtitle,
+          titleTextStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: Theme.of(context).colorScheme.onBackground,
+              ),
           height: 132,
-          bottom: CustomTabBar(
+          bottom: const CustomTabBar(
             height: 52,
             tabs: [
               Tab(
@@ -38,16 +38,19 @@ class VisitingScreen extends StatelessWidget {
         ),
         body: TabBarView(children: [
           SightList(
-            children: wantToVisitSights.map(SightCardInScheduledList.new).toList(),
+            children:
+                wantToVisitSights.map(SightCardInScheduledList.new).toList(),
             emptyScreen: const EmptyScreen(
-                iconAssetName: AppAssets.iconFavoriteEmpty,
-                description: AppStrings.emptyFavoritesDescription,),
+              iconAssetName: AppAssets.iconFavoriteEmpty,
+              description: AppStrings.emptyFavoritesDescription,
+            ),
           ),
           SightList(
             children: visitedSights.map(SightCardInVisitedList.new).toList(),
             emptyScreen: const EmptyScreen(
-                iconAssetName: AppAssets.iconVisitedEmpty,
-                description: AppStrings.emptyVisitedDescription,),
+              iconAssetName: AppAssets.iconVisitedEmpty,
+              description: AppStrings.emptyVisitedDescription,
+            ),
           ),
         ]),
         bottomNavigationBar: const AppBottomNavigationBar(),
@@ -75,18 +78,27 @@ class EmptyScreen extends StatelessWidget {
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
-            SvgPicture.asset(iconAssetName),
+            SvgPicture.asset(
+              iconAssetName,
+              color: Theme.of(context).colorScheme.outline,
+            ),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                const Text(AppStrings.empty,
-                    textAlign: TextAlign.center,
-                    style: AppTypography.styleSubtitleGray,),
+                Text(
+                  AppStrings.empty,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
+                ),
                 const SizedBox(height: 8),
                 Text(
                   description,
                   textAlign: TextAlign.center,
-                  style: AppTypography.styleSmallGray,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
                 ),
               ],
             ),
@@ -118,16 +130,18 @@ class CustomTabBar extends StatelessWidget implements PreferredSizeWidget {
       height: height,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: AppColors.sightCardColor,
+          color: Theme.of(context).colorScheme.primaryContainer,
           borderRadius: BorderRadius.circular(40),
         ),
         child: TabBar(
           indicator: BoxDecoration(
-            color: AppColors.fontColor,
+            color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.circular(40),
           ),
-          unselectedLabelColor: AppColors.fontColorGray,
+          unselectedLabelColor:
+              Theme.of(context).colorScheme.onPrimaryContainer,
           unselectedLabelStyle: AppTypography.styleSmallBold,
+          labelColor: Theme.of(context).colorScheme.onPrimary,
           tabs: tabs,
         ),
       ),
