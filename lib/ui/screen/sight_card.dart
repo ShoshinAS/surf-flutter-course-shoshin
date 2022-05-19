@@ -54,7 +54,7 @@ class SightCardInList extends SightCard {
       : super(
           sight,
           key: key,
-          buttons: [const _SightCardButton(AppAssets.iconHear)],
+          buttons: [_AddToFavoritesButton(sight: sight)],
         );
 }
 
@@ -66,8 +66,8 @@ class SightCardInScheduledList extends SightCard {
           key: key,
           extraInformation: const ScheduledDate(),
           buttons: [
-            const _SightCardButton(AppAssets.iconCalendar),
-            const _SightCardButton(AppAssets.iconRemove),
+            _AddToCalendarButton(sight: sight),
+            _RemoveFromFavorites(sight: sight),
           ],
         );
 }
@@ -94,8 +94,8 @@ class SightCardInVisitedList extends SightCard {
           key: key,
           extraInformation: const VisitDate(),
           buttons: [
-            const _SightCardButton(AppAssets.iconShare),
-            const _SightCardButton(AppAssets.iconRemove),
+            _ShareButton(sight: sight),
+            _RemoveFromFavorites(sight: sight),
           ],
         );
 }
@@ -136,7 +136,10 @@ class _SightCardButtonPanel extends StatelessWidget {
 // Виджет отображает кнопку на панели _SightCardButtonPanel
 class _SightCardButton extends StatelessWidget {
   final String icon;
-  const _SightCardButton(this.icon, {Key? key}) : super(key: key);
+  final Sight sight;
+  final VoidCallback onPressed;
+
+  const _SightCardButton({required this.icon, required this.sight, required this.onPressed, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -144,10 +147,77 @@ class _SightCardButton extends StatelessWidget {
       padding: const EdgeInsets.only(
         left: 16,
       ),
-      child: SvgPicture.asset(
-        icon,
-        color: Colors.white,
+      child: MaterialButton(
+        onPressed: onPressed,
+        minWidth: 0,
+        height: 0,
+        padding: EdgeInsets.zero,
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        child: SvgPicture.asset(
+          icon,
+          color: Colors.white,
+        ),
       ),
+    );
+  }
+}
+
+class _AddToFavoritesButton extends StatelessWidget {
+  final Sight sight;
+
+  const _AddToFavoritesButton({required this.sight, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return _SightCardButton(
+        icon: AppAssets.iconHeart,
+        sight: sight,
+        onPressed: () => debugPrint('Нажата кнопка "Добавить в избранное" - ${sight.name}'),
+    );
+  }
+}
+
+class _AddToCalendarButton extends StatelessWidget {
+  final Sight sight;
+
+  const _AddToCalendarButton({required this.sight, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return _SightCardButton(
+      icon: AppAssets.iconCalendar,
+      sight: sight,
+      onPressed: () => debugPrint('Нажата кнопка "Запланировать к посещению" - ${sight.name}'),
+    );
+  }
+}
+
+class _ShareButton extends StatelessWidget {
+  final Sight sight;
+
+  const _ShareButton({required this.sight, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return _SightCardButton(
+      icon: AppAssets.iconShare,
+      sight: sight,
+      onPressed: () => debugPrint('Нажата кнопка "Поделиться" - ${sight.name}'),
+    );
+  }
+}
+
+class _RemoveFromFavorites extends StatelessWidget {
+  final Sight sight;
+
+  const _RemoveFromFavorites({required this.sight, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return _SightCardButton(
+      icon: AppAssets.iconRemove,
+      sight: sight,
+      onPressed: () => debugPrint('Нажата кнопка "Удалить из избранного" - ${sight.name}'),
     );
   }
 }

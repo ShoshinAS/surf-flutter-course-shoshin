@@ -146,16 +146,18 @@ class BottomPanel extends StatelessWidget {
       ),
       alignment: Alignment.bottomCenter,
       child: Row(
-        children: const [
+        children: [
           BottomButton(
             text: AppStrings.plan,
             active: false,
             icon: AppAssets.iconCalendar,
+            onPressed: () => debugPrint('Нажата кнопка "Запланировать"'),
           ),
           BottomButton(
             text: AppStrings.toFavourites,
             active: true,
-            icon: AppAssets.iconHear,
+            icon: AppAssets.iconHeart,
+            onPressed: () => debugPrint('Нажата кнопка "В Избранное"'),
           ),
         ],
       ),
@@ -197,26 +199,43 @@ class SightImage extends StatelessWidget {
               );
             },
           ),
-          Positioned(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.tertiary,
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(10),
-                ),
-              ),
-              height: 32,
-              width: 32,
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                AppAssets.iconArrow,
-                color: Theme.of(context).colorScheme.onTertiary,
-              ),
-            ),
+          const Positioned(
+            child: _ReturnButton(),
             left: 16,
             top: 36,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ReturnButton extends StatelessWidget {
+  const _ReturnButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        alignment: Alignment.center,
+        primary: Theme.of(context).colorScheme.tertiary,
+        onPrimary: Theme.of(context).colorScheme.onTertiary,
+        elevation: 0,
+        padding: EdgeInsets.zero,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(10),
+          ),
+        ),
+        minimumSize: const Size.square(32),
+        maximumSize: const Size.square(32),
+      ),
+      onPressed: () => debugPrint('Нажата кнопка "Вернуться"'),
+      child: SvgPicture.asset(
+        AppAssets.iconArrow,
+        color: Theme.of(context).colorScheme.onTertiary,
       ),
     );
   }
@@ -251,29 +270,23 @@ class RouteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      height: 48,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
-        borderRadius: const BorderRadius.all(Radius.circular(12)),
+    return ElevatedButton.icon(
+      onPressed: () => debugPrint('Нажата кнопка "Построить маршрут"'),
+      icon: SvgPicture.asset(
+        AppAssets.iconGo,
+        width: 24,
+        height: 24,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            AppAssets.iconGo,
-            width: 24,
-            height: 24,
-          ),
-          const SizedBox(width: 10),
-          Text(
-            AppStrings.route,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                ),
-          ),
-        ],
+      label: const Text(AppStrings.route),
+      style: ElevatedButton.styleFrom(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        minimumSize: const Size(double.infinity, 46),
+        primary: Theme.of(context).colorScheme.secondary,
+        onPrimary: Theme.of(context).colorScheme.onSecondary,
+        textStyle: Theme.of(context).textTheme.labelMedium,
       ),
     );
   }
@@ -284,11 +297,13 @@ class BottomButton extends StatelessWidget {
   final String text;
   final bool active;
   final String icon;
+  final VoidCallback onPressed;
 
   const BottomButton({
     required this.text,
     required this.active,
     required this.icon,
+    required this.onPressed,
     Key? key,
   }) : super(key: key);
 
@@ -299,27 +314,23 @@ class BottomButton extends StatelessWidget {
         : Theme.of(context).colorScheme.outline;
 
     return Expanded(
-      child: Container(
-        height: 40,
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              icon,
-              width: 20,
-              height: 20,
-              color: color,
-            ),
-            const SizedBox(width: 10),
-            Text(
-              text,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: color,
-                  ),
-            ),
-          ],
-        ),
+      child: ElevatedButton.icon(
+          onPressed: onPressed,
+          icon: SvgPicture.asset(
+            icon,
+            width: 20,
+            height: 20,
+            color: color,
+          ),
+          label: Text(text),
+          style: ElevatedButton.styleFrom(
+            elevation: 0,
+            padding: EdgeInsets.zero,
+            minimumSize: const Size(0, 40),
+            textStyle: Theme.of(context).textTheme.bodyMedium,
+            primary: Theme.of(context).colorScheme.background,
+            onPrimary: color,
+          ),
       ),
     );
   }

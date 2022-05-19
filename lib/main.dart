@@ -20,8 +20,8 @@ class App extends StatelessWidget {
       darkTheme: darkTheme,
       title: AppStrings.appTitle,
       //home: SightListScreen(sightList: mocks),
-      //home: SightDetails(mocks[1]),
-      home: const VisitingScreen(),
+      home: SightDetails(mocks[1]),
+      //home: const VisitingScreen(),
     );
   }
 }
