@@ -50,4 +50,18 @@ class AppTypography {
     fontWeight: FontWeight.w500,
     height: 24 / 18,
   );
+
+  static const styleSuperSmall = TextStyle(
+    fontSize: 12,
+    fontFamily: 'Roboto',
+    fontWeight: FontWeight.w400,
+    height: 16 / 12,
+  );
+
+  static const styleMenu = TextStyle(
+    fontSize: 16,
+    fontFamily: 'Roboto',
+    fontWeight: FontWeight.w400,
+    height: 20 / 16,
+  );
 }

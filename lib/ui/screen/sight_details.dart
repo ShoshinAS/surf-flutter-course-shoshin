@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/domain/sight.dart';
 import 'package:places/mocks.dart';
+import 'package:places/ui/screen/app_bar.dart';
+import 'package:places/ui/screen/big_button.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/screen/res/typography.dart';
@@ -19,32 +21,36 @@ class SightDetails extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Column(
         children: [
-          SightImage(sight: sight),
+          _SightImage(sight: sight),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 24),
-                SightDetailsName(sight: sight),
+                _SightDetailsName(sight: sight),
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    SightDetailsType(sight: sight),
+                    _SightDetailsType(sight: sight),
                     const SizedBox(width: 16),
-                    const SightOpeningHours(),
+                    const _SightOpeningHours(),
                   ],
                 ),
                 const SizedBox(height: 24),
-                SightDescription(sight: sight),
+                _SightDescription(sight: sight),
                 const SizedBox(height: 24),
-                const RouteButton(),
+                BigButton(
+                    title: AppStrings.route,
+                    icon: AppAssets.iconGo,
+                    onPressed: () => debugPrint('Нажата кнопка "Построить маршрут"'),
+                ),
                 const SizedBox(height: 24),
                 const Divider(),
               ],
             ),
           ),
-          const BottomPanel(),
+          const _BottomPanel(),
         ],
         crossAxisAlignment: CrossAxisAlignment.start,
       ),
@@ -54,10 +60,10 @@ class SightDetails extends StatelessWidget {
 }
 
 // Виджет отображает краткое описание интересного места на экране информации
-class SightDescription extends StatelessWidget {
+class _SightDescription extends StatelessWidget {
   final Sight sight;
 
-  const SightDescription({
+  const _SightDescription({
     Key? key,
     required this.sight,
   }) : super(key: key);
@@ -75,8 +81,8 @@ class SightDescription extends StatelessWidget {
 }
 
 // Виджет отображает информацию о времени открытия интересного места
-class SightOpeningHours extends StatelessWidget {
-  const SightOpeningHours({
+class _SightOpeningHours extends StatelessWidget {
+  const _SightOpeningHours({
     Key? key,
   }) : super(key: key);
 
@@ -92,10 +98,10 @@ class SightOpeningHours extends StatelessWidget {
 }
 
 // Виджет отображает информацию о типе интересного места
-class SightDetailsType extends StatelessWidget {
+class _SightDetailsType extends StatelessWidget {
   final Sight sight;
 
-  const SightDetailsType({
+  const _SightDetailsType({
     Key? key,
     required this.sight,
   }) : super(key: key);
@@ -103,7 +109,7 @@ class SightDetailsType extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      sight.type,
+      sight.type.toString(),
       style: Theme.of(context).textTheme.titleSmall?.copyWith(
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -112,10 +118,10 @@ class SightDetailsType extends StatelessWidget {
 }
 
 // Виджет отображает имя интересного места
-class SightDetailsName extends StatelessWidget {
+class _SightDetailsName extends StatelessWidget {
   final Sight sight;
 
-  const SightDetailsName({
+  const _SightDetailsName({
     Key? key,
     required this.sight,
   }) : super(key: key);
@@ -130,8 +136,8 @@ class SightDetailsName extends StatelessWidget {
 }
 
 // Виджет отображает нижнюю панель
-class BottomPanel extends StatelessWidget {
-  const BottomPanel({
+class _BottomPanel extends StatelessWidget {
+  const _BottomPanel({
     Key? key,
   }) : super(key: key);
 
@@ -147,13 +153,13 @@ class BottomPanel extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       child: Row(
         children: [
-          BottomButton(
+          _BottomButton(
             text: AppStrings.plan,
             active: false,
             icon: AppAssets.iconCalendar,
             onPressed: () => debugPrint('Нажата кнопка "Запланировать"'),
           ),
-          BottomButton(
+          _BottomButton(
             text: AppStrings.toFavourites,
             active: true,
             icon: AppAssets.iconHeart,
@@ -167,10 +173,10 @@ class BottomPanel extends StatelessWidget {
 
 // Виджет отображает изображение интересного места
 // с кнопкой возврата на предыдущий экран
-class SightImage extends StatelessWidget {
+class _SightImage extends StatelessWidget {
   final Sight sight;
 
-  const SightImage({
+  const _SightImage({
     Key? key,
     required this.sight,
   }) : super(key: key);
@@ -200,7 +206,7 @@ class SightImage extends StatelessWidget {
             },
           ),
           const Positioned(
-            child: _ReturnButton(),
+            child: ReturnButton(),
             left: 16,
             top: 36,
           ),
@@ -210,96 +216,14 @@ class SightImage extends StatelessWidget {
   }
 }
 
-class _ReturnButton extends StatelessWidget {
-  const _ReturnButton({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        alignment: Alignment.center,
-        primary: Theme.of(context).colorScheme.tertiary,
-        onPrimary: Theme.of(context).colorScheme.onTertiary,
-        elevation: 0,
-        padding: EdgeInsets.zero,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(10),
-          ),
-        ),
-        minimumSize: const Size.square(32),
-        maximumSize: const Size.square(32),
-      ),
-      onPressed: () => debugPrint('Нажата кнопка "Вернуться"'),
-      child: SvgPicture.asset(
-        AppAssets.iconArrow,
-        color: Theme.of(context).colorScheme.onTertiary,
-      ),
-    );
-  }
-}
-
-// Виджет отображает горизонтальную линию-разделитель
-class Divider extends StatelessWidget {
-  const Divider({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).colorScheme.outline,
-            width: 0.8,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Виджет отображает кнопку построения маршрута до интересного места
-class RouteButton extends StatelessWidget {
-  const RouteButton({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: () => debugPrint('Нажата кнопка "Построить маршрут"'),
-      icon: SvgPicture.asset(
-        AppAssets.iconGo,
-        width: 24,
-        height: 24,
-      ),
-      label: const Text(AppStrings.route),
-      style: ElevatedButton.styleFrom(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        minimumSize: const Size(double.infinity, 46),
-        primary: Theme.of(context).colorScheme.secondary,
-        onPrimary: Theme.of(context).colorScheme.onSecondary,
-        textStyle: Theme.of(context).textTheme.labelMedium,
-      ),
-    );
-  }
-}
-
 // Виджет отображает кнопки в нижней панели экрана
-class BottomButton extends StatelessWidget {
+class _BottomButton extends StatelessWidget {
   final String text;
   final bool active;
   final String icon;
   final VoidCallback onPressed;
 
-  const BottomButton({
+  const _BottomButton({
     required this.text,
     required this.active,
     required this.icon,
@@ -315,22 +239,25 @@ class BottomButton extends StatelessWidget {
 
     return Expanded(
       child: ElevatedButton.icon(
-          onPressed: onPressed,
-          icon: SvgPicture.asset(
-            icon,
-            width: 20,
-            height: 20,
-            color: color,
-          ),
-          label: Text(text),
-          style: ElevatedButton.styleFrom(
-            elevation: 0,
-            padding: EdgeInsets.zero,
-            minimumSize: const Size(0, 40),
-            textStyle: Theme.of(context).textTheme.bodyMedium,
-            primary: Theme.of(context).colorScheme.background,
-            onPrimary: color,
-          ),
+        onPressed: onPressed,
+        icon: SvgPicture.asset(
+          icon,
+          width: 20,
+          height: 20,
+          color: color,
+        ),
+        label: Text(text),
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          padding: EdgeInsets.zero,
+          minimumSize: const Size(0, 40),
+          textStyle: Theme.of(context).textTheme.bodyMedium,
+          primary: Theme.of(context).colorScheme.background,
+          onPrimary: color,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ).copyWith(
+          elevation: MaterialStateProperty.all(0),
+        ),
       ),
     );
   }

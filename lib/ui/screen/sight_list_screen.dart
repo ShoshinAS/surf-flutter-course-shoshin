@@ -17,12 +17,12 @@ class SightListScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: CustomAppBar(
-        AppStrings.appBarTitle,
-        height: 152,
+        title: AppStrings.appBarTitle,
+        height: 128,
         titleTextStyle: Theme.of(context).textTheme.headlineLarge?.copyWith(
               color: Theme.of(context).colorScheme.onBackground,
             ),
-        alignment: Alignment.bottomLeft,
+        mainAxisAlignment: MainAxisAlignment.start,
       ),
       body: Center(
         child: SightList(

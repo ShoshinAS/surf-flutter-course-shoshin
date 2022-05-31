@@ -32,7 +32,14 @@ class AppBottomNavigationBar extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
-              AppAssets.iconHeartFull,
+              AppAssets.iconHeart,
+              color: Theme.of(context).colorScheme.onBackground,
+            ),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              AppAssets.iconSettings,
               color: Theme.of(context).colorScheme.onBackground,
             ),
             label: '',

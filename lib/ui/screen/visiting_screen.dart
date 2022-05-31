@@ -19,12 +19,12 @@ class VisitingScreen extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: CustomAppBar(
-          AppStrings.favoriteTitle,
+          title: AppStrings.favoriteTitle,
           titleTextStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: Theme.of(context).colorScheme.onBackground,
               ),
-          height: 132,
-          bottom: const CustomTabBar(
+          height: 108,
+          bottom: const _CustomTabBar(
             height: 52,
             tabs: [
               Tab(
@@ -40,14 +40,14 @@ class VisitingScreen extends StatelessWidget {
           SightList(
             children:
                 wantToVisitSights.map(SightCardInScheduledList.new).toList(),
-            emptyScreen: const EmptyScreen(
+            emptyScreen: const _EmptyScreen(
               iconAssetName: AppAssets.iconFavoriteEmpty,
               description: AppStrings.emptyFavoritesDescription,
             ),
           ),
           SightList(
             children: visitedSights.map(SightCardInVisitedList.new).toList(),
-            emptyScreen: const EmptyScreen(
+            emptyScreen: const _EmptyScreen(
               iconAssetName: AppAssets.iconVisitedEmpty,
               description: AppStrings.emptyVisitedDescription,
             ),
@@ -60,10 +60,10 @@ class VisitingScreen extends StatelessWidget {
 }
 
 // виджет отображает пустой список экрана Хочу посетить / Интересные места
-class EmptyScreen extends StatelessWidget {
+class _EmptyScreen extends StatelessWidget {
   final String iconAssetName;
   final String description;
-  const EmptyScreen({
+  const _EmptyScreen({
     Key? key,
     required this.iconAssetName,
     required this.description,
@@ -110,14 +110,14 @@ class EmptyScreen extends StatelessWidget {
 }
 
 // Виджет реализует TapBar для отображения на экране Хочу посетить / Интересные места
-class CustomTabBar extends StatelessWidget implements PreferredSizeWidget {
+class _CustomTabBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget> tabs;
   final double height;
 
   @override
   Size get preferredSize => Size.fromHeight(height);
 
-  const CustomTabBar({
+  const _CustomTabBar({
     Key? key,
     required this.tabs,
     required this.height,
