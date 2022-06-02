@@ -98,3 +98,8 @@ class MockStrings {
   static const scheduledDate = 'Запланировано на 12 окт. 2020';
   static const visitDate = 'Цель достигнута 12 окт. 2020';
 }
+
+class MockLocations {
+  static Location location1 = Location(53.231653, 50.291682);
+  static Location location2 = Location(53.208479, 50.124556);
+}

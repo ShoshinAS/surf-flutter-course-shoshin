@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:places/ui/models/theme_model.dart';
-import 'package:places/ui/screen/app_bar.dart';
-import 'package:places/ui/screen/bottom_navigation_bar.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
-import 'package:places/ui/screen/res/typography.dart';
+import 'package:places/ui/widgets/app_bar.dart';
+import 'package:places/ui/widgets/bottom_navigation_bar.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -18,11 +17,13 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: CustomAppBar(
         title: AppStrings.settings,
-        titleTextStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Theme.of(context).colorScheme.onBackground,
+        titleTextStyle: theme.textTheme.headlineSmall?.copyWith(
+              color: theme.colorScheme.onBackground,
             ),
         height: 56,
       ),
@@ -35,7 +36,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Consumer<ThemeModel>(
                 builder: (context, themeModel, child) => Switch(
                   value: themeModel.darkTheme,
-                  activeColor: Theme.of(context).colorScheme.secondary,
+                  activeColor: theme.colorScheme.secondary,
                   onChanged: (newValue) {
                     setState(() {
                       themeModel.darkTheme = newValue;
@@ -49,13 +50,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: ElevatedButton(
                 child: SvgPicture.asset(
                   AppAssets.iconInfo,
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: theme.colorScheme.secondary,
                 ),
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
-                  shape: CircleBorder(),
-                  primary: Theme.of(context).colorScheme.background,
-                  onPrimary: Theme.of(context).colorScheme.onBackground,
+                  shape: const CircleBorder(),
+                  primary: theme.colorScheme.background,
+                  onPrimary: theme.colorScheme.onBackground,
                   padding: EdgeInsets.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ).copyWith(
@@ -86,18 +87,20 @@ class _SettingsItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: AppTypography.styleMenu),
+            Text(title, style: theme.textTheme.bodyLarge),
             child,
           ],
         ),
         Divider(
           height: 12,
-          color: Theme.of(context).colorScheme.outline,
+          color: theme.colorScheme.outline,
         ),
       ],
     );

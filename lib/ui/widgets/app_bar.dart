@@ -29,6 +29,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -43,7 +45,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 child: Text(
                   title!,
                   style: titleTextStyle ??
-                      Theme.of(context).appBarTheme.titleTextStyle,
+                      theme.appBarTheme.titleTextStyle,
                 ),
               )
             else
@@ -70,11 +72,13 @@ class ReturnButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         alignment: Alignment.center,
-        primary: Theme.of(context).colorScheme.tertiary,
-        onPrimary: Theme.of(context).colorScheme.onTertiary,
+        primary: theme.colorScheme.tertiary,
+        onPrimary: theme.colorScheme.onTertiary,
         padding: EdgeInsets.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         shape: const RoundedRectangleBorder(
@@ -90,7 +94,7 @@ class ReturnButton extends StatelessWidget {
       onPressed: () => debugPrint('Нажата кнопка "Вернуться"'),
       child: SvgPicture.asset(
         AppAssets.iconArrow,
-        color: Theme.of(context).colorScheme.onTertiary,
+        color: theme.colorScheme.onTertiary,
       ),
     );
   }

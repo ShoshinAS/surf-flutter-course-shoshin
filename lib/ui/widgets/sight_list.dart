@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:places/ui/screen/sight_card.dart';
+import 'package:places/ui/widgets/sight_card.dart';
 
 class SightList extends StatelessWidget {
   final List<SightCard> children;

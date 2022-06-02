@@ -2,23 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/domain/sight.dart';
 import 'package:places/mocks.dart';
-import 'package:places/ui/screen/app_bar.dart';
-import 'package:places/ui/screen/big_button.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
-import 'package:places/ui/screen/res/typography.dart';
+import 'package:places/ui/widgets/app_bar.dart';
+import 'package:places/ui/widgets/big_button.dart';
 
 // Виджет отображает детальную информацию об интересном месте
 // для отображения на отдельном экране
-class SightDetails extends StatelessWidget {
+class SightDetailsScreen extends StatelessWidget {
   final Sight sight;
 
-  const SightDetails(this.sight, {Key? key}) : super(key: key);
+  const SightDetailsScreen(this.sight, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: theme.colorScheme.background,
       body: Column(
         children: [
           _SightImage(sight: sight),
@@ -70,10 +71,12 @@ class _SightDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
       sight.details,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onBackground,
+      style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onBackground,
           ),
       overflow: TextOverflow.clip,
     );
@@ -88,10 +91,12 @@ class _SightOpeningHours extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
       MockStrings.openingHours,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+      style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
     );
   }
@@ -108,10 +113,12 @@ class _SightDetailsType extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
       sight.type.toString(),
-      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface,
+      style: theme.textTheme.titleSmall?.copyWith(
+            color: theme.colorScheme.onSurface,
           ),
     );
   }
@@ -128,9 +135,11 @@ class _SightDetailsName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
       sight.name,
-      style: AppTypography.styleTitle,
+      style: theme.textTheme.titleLarge,
     );
   }
 }
@@ -233,9 +242,10 @@ class _BottomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final color = active
-        ? Theme.of(context).colorScheme.onBackground
-        : Theme.of(context).colorScheme.outline;
+        ? theme.colorScheme.onBackground
+        : theme.colorScheme.outline;
 
     return Expanded(
       child: ElevatedButton.icon(
@@ -251,8 +261,8 @@ class _BottomButton extends StatelessWidget {
           elevation: 0,
           padding: EdgeInsets.zero,
           minimumSize: const Size(0, 40),
-          textStyle: Theme.of(context).textTheme.bodyMedium,
-          primary: Theme.of(context).colorScheme.background,
+          textStyle: theme.textTheme.bodyMedium,
+          primary: theme.colorScheme.background,
           onPrimary: color,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ).copyWith(

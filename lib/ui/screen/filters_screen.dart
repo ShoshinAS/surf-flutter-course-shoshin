@@ -3,14 +3,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/domain/sight_type.dart';
 import 'package:places/filter.dart';
 import 'package:places/mocks.dart';
-import 'package:places/ui/screen/app_bar.dart';
-import 'package:places/ui/screen/big_button.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
-import 'package:places/ui/screen/res/typography.dart';
+import 'package:places/ui/widgets/app_bar.dart';
+import 'package:places/ui/widgets/big_button.dart';
 
 class FiltersScreen extends StatefulWidget {
-  static const sliderRange = RangeValues(100, 10000);
+  static const maxDistance = 10000.0;
 
   const FiltersScreen({Key? key}) : super(key: key);
 
@@ -21,15 +20,13 @@ class FiltersScreen extends StatefulWidget {
 class _FiltersScreenState extends State<FiltersScreen> {
   Filter filter = Filter(
       sightList: mocks,
-      startDistance: FiltersScreen.sliderRange.start,
-      endDistance: FiltersScreen.sliderRange.end,
-      selectedCategories: SightType.values.toSet(),
+      maxDistance: FiltersScreen.maxDistance,
   );
-
-  RangeValues selectedRange = FiltersScreen.sliderRange;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: CustomAppBar(
         height: 56,
@@ -53,8 +50,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
               alignment: Alignment.centerLeft,
               child: Text(
                 AppStrings.categories,
-                style: AppTypography.styleSuperSmall.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.outline,
                 ),
               ),
             ),
@@ -83,38 +80,33 @@ class _FiltersScreenState extends State<FiltersScreen> {
               children: [
                 Text(
                     AppStrings.distance,
-                    style: AppTypography.styleText.copyWith(
-                      color: Theme.of(context).colorScheme.onTertiary,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: theme.colorScheme.onTertiary,
                     ),
                 ),
                 Text(
-                    AppStrings.distanceRange,
-                    style: AppTypography.styleText.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    'до ${(filter.selectedDistance/1000).toStringAsFixed(2)} км',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: theme.colorScheme.onPrimaryContainer,
                     ),
                 ),
               ],
             ),
-            RangeSlider(
-              values: RangeValues(filter.startDistance, filter.endDistance),
-              min: FiltersScreen.sliderRange.start,
-              max: FiltersScreen.sliderRange.end,
-              activeColor: Theme.of(context).colorScheme.secondary,
-              inactiveColor: Theme.of(context).colorScheme.outline,
-              onChanged: (rangeValues) {
+            Slider(
+              value: filter.selectedDistance,
+              max: filter.maxDistance,
+              activeColor: theme.colorScheme.secondary,
+              inactiveColor: theme.colorScheme.outline,
+              onChanged: (newValue) {
                 setState(() {
-                  filter.startDistance = rangeValues.start;
-                  filter.endDistance = rangeValues.end;
+                  filter.selectedDistance = newValue;
                 });
               },
             ),
             const Expanded(child: SizedBox.shrink()),
             BigButton(
-              title: AppStrings.show,
-              onPressed: () async {
-                debugPrint(selectedRange.toString());
-                await filter.determineCurrentLocation();
-                filter.filter();
+              title: '${AppStrings.show} (${filter.amount})',
+              onPressed: () {
                 debugPrint(filter.result.toString());
               },
             ),
@@ -135,12 +127,14 @@ class _ClearFiltersButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return TextButton(
       onPressed: onPressed,
       child: Text(
         AppStrings.clear,
-        style: AppTypography.styleText.copyWith(
-          color: Theme.of(context).colorScheme.secondary,
+        style: theme.textTheme.titleMedium?.copyWith(
+          color: theme.colorScheme.secondary,
         ),
       ),
     );
@@ -163,22 +157,25 @@ class _CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        primary: Theme.of(context).colorScheme.background,
-        onPrimary: Theme.of(context).colorScheme.onBackground,
-      ).copyWith(
-        elevation: MaterialStateProperty.all(0),
-      ),
-      onPressed: onPressed,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Stack(
+    final theme = Theme.of(context);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: theme.colorScheme.background,
+            onPrimary: theme.colorScheme.onBackground,
+            shape: const CircleBorder(),
+          ).copyWith(
+            elevation: MaterialStateProperty.all(0),
+          ),
+          onPressed: onPressed,
+          child: Stack(
             children: [
               SvgPicture.asset(
                 icon,
-                color: Theme.of(context).colorScheme.secondary,
+                color: theme.colorScheme.secondary,
               ),
               if (selected)
                 Positioned(
@@ -186,11 +183,11 @@ class _CategoryCard extends StatelessWidget {
                     children: [
                       SvgPicture.asset(
                         AppAssets.iconTickCircle,
-                        color: Theme.of(context).colorScheme.onTertiary,
+                        color: theme.colorScheme.onTertiary,
                       ),
                       SvgPicture.asset(
                         AppAssets.iconTickChoice,
-                        color: Theme.of(context).colorScheme.tertiary,
+                        color: theme.colorScheme.tertiary,
                       ),
                     ],
                   ),
@@ -201,20 +198,20 @@ class _CategoryCard extends StatelessWidget {
                 const SizedBox.shrink(),
             ],
           ),
-          const SizedBox(height: 12),
-          Container(
-            width: 96,
-            height: 16,
-            alignment: Alignment.center,
-            child: Text(
-              title,
-              style: AppTypography.styleSuperSmall.copyWith(
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          width: 96,
+          height: 16,
+          alignment: Alignment.center,
+          child: Text(
+            title,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onBackground,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

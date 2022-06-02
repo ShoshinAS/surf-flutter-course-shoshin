@@ -9,11 +9,13 @@ class AppBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: Theme.of(context).colorScheme.outline,
+            color: theme.colorScheme.outline,
             width: 0.8,
           ),
         ),
@@ -21,26 +23,26 @@ class AppBottomNavigationBar extends StatelessWidget {
       child: BottomNavigationBar(
         showSelectedLabels: false,
         showUnselectedLabels: false,
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: theme.colorScheme.background,
         items: [
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               AppAssets.iconList,
-              color: Theme.of(context).colorScheme.onBackground,
+              color: theme.colorScheme.onBackground,
             ),
             label: '',
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               AppAssets.iconHeart,
-              color: Theme.of(context).colorScheme.onBackground,
+              color: theme.colorScheme.onBackground,
             ),
             label: '',
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               AppAssets.iconSettings,
-              color: Theme.of(context).colorScheme.onBackground,
+              color: theme.colorScheme.onBackground,
             ),
             label: '',
           ),

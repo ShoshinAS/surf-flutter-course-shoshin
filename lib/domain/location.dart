@@ -1,17 +1,10 @@
 import 'dart:math';
 
-import 'package:geolocator/geolocator.dart';
-
 class Location {
   final double latitude;
   final double longitude;
 
   Location(this.latitude, this.longitude);
-
-  Location.fromPosition(Position position)
-      : latitude = position.latitude,
-        longitude = position.longitude;
-
 
   @override
   String toString() {

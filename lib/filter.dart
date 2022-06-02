@@ -1,83 +1,79 @@
-import 'package:geolocator/geolocator.dart';
 import 'package:places/domain/location.dart';
 import 'package:places/domain/sight.dart';
 import 'package:places/domain/sight_type.dart';
+import 'package:places/mocks.dart';
 
 class Filter {
+  final double maxDistance;
   final List<Sight> sightList;
+  final Location _currentLocation = MockLocations.location2;
 
-  Set<SightType> selectedCategories;
-  double startDistance;
-  double endDistance;
-  List<Sight> result = [];
-  Location? _currentLocation;
-
-  Filter(
-      {required this.sightList,
-      this.startDistance = 0,
-      this.endDistance = 0,
-      this.selectedCategories = const {},});
-
-  void clear(){
-    selectedCategories = SightType.values.toSet();
+  set selectedDistance(double value) {
+    _selectedDistance = value;
+    _filter();
   }
 
-  void invert(SightType category){
-    if (selectedCategories.contains(category)) {
-      selectedCategories.remove(category);
+  double get selectedDistance => _selectedDistance;
+
+  List<Sight> get result => _result;
+
+  set selectedCategories(Set<SightType> value) {
+    _selectedCategories = value;
+    _filter();
+  }
+
+  Set<SightType> get selectedCategories => _selectedCategories;
+
+  int get amount => _result.length;
+
+
+  Set<SightType> _selectedCategories;
+  double _selectedDistance;
+  List<Sight> _result;
+
+  Filter({
+    required this.sightList,
+    required this.maxDistance,
+  })  : _selectedDistance = maxDistance,
+        _selectedCategories = {},
+        _result = []
+  {
+    _filter();
+  }
+
+  void clear() {
+    _selectedCategories.clear();
+    _selectedDistance = maxDistance;
+    _filter();
+  }
+
+  void invert(SightType category) {
+    if (_selectedCategories.contains(category)) {
+      _selectedCategories.remove(category);
     } else {
-      selectedCategories.add(category);
+      _selectedCategories.add(category);
     }
+    _filter();
   }
 
-  bool selected(SightType category){
-    return selectedCategories.contains(category);
+  bool selected(SightType category) {
+    return _selectedCategories.contains(category);
   }
 
-  void filter() {
-    result.clear();
+  void _filter() {
+    _result.clear();
 
     for (final sight in sightList) {
-      if (!selectedCategories.contains(sight.type)) {
+      if (_selectedCategories.isNotEmpty &
+          !_selectedCategories.contains(sight.type)) {
         continue;
       }
-      if (_currentLocation != null) {
-        final distance =
-            _currentLocation!.distanceToAnotherLocation(sight.location);
-        if (distance < startDistance || distance > endDistance) {
-          continue;
-        }
+      final distance =
+          _currentLocation.distanceToAnotherLocation(sight.location);
+      if (distance > _selectedDistance) {
+        continue;
       }
-      result.add(sight);
+      _result.add(sight);
     }
-  }
-
-  Future<void> determineCurrentLocation() async {
-    _currentLocation = Location.fromPosition(await _determinePosition());
-  }
-
-  static Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.',);
-    }
-
-    return Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
   }
 }

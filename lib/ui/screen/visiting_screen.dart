@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/mocks.dart';
-import 'package:places/ui/screen/app_bar.dart';
-import 'package:places/ui/screen/bottom_navigation_bar.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
-import 'package:places/ui/screen/res/typography.dart';
-import 'package:places/ui/screen/sight_card.dart';
-import 'package:places/ui/screen/sight_list.dart';
+import 'package:places/ui/widgets/app_bar.dart';
+import 'package:places/ui/widgets/bottom_navigation_bar.dart';
+import 'package:places/ui/widgets/sight_card.dart';
+import 'package:places/ui/widgets/sight_list.dart';
 
 // виджет отображает экран Хочу посетить / Интересные места
 class VisitingScreen extends StatelessWidget {
@@ -15,13 +14,15 @@ class VisitingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: CustomAppBar(
           title: AppStrings.favoriteTitle,
-          titleTextStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Theme.of(context).colorScheme.onBackground,
+          titleTextStyle: theme.textTheme.headlineSmall?.copyWith(
+                color: theme.colorScheme.onBackground,
               ),
           height: 108,
           bottom: const _CustomTabBar(
@@ -71,6 +72,8 @@ class _EmptyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Center(
       child: SizedBox(
         width: 253.5,
@@ -80,7 +83,7 @@ class _EmptyScreen extends StatelessWidget {
           children: [
             SvgPicture.asset(
               iconAssetName,
-              color: Theme.of(context).colorScheme.outline,
+              color: theme.colorScheme.outline,
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -88,16 +91,16 @@ class _EmptyScreen extends StatelessWidget {
                 Text(
                   AppStrings.empty,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.outline,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                        color: theme.colorScheme.outline,
                       ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   description,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.outline,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.outline,
                       ),
                 ),
               ],
@@ -125,23 +128,25 @@ class _CustomTabBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       height: height,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
+          color: theme.colorScheme.primaryContainer,
           borderRadius: BorderRadius.circular(40),
         ),
         child: TabBar(
           indicator: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
+            color: theme.colorScheme.primary,
             borderRadius: BorderRadius.circular(40),
           ),
           unselectedLabelColor:
-              Theme.of(context).colorScheme.onPrimaryContainer,
-          unselectedLabelStyle: AppTypography.styleSmallBold,
-          labelColor: Theme.of(context).colorScheme.onPrimary,
+          theme.colorScheme.onPrimaryContainer,
+          unselectedLabelStyle: theme.textTheme.titleSmall,
+          labelColor: theme.colorScheme.onPrimary,
           tabs: tabs,
         ),
       ),

@@ -45,7 +45,7 @@ abstract class SightCard extends StatelessWidget {
                     ],
                   ),
                   Material(
-                    color: Colors.transparent,
+                    color: AppColors.transparent,
                     child: Positioned.fill(child: InkWell(
                       onTap: () {
                         debugPrint('Нажатие на карточку интересного места');
@@ -108,10 +108,12 @@ class _ScheduledDate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
       MockStrings.scheduledDate,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color: Theme.of(context).colorScheme.secondary,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: theme.colorScheme.secondary,
       ),
     );
   }
@@ -122,10 +124,12 @@ class _VisitDate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
       MockStrings.visitDate,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+      style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
     );
   }
@@ -165,6 +169,8 @@ class _SightCardButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.only(
         left: 8,
@@ -178,8 +184,8 @@ class _SightCardButton extends StatelessWidget {
           elevation: 0,
           minimumSize: const Size.square(32),
           shape: const CircleBorder(),
-          primary: Colors.transparent,
-          onPrimary: Theme.of(context).colorScheme.onBackground,
+          primary: AppColors.transparent,
+          onPrimary: theme.colorScheme.onBackground,
           padding: EdgeInsets.zero,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ).copyWith(
@@ -273,6 +279,8 @@ class _SightCardDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       height: 92,
       width: double.infinity,
@@ -282,7 +290,7 @@ class _SightCardDescription extends StatelessWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: theme.colorScheme.surface,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,10 +316,12 @@ class _SightCardOpeningTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
       MockStrings.openingHours,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+      style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
     );
   }
@@ -328,10 +338,12 @@ class _SightCardName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
       sight.name,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface,
+      style: theme.textTheme.titleMedium?.copyWith(
+            color: theme.colorScheme.onSurface,
           ),
     );
   }
@@ -348,10 +360,12 @@ class _SightCardType extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Positioned(
       child: Text(
         sight.type.toString(),
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        style: theme.textTheme.titleSmall?.copyWith(
               color: AppColors.white,
             ),
       ),

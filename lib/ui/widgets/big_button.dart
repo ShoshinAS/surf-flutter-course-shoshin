@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:places/ui/screen/res/typography.dart';
 
 // Виджет отображает большую кнопку для отображения внизу экрана
 class BigButton extends StatelessWidget {
@@ -17,6 +16,8 @@ class BigButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ElevatedButton(
       onPressed: onPressed,
       child: Row(
@@ -36,7 +37,9 @@ class BigButton extends StatelessWidget {
             const SizedBox(width: 10),
           Text(
             title,
-            style: AppTypography.styleButton,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: theme.colorScheme.onSecondary,
+            ),
           ),
         ],
       ),
@@ -46,9 +49,9 @@ class BigButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         minimumSize: const Size(double.infinity, 46),
-        primary: Theme.of(context).colorScheme.secondary,
-        onPrimary: Theme.of(context).colorScheme.onSecondary,
-        textStyle: Theme.of(context).textTheme.labelMedium,
+        primary: theme.colorScheme.secondary,
+        onPrimary: theme.colorScheme.onSecondary,
+        textStyle: theme.textTheme.labelMedium,
       ),
     );
   }

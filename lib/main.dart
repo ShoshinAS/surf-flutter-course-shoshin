@@ -5,7 +5,7 @@ import 'package:places/ui/screen/filters_screen.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/screen/res/themes.dart';
 import 'package:places/ui/screen/settings_screen.dart';
-import 'package:places/ui/screen/sight_details.dart';
+import 'package:places/ui/screen/sight_details_screen.dart';
 import 'package:places/ui/screen/sight_list_screen.dart';
 import 'package:places/ui/screen/visiting_screen.dart';
 import 'package:provider/provider.dart';
@@ -30,8 +30,8 @@ class App extends StatelessWidget {
           title: AppStrings.appTitle,
           //home: SightListScreen(sightList: mocks),
           //home: SightDetails(mocks[1]),
-          home: const VisitingScreen(),
-          //home: FiltersScreen(),
+          //home: const VisitingScreen(),
+          home: const FiltersScreen(),
           //home: const SettingsScreen(),
         );
       },
