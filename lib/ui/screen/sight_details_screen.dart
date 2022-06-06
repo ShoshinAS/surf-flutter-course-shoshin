@@ -4,47 +4,54 @@ import 'package:places/domain/sight.dart';
 import 'package:places/mocks.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
-import 'package:places/ui/screen/res/typography.dart';
+import 'package:places/ui/widgets/app_bar.dart';
+import 'package:places/ui/widgets/big_button.dart';
 
 // Виджет отображает детальную информацию об интересном месте
 // для отображения на отдельном экране
-class SightDetails extends StatelessWidget {
+class SightDetailsScreen extends StatelessWidget {
   final Sight sight;
 
-  const SightDetails(this.sight, {Key? key}) : super(key: key);
+  const SightDetailsScreen(this.sight, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: theme.colorScheme.background,
       body: Column(
         children: [
-          SightImage(sight: sight),
+          _SightImage(sight: sight),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 24),
-                SightDetailsName(sight: sight),
+                _SightDetailsName(sight: sight),
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    SightDetailsType(sight: sight),
+                    _SightDetailsType(sight: sight),
                     const SizedBox(width: 16),
-                    const SightOpeningHours(),
+                    const _SightOpeningHours(),
                   ],
                 ),
                 const SizedBox(height: 24),
-                SightDescription(sight: sight),
+                _SightDescription(sight: sight),
                 const SizedBox(height: 24),
-                const RouteButton(),
+                BigButton(
+                    title: AppStrings.route,
+                    icon: AppAssets.iconGo,
+                    onPressed: () => debugPrint('Нажата кнопка "Построить маршрут"'),
+                ),
                 const SizedBox(height: 24),
                 const Divider(),
               ],
             ),
           ),
-          const BottomPanel(),
+          const _BottomPanel(),
         ],
         crossAxisAlignment: CrossAxisAlignment.start,
       ),
@@ -54,20 +61,22 @@ class SightDetails extends StatelessWidget {
 }
 
 // Виджет отображает краткое описание интересного места на экране информации
-class SightDescription extends StatelessWidget {
+class _SightDescription extends StatelessWidget {
   final Sight sight;
 
-  const SightDescription({
+  const _SightDescription({
     Key? key,
     required this.sight,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
       sight.details,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onBackground,
+      style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onBackground,
           ),
       overflow: TextOverflow.clip,
     );
@@ -75,63 +84,69 @@ class SightDescription extends StatelessWidget {
 }
 
 // Виджет отображает информацию о времени открытия интересного места
-class SightOpeningHours extends StatelessWidget {
-  const SightOpeningHours({
+class _SightOpeningHours extends StatelessWidget {
+  const _SightOpeningHours({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
       MockStrings.openingHours,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+      style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
     );
   }
 }
 
 // Виджет отображает информацию о типе интересного места
-class SightDetailsType extends StatelessWidget {
+class _SightDetailsType extends StatelessWidget {
   final Sight sight;
 
-  const SightDetailsType({
+  const _SightDetailsType({
     Key? key,
     required this.sight,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
-      sight.type,
-      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface,
+      sight.type.toString(),
+      style: theme.textTheme.titleSmall?.copyWith(
+            color: theme.colorScheme.onSurface,
           ),
     );
   }
 }
 
 // Виджет отображает имя интересного места
-class SightDetailsName extends StatelessWidget {
+class _SightDetailsName extends StatelessWidget {
   final Sight sight;
 
-  const SightDetailsName({
+  const _SightDetailsName({
     Key? key,
     required this.sight,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
       sight.name,
-      style: AppTypography.styleTitle,
+      style: theme.textTheme.titleLarge,
     );
   }
 }
 
 // Виджет отображает нижнюю панель
-class BottomPanel extends StatelessWidget {
-  const BottomPanel({
+class _BottomPanel extends StatelessWidget {
+  const _BottomPanel({
     Key? key,
   }) : super(key: key);
 
@@ -146,16 +161,18 @@ class BottomPanel extends StatelessWidget {
       ),
       alignment: Alignment.bottomCenter,
       child: Row(
-        children: const [
-          BottomButton(
+        children: [
+          _BottomButton(
             text: AppStrings.plan,
             active: false,
             icon: AppAssets.iconCalendar,
+            onPressed: () => debugPrint('Нажата кнопка "Запланировать"'),
           ),
-          BottomButton(
+          _BottomButton(
             text: AppStrings.toFavourites,
             active: true,
-            icon: AppAssets.iconHear,
+            icon: AppAssets.iconHeart,
+            onPressed: () => debugPrint('Нажата кнопка "В Избранное"'),
           ),
         ],
       ),
@@ -165,10 +182,10 @@ class BottomPanel extends StatelessWidget {
 
 // Виджет отображает изображение интересного места
 // с кнопкой возврата на предыдущий экран
-class SightImage extends StatelessWidget {
+class _SightImage extends StatelessWidget {
   final Sight sight;
 
-  const SightImage({
+  const _SightImage({
     Key? key,
     required this.sight,
   }) : super(key: key);
@@ -197,22 +214,8 @@ class SightImage extends StatelessWidget {
               );
             },
           ),
-          Positioned(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.tertiary,
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(10),
-                ),
-              ),
-              height: 32,
-              width: 32,
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                AppAssets.iconArrow,
-                color: Theme.of(context).colorScheme.onTertiary,
-              ),
-            ),
+          const Positioned(
+            child: ReturnButton(),
             left: 16,
             top: 36,
           ),
@@ -222,103 +225,48 @@ class SightImage extends StatelessWidget {
   }
 }
 
-// Виджет отображает горизонтальную линию-разделитель
-class Divider extends StatelessWidget {
-  const Divider({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).colorScheme.outline,
-            width: 0.8,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Виджет отображает кнопку построения маршрута до интересного места
-class RouteButton extends StatelessWidget {
-  const RouteButton({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      height: 48,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
-        borderRadius: const BorderRadius.all(Radius.circular(12)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            AppAssets.iconGo,
-            width: 24,
-            height: 24,
-          ),
-          const SizedBox(width: 10),
-          Text(
-            AppStrings.route,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 // Виджет отображает кнопки в нижней панели экрана
-class BottomButton extends StatelessWidget {
+class _BottomButton extends StatelessWidget {
   final String text;
   final bool active;
   final String icon;
+  final VoidCallback onPressed;
 
-  const BottomButton({
+  const _BottomButton({
     required this.text,
     required this.active,
     required this.icon,
+    required this.onPressed,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final color = active
-        ? Theme.of(context).colorScheme.onBackground
-        : Theme.of(context).colorScheme.outline;
+        ? theme.colorScheme.onBackground
+        : theme.colorScheme.outline;
 
     return Expanded(
-      child: Container(
-        height: 40,
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              icon,
-              width: 20,
-              height: 20,
-              color: color,
-            ),
-            const SizedBox(width: 10),
-            Text(
-              text,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: color,
-                  ),
-            ),
-          ],
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: SvgPicture.asset(
+          icon,
+          width: 20,
+          height: 20,
+          color: color,
+        ),
+        label: Text(text),
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          padding: EdgeInsets.zero,
+          minimumSize: const Size(0, 40),
+          textStyle: theme.textTheme.bodyMedium,
+          primary: theme.colorScheme.background,
+          onPrimary: color,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ).copyWith(
+          elevation: MaterialStateProperty.all(0),
         ),
       ),
     );

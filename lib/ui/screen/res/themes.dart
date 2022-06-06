@@ -3,18 +3,21 @@ import 'package:places/ui/screen/res/colors.dart';
 import 'package:places/ui/screen/res/typography.dart';
 
 const textTheme = TextTheme(
-  headlineLarge: AppTypography.styleLargeTitle,
-  headlineSmall: AppTypography.styleSubtitle,
+  headlineLarge: AppTypography.styleLargeTitle, // 32
+  headlineSmall: AppTypography.styleSubtitle, // 18
+  titleLarge: AppTypography.styleText, // 24
   titleMedium: AppTypography.styleText, // 16
   titleSmall: AppTypography.styleSmallBold, // 14
+  bodyLarge: AppTypography.styleMenu, // 16
   bodyMedium: AppTypography.styleSmall, // 14
-  labelMedium: AppTypography.styleButton,
+  labelMedium: AppTypography.styleButton, // 14
+  labelSmall: AppTypography.styleSuperSmall, // 12
 );
 
 final lightTheme = ThemeData(
   scaffoldBackgroundColor: AppColors.white,
-  highlightColor: Colors.transparent,
-  splashColor: Colors.transparent,
+  highlightColor: AppColors.transparent,
+  splashColor: AppColors.transparent,
   textTheme: textTheme,
   colorScheme: const ColorScheme.light(
     //background: AppColors.white,
@@ -36,8 +39,8 @@ final lightTheme = ThemeData(
 
 final darkTheme = ThemeData(
   scaffoldBackgroundColor: AppColors.mainBlack,
-  highlightColor: Colors.transparent,
-  splashColor: Colors.transparent,
+  highlightColor: AppColors.transparent,
+  splashColor: AppColors.transparent,
   textTheme: textTheme,
   colorScheme: const ColorScheme.dark(
     background: AppColors.mainBlack,

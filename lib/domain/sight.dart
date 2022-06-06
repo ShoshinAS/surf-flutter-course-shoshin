@@ -1,17 +1,21 @@
+import 'package:places/domain/location.dart';
+import 'package:places/domain/sight_type.dart';
+
 class Sight {
-  String name = '';
-  double lat = 0.0;
-  double lon = 0.0;
-  String url = '';
-  String details = '';
-  String type = '';
+  String name;
+  Location location;
+  String url;
+  String details;
+  SightType type;
 
   Sight({
     required this.name,
-    required this.lat,
-    required this.lon,
+    required this.location,
     required this.url,
     required this.details,
     required this.type,
   });
+
+  @override
+  String toString() => name;
 }

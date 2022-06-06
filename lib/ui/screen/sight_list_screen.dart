@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:places/domain/sight.dart';
-import 'package:places/ui/screen/app_bar.dart';
-import 'package:places/ui/screen/bottom_navigation_bar.dart';
 import 'package:places/ui/screen/res/strings.dart';
-import 'package:places/ui/screen/sight_card.dart';
-import 'package:places/ui/screen/sight_list.dart';
+import 'package:places/ui/widgets/app_bar.dart';
+import 'package:places/ui/widgets/bottom_navigation_bar.dart';
+import 'package:places/ui/widgets/sight_card.dart';
+import 'package:places/ui/widgets/sight_list.dart';
 
 // Виджет отображает экран со списком интересных мест
 class SightListScreen extends StatelessWidget {
@@ -14,15 +14,17 @@ class SightListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: theme.colorScheme.background,
       appBar: CustomAppBar(
-        AppStrings.appBarTitle,
-        height: 152,
-        titleTextStyle: Theme.of(context).textTheme.headlineLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onBackground,
+        title: AppStrings.appBarTitle,
+        height: 128,
+        titleTextStyle: theme.textTheme.headlineLarge?.copyWith(
+              color: theme.colorScheme.onBackground,
             ),
-        alignment: Alignment.bottomLeft,
+        mainAxisAlignment: MainAxisAlignment.start,
       ),
       body: Center(
         child: SightList(
