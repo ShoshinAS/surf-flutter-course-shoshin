@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:places/ui/widgets/sight_card.dart';
 
+// виджет реализует список интересных мест
 class SightList extends StatelessWidget {
   final List<SightCard> children;
   final Widget emptyScreen;

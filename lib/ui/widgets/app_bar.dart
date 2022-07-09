@@ -8,7 +8,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
   final String? title;
   final TextStyle? titleTextStyle;
-  final MainAxisAlignment mainAxisAlignment;
+  final AlignmentGeometry? alignment;
   final PreferredSizeWidget? bottom;
   final Widget? leading;
   final List<Widget>? actions;
@@ -21,7 +21,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.height,
     this.title,
     this.titleTextStyle,
-    this.mainAxisAlignment = MainAxisAlignment.center,
+    this.alignment = Alignment.center,
     this.bottom,
     this.leading,
     this.actions,
@@ -34,28 +34,34 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Row(
-          mainAxisAlignment: mainAxisAlignment,
-          children: [
-            const SizedBox(width: 16),
-            if (leading != null) leading! else const SizedBox.shrink(),
-            if (title != null)
-              Padding(
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned(
+                left: 0,
+                child: (leading != null) ? leading! : const SizedBox.shrink(),
+              ),
+              Container(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text(
-                  title!,
-                  style: titleTextStyle ??
-                      theme.appBarTheme.titleTextStyle,
-                ),
-              )
-            else
-              const Expanded(child: SizedBox()),
-            if (actions != null)
-              Row(children: actions!)
-            else
-              const SizedBox.shrink(),
-            const SizedBox(width: 16),
-          ],
+                alignment: alignment,
+                child: (title != null)
+                    ? Text(
+                        title!,
+                        style:
+                            titleTextStyle ?? theme.appBarTheme.titleTextStyle,
+                      )
+                    : const SizedBox.shrink(),
+              ),
+              Positioned(
+                right: 0,
+                child: (actions != null)
+                    ? Row(children: actions!)
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
         ),
         Container(
           child: bottom,
@@ -91,7 +97,7 @@ class ReturnButton extends StatelessWidget {
       ).copyWith(
         elevation: MaterialStateProperty.all(0),
       ),
-      onPressed: () => debugPrint('Нажата кнопка "Вернуться"'),
+      onPressed: () => Navigator.pop(context),
       child: SvgPicture.asset(
         AppAssets.iconArrow,
         color: theme.colorScheme.onTertiary,

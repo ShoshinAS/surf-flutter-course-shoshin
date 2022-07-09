@@ -1,3 +1,4 @@
+// графические ресурсы приложения
 class AppAssets {
   static const iconFavoriteEmpty = 'res/icons/favorites_empty.svg';
   static const iconVisitedEmpty = 'res/icons/visited_empty.svg';
@@ -20,4 +21,9 @@ class AppAssets {
   static const iconCategoryMuseum = 'res/icons/catalog_museum.svg';
   static const iconCategoryCafe = 'res/icons/catalog_cafe.svg';
   static const iconInfo = 'res/icons/info.svg';
+  static const iconClear = 'res/icons/clear.svg';
+  static const iconPlus = 'res/icons/plus.svg';
+  static const iconSearch = 'res/icons/search.svg';
+  static const iconFilter = 'res/icons/filter.svg';
+  static const iconDelete = 'res/icons/delete.svg';
 }

@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:places/ui/screen/res/colors.dart';
 import 'package:places/ui/screen/res/typography.dart';
 
+// параметры темы текстов
 const textTheme = TextTheme(
   headlineLarge: AppTypography.styleLargeTitle, // 32
   headlineSmall: AppTypography.styleSubtitle, // 18
-  titleLarge: AppTypography.styleText, // 24
+  titleLarge: AppTypography.styleTitle, // 24
   titleMedium: AppTypography.styleText, // 16
   titleSmall: AppTypography.styleSmallBold, // 14
   bodyLarge: AppTypography.styleMenu, // 16
@@ -14,11 +15,15 @@ const textTheme = TextTheme(
   labelSmall: AppTypography.styleSuperSmall, // 12
 );
 
+// параметры светлой темы
 final lightTheme = ThemeData(
   scaffoldBackgroundColor: AppColors.white,
   highlightColor: AppColors.transparent,
-  splashColor: AppColors.transparent,
+  //splashColor: AppColors.transparent,
   textTheme: textTheme,
+  bottomSheetTheme:
+      const BottomSheetThemeData(backgroundColor: AppColors.white),
+  splashColor: AppColors.splashColor,
   colorScheme: const ColorScheme.light(
     //background: AppColors.white,
     onBackground: AppColors.secondary,
@@ -35,13 +40,23 @@ final lightTheme = ThemeData(
     tertiary: AppColors.white,
     onTertiary: AppColors.mainWhite,
   ),
+  extensions: const <ThemeExtension<dynamic>>[
+    CustomColors(
+      gradient1: AppColors.gradientLeftWhite,
+      gradient2: AppColors.gradientRightWhite,
+    ),
+  ],
 );
 
+// параметры темной темы
 final darkTheme = ThemeData(
   scaffoldBackgroundColor: AppColors.mainBlack,
   highlightColor: AppColors.transparent,
-  splashColor: AppColors.transparent,
+  //splashColor: AppColors.transparent,
   textTheme: textTheme,
+  bottomSheetTheme:
+      const BottomSheetThemeData(backgroundColor: AppColors.mainBlack),
+  splashColor: AppColors.splashColor,
   colorScheme: const ColorScheme.dark(
     background: AppColors.mainBlack,
     //onBackground: AppColors.white,
@@ -58,4 +73,43 @@ final darkTheme = ThemeData(
     tertiary: AppColors.mainBlack,
     onTertiary: AppColors.white,
   ),
+  extensions: const [
+    CustomColors(
+      gradient1: AppColors.gradientLeftBlack,
+      gradient2: AppColors.gradientRightBlack,
+    ),
+  ],
 );
+
+// пользовательские цвета приложения
+@immutable
+class CustomColors extends ThemeExtension<CustomColors> {
+  final Color? gradient1;
+  final Color? gradient2;
+
+  const CustomColors({
+    required this.gradient1,
+    required this.gradient2,
+  });
+
+  @override
+  CustomColors copyWith({Color? gradient1, Color? gradient2}) {
+    return CustomColors(
+      gradient1: gradient1 ?? this.gradient1,
+      gradient2: gradient2 ?? this.gradient2,
+    );
+  }
+
+  @override
+  CustomColors lerp(ThemeExtension<CustomColors>? other, double t) {
+    if (other is! CustomColors) {
+      return this;
+    }
+
+    return CustomColors(
+      gradient1: Color.lerp(gradient1, other.gradient1, t),
+      gradient2: Color.lerp(gradient2, other.gradient2, t),
+    );
+  }
+
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// шрифты и стили приложения
 class AppTypography {
   static const styleSmallBold = TextStyle(
     fontFamily: 'Roboto',

@@ -3,7 +3,7 @@ import 'package:places/domain/sight.dart';
 import 'package:places/domain/sight_type.dart';
 
 // Моковые данные приложения
-final List<Sight> mocks = [
+List<Sight> mocks = [
   Sight(
     name: 'Поволжский музей железнодорожной техники',
     type: SightType.museum,
