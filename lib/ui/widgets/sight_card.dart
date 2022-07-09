@@ -386,10 +386,10 @@ class _SightCardImage extends StatelessWidget {
       width: double.infinity,
       fit: BoxFit.cover,
       errorBuilder: (context, exception, tackTrace) {
-        return const ColoredBox(
-          color: AppColors.inactiveBlack,
-          child: SizedBox.expand(),
-      );
+        return ColoredBox(
+          color: Theme.of(context).colorScheme.outline,
+          child: const SizedBox.expand(),
+        );
       },
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) {
