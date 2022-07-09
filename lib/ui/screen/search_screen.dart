@@ -416,7 +416,7 @@ class _SearchResultImage extends StatelessWidget {
         errorBuilder: (context, exception, tackTrace) {
           return ColoredBox(
             color: Theme.of(context).colorScheme.outline,
-            child: const SizedBox.expand(),
+            child: const SizedBox(height: 56, width: 56),
           );
         },
         loadingBuilder: (context, child, loadingProgress) {
