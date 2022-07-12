@@ -199,6 +199,12 @@ class _SightImage extends StatelessWidget {
             sight.url,
             fit: BoxFit.cover,
             height: 360,
+            errorBuilder: (context, exception, tackTrace) {
+              return ColoredBox(
+                color: Theme.of(context).colorScheme.outline,
+                child: const SizedBox.expand(),
+              );
+            },
             loadingBuilder: (context, child, loadingProgress) {
               if (loadingProgress == null) {
                 return child;

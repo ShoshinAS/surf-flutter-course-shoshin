@@ -7,6 +7,7 @@ import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/bottom_navigation_bar.dart';
 import 'package:provider/provider.dart';
 
+// экран настроек приложения
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
@@ -75,6 +76,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
+// виджет элемента настрое приложения
 class _SettingsItem extends StatelessWidget {
   final String title;
   final Widget child;

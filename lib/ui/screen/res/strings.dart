@@ -1,7 +1,7 @@
 /// Строковые константы приложения
 class AppStrings {
   static const appTitle = 'Интересные места';
-  static const appBarTitle = 'Список\nинтересных мест';
+  static const appBarTitle = 'Список интересных мест';
   static const route = 'ПОСТРОИТЬ МАРШРУТ';
   static const plan = 'Запланировать';
   static const toFavourites = 'В Избранное';
@@ -15,6 +15,12 @@ class AppStrings {
   static const empty = 'Пусто';
   static const clear = 'Очистить';
   static const categories = 'КАТЕГОРИИ';
+  static const category = 'Категория';
+  static const name = 'НАЗВАНИЕ';
+  static const latitude  = 'ШИРОТА';
+  static const longitude  = 'ДОЛГОТА';
+  static const description = 'ОПИСАНИЕ';
+  static const enterText = 'введите текст';
   static const show = 'ПОКАЗАТЬ';
   static const distance = 'Расстояние';
   static const distanceRange = 'От 100 м до 10 км';
@@ -27,5 +33,17 @@ class AppStrings {
   static const typePark = 'Парк';
   static const typeMuseum = 'Музей';
   static const typeCafe = 'Кафе';
+  static const newPlace = 'Новое место';
+  static const cancel = 'Отмена';
+  static const specifyOnTheMap = 'Указать на карте';
+  static const create = 'Создать';
+  static const notSelected = 'Не выбрано';
+  static const search = 'Поиск';
+  static const nothingFound = 'Ничего не найдено';
+  static const tryToChangeSearchParameters = 'Попробуйте изменить параметры\nпоиска';
+  static const error = 'Ошибка';
+  static const somethingWentWrong = 'Что-то пошло не так.\nПопробуйте позже.';
+  static const youSearched = 'ВЫ ИСКАЛИ';
+  static const clearHistory = 'Очистить историю';
 }
 

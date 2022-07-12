@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:places/mocks.dart';
+import 'package:places/ui/models/filter_model.dart';
+import 'package:places/ui/models/search_history_model.dart';
 import 'package:places/ui/models/theme_model.dart';
-import 'package:places/ui/screen/filters_screen.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/screen/res/themes.dart';
-import 'package:places/ui/screen/settings_screen.dart';
-import 'package:places/ui/screen/sight_details_screen.dart';
+import 'package:places/ui/screen/res/values.dart';
 import 'package:places/ui/screen/sight_list_screen.dart';
-import 'package:places/ui/screen/visiting_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-        create: (context) => ThemeModel(), child: const App(),),
-  );
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => ThemeModel()),
+      ChangeNotifierProvider(
+        create: (_) =>
+            Filter(maxDistance: AppValues.maxDistance, sightList: mocks),
+      ),
+      ChangeNotifierProvider(create: (_) => SearchHistory()),
+    ],
+    child: const App(),
+  ));
 }
 
 class App extends StatelessWidget {
@@ -28,11 +34,7 @@ class App extends StatelessWidget {
           theme: model.darkTheme ? darkTheme : lightTheme,
           //theme: darkTheme,
           title: AppStrings.appTitle,
-          //home: SightListScreen(sightList: mocks),
-          //home: SightDetails(mocks[1]),
-          //home: const VisitingScreen(),
-          home: const FiltersScreen(),
-          //home: const SettingsScreen(),
+          home: const SightListScreen(),
         );
       },
     );

@@ -6,20 +6,29 @@ class BigButton extends StatelessWidget {
   final String title;
   final String? icon;
   final VoidCallback onPressed;
+  final ValueChanged<bool>? onFocusChange;
+  final bool active;
 
   const BigButton({
     required this.title,
     required this.onPressed,
     this.icon,
+    this.onFocusChange,
+    this.active = true,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final buttonColor =
+        active ? theme.colorScheme.secondary : theme.colorScheme.surface;
+    final textColor =
+        active ? theme.colorScheme.onSecondary : theme.colorScheme.outline;
 
     return ElevatedButton(
-      onPressed: onPressed,
+      onPressed: active ? onPressed : null,
+      onFocusChange: onFocusChange,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -38,7 +47,7 @@ class BigButton extends StatelessWidget {
           Text(
             title,
             style: theme.textTheme.labelMedium?.copyWith(
-              color: theme.colorScheme.onSecondary,
+              color: textColor,
             ),
           ),
         ],
@@ -49,9 +58,10 @@ class BigButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         minimumSize: const Size(double.infinity, 46),
-        primary: theme.colorScheme.secondary,
-        onPrimary: theme.colorScheme.onSecondary,
         textStyle: theme.textTheme.labelMedium,
+      ).copyWith(
+        backgroundColor: MaterialStateProperty.all(buttonColor),
+        foregroundColor: MaterialStateProperty.all(textColor),
       ),
     );
   }

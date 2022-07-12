@@ -4,6 +4,7 @@ import 'package:places/domain/sight.dart';
 import 'package:places/mocks.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/colors.dart';
+import 'package:places/ui/screen/sight_details_screen.dart';
 
 // Виджет реализует абстрактный класс для отображения карточки интересного места в списке
 abstract class SightCard extends StatelessWidget {
@@ -21,6 +22,7 @@ abstract class SightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Theme.of(context).colorScheme.background,
       child: Column(
         children: [
           const SizedBox(height: 16),
@@ -44,15 +46,19 @@ abstract class SightCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Material(
+                  Positioned.fill(child: Material(
                     color: AppColors.transparent,
-                    child: Positioned.fill(child: InkWell(
+                    child: InkWell(
                       onTap: () {
-                        debugPrint('Нажатие на карточку интересного места');
+                        Navigator.of(context).push<MaterialPageRoute>(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SightDetailsScreen(sight),
+                          ),
+                        );
                       },
-                      splashColor: const Color.fromRGBO(196, 196, 196, 0.5),
-                    )),
-                  ),
+                    ),
+                  )),
                   _SightCardType(sight: sight),
                   _SightCardButtonPanel(buttons: buttons),
                 ],
@@ -148,8 +154,8 @@ class _SightCardButtonPanel extends StatelessWidget {
       child: Row(
         children: buttons,
       ),
-      top: 12,
-      right: 12,
+      top: 8,
+      right: 8,
     );
   }
 }
@@ -169,31 +175,20 @@ class _SightCardButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 8,
-      ),
-      child: ElevatedButton(
-        child: SvgPicture.asset(
-          icon,
-          color: AppColors.white,
+    return Material(
+      color: Colors.transparent,
+      child: IconButton(
+        icon: SvgPicture.asset(
+           icon,
+           color: AppColors.white,
+         ),
+        constraints: const BoxConstraints(
+          minWidth: 24,
+          minHeight: 24,
         ),
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          minimumSize: const Size.square(32),
-          shape: const CircleBorder(),
-          primary: AppColors.transparent,
-          onPrimary: theme.colorScheme.onBackground,
-          padding: EdgeInsets.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ).copyWith(
-          elevation: MaterialStateProperty.all(0),
-        ),
-        onPressed: () {
-          debugPrint('Нажата кнопка "Смотреть туториал"');
-        },
+        splashRadius: 16,
+        onPressed: () {},
       ),
     );
   }
@@ -390,6 +385,12 @@ class _SightCardImage extends StatelessWidget {
       sight.url,
       width: double.infinity,
       fit: BoxFit.cover,
+      errorBuilder: (context, exception, tackTrace) {
+        return ColoredBox(
+          color: Theme.of(context).colorScheme.outline,
+          child: const SizedBox.expand(),
+        );
+      },
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) {
           return child;

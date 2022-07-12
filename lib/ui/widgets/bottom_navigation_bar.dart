@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:places/ui/screen/res/assets.dart';
 
+// кастомизированный BottomNavigationBar
 class AppBottomNavigationBar extends StatelessWidget {
   const AppBottomNavigationBar({
     Key? key,
@@ -11,7 +12,7 @@ class AppBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(

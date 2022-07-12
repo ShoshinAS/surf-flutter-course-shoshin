@@ -1,123 +1,130 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/domain/sight_type.dart';
-import 'package:places/filter.dart';
-import 'package:places/mocks.dart';
+import 'package:places/ui/models/filter_model.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/big_button.dart';
 
+// экран фильтра
 class FiltersScreen extends StatefulWidget {
-  static const maxDistance = 10000.0;
+  final Filter initialFilter;
 
-  const FiltersScreen({Key? key}) : super(key: key);
+  const FiltersScreen({Key? key, required this.initialFilter}) : super(key: key);
 
   @override
   State<FiltersScreen> createState() => _FiltersScreenState();
 }
 
 class _FiltersScreenState extends State<FiltersScreen> {
-  Filter filter = Filter(
-      sightList: mocks,
-      maxDistance: FiltersScreen.maxDistance,
-  );
+  late final Filter screenFilter;
+
+  @override
+  void initState() {
+    super.initState();
+    screenFilter = Filter.from(widget.initialFilter);
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: CustomAppBar(
-        height: 56,
-        leading: const ReturnButton(),
-        actions: [
-          _ClearFiltersButton(
-            onPressed: () {
-              setState(() {
-                filter.clear();
-              });
-            },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            Container(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                AppStrings.categories,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.outline,
+        appBar: CustomAppBar(
+          height: 56,
+          leading: const ReturnButton(),
+          actions: [
+            _ClearFiltersButton(
+              onPressed: () {
+                setState(screenFilter.clear);
+              },
+            ),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              const SizedBox(height: 16),
+              Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  AppStrings.categories,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.outline,
+                  ),
                 ),
               ),
-            ),
-            //const SizedBox(height: 24),
-            GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              children: SightType.values
-                  .map(
-                    (e) => _CategoryCard(
-                      title: e.toString(),
-                      icon: e.getIcon(),
-                      selected: filter.selected(e),
-                      onPressed: () {
-                        setState(() {
-                          filter.invert(e);
-                        });
-                      },
-                    ),
-                  )
-                  .toList(),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
+              //const SizedBox(height: 24),
+              GridView.count(
+                crossAxisCount: 3,
+                shrinkWrap: true,
+                children: SightType.values
+                    .map(
+                      (e) =>
+                      _CategoryCard(
+                        title: e.toString(),
+                        icon: e.getIcon(),
+                        selected: screenFilter.selected(e),
+                        onPressed: () {
+                          setState(() {
+                            screenFilter.invert(e);
+                          });
+                        },
+                      ),
+                )
+                    .toList(),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
                     AppStrings.distance,
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: theme.colorScheme.onTertiary,
                     ),
-                ),
-                Text(
-                    'до ${(filter.selectedDistance/1000).toStringAsFixed(2)} км',
+                  ),
+                  Text(
+                    'до ${(screenFilter.selectedDistance / 1000).toStringAsFixed(
+                        2,)} км',
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: theme.colorScheme.onPrimaryContainer,
                     ),
-                ),
-              ],
-            ),
-            Slider(
-              value: filter.selectedDistance,
-              max: filter.maxDistance,
-              activeColor: theme.colorScheme.secondary,
-              inactiveColor: theme.colorScheme.outline,
-              onChanged: (newValue) {
-                setState(() {
-                  filter.selectedDistance = newValue;
-                });
-              },
-            ),
-            const Expanded(child: SizedBox.shrink()),
-            BigButton(
-              title: '${AppStrings.show} (${filter.amount})',
-              onPressed: () {
-                debugPrint(filter.result.toString());
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
+                  ),
+                ],
+              ),
+              Slider(
+                value: screenFilter.selectedDistance,
+                max: screenFilter.maxDistance,
+                activeColor: theme.colorScheme.secondary,
+                inactiveColor: theme.colorScheme.outline,
+                onChanged: (newValue) {
+                  setState(() {
+                    screenFilter.selectedDistance = newValue;
+                  });
+                },
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+        bottomSheet: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: BigButton(
+            active: screenFilter.amount > 0,
+            title: '${AppStrings.show} (${screenFilter.amount})',
+            onPressed: () {
+              widget.initialFilter.fill(screenFilter);
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      );
   }
 }
 
+// виджет кнопки очистки фильтра
 class _ClearFiltersButton extends StatelessWidget {
   final VoidCallback onPressed;
   const _ClearFiltersButton({
@@ -141,6 +148,7 @@ class _ClearFiltersButton extends StatelessWidget {
   }
 }
 
+// кнопка выбора категории
 class _CategoryCard extends StatelessWidget {
   final String icon;
   final String title;
@@ -216,6 +224,7 @@ class _CategoryCard extends StatelessWidget {
   }
 }
 
+// расширение SightType для определения иконки для каждой категории
 extension _Category on SightType {
   String getIcon() {
     switch (this) {

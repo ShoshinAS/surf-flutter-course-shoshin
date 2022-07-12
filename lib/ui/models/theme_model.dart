@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// класс реализует переключение темы
 class ThemeModel extends ChangeNotifier{
 
   bool get darkTheme => _darkTheme;

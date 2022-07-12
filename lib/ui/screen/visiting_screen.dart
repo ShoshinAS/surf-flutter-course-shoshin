@@ -148,6 +148,7 @@ class _CustomTabBar extends StatelessWidget implements PreferredSizeWidget {
           unselectedLabelStyle: theme.textTheme.titleSmall,
           labelColor: theme.colorScheme.onPrimary,
           tabs: tabs,
+          splashFactory: NoSplash.splashFactory,
         ),
       ),
     );
