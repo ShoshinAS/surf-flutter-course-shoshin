@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/domain/location.dart';
 import 'package:places/domain/sight.dart';
 import 'package:places/domain/sight_type.dart';
 import 'package:places/ui/models/filter_model.dart';
+import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
+import 'package:places/ui/screen/select_category_screen.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/big_button.dart';
 import 'package:places/ui/widgets/clear_text_button.dart';
@@ -19,7 +22,6 @@ class AddSightScreen extends StatefulWidget {
 }
 
 class _AddSightScreenState extends State<AddSightScreen> {
-  final FocusNode _focusNodeCategory = FocusNode();
   final FocusNode _focusNodeName = FocusNode();
   final FocusNode _focusNodeLatitude = FocusNode();
   final FocusNode _focusNodeLongitude = FocusNode();
@@ -59,18 +61,16 @@ class _AddSightScreenState extends State<AddSightScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _CustomDropdownButton(
-              title: AppStrings.category,
-              value: _sightType,
-              items: SightType.values.map((e) {
-                return DropdownMenuItem(value: e, child: Text(e.toString()));
-              }).toList(),
-              onChanged: (newValue) {
-                _sightType = newValue as SightType?;
+            const SizedBox(
+              height: 24,
+            ),
+            _CustomCategoryButton(
+              sightType: _sightType,
+              onSelect: (selectedSightType) {
+                _sightType = selectedSightType;
                 setState(() {});
+                _focusNodeName.requestFocus();
               },
-              focusNode: _focusNodeCategory,
-              focusNodeNext: _focusNodeName,
             ),
             _CustomTextField(
               title: AppStrings.name,
@@ -218,66 +218,6 @@ class _CoordinateTextField extends StatelessWidget {
   }
 }
 
-// виджет выбора категории из впадающего списка
-class _CustomDropdownButton extends StatelessWidget {
-  final Object? value;
-  final List<DropdownMenuItem<Object>> items;
-  final String title;
-  final ValueChanged<Object?> onChanged;
-  final FocusNode focusNode;
-  final FocusNode focusNodeNext;
-
-  const _CustomDropdownButton({
-    Key? key,
-    this.value,
-    required this.items,
-    required this.title,
-    required this.onChanged,
-    required this.focusNode,
-    required this.focusNodeNext,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 24),
-        Text(
-          title,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: theme.colorScheme.outline,
-          ),
-        ),
-        const SizedBox(height: 12),
-        DropdownButton(
-          value: value,
-          isExpanded: true,
-          hint: Text(
-            AppStrings.notSelected,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: theme.colorScheme.onTertiary,
-          ),
-          borderRadius: BorderRadius.circular(8),
-          items: SightType.values.map((e) {
-            return DropdownMenuItem(value: e, child: Text(e.toString()));
-          }).toList(),
-          onChanged: (newValue) {
-            focusNodeNext.requestFocus();
-            onChanged(newValue);
-          },
-        ),
-      ],
-    );
-  }
-}
-
 // кастомизированное текстовое поле
 class _CustomTextField extends StatelessWidget {
   final String title;
@@ -396,5 +336,71 @@ class LimitRangeTextInputFormatter extends TextInputFormatter {
     }
 
     return newValue;
+  }
+}
+
+class _CustomCategoryButton extends StatelessWidget {
+  final SightType? sightType;
+  final ValueChanged<SightType> onSelect;
+
+  const _CustomCategoryButton({
+    Key? key,
+    this.sightType,
+    required this.onSelect,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppStrings.category.toUpperCase(),
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.outline,
+          ),
+        ),
+        const SizedBox(height: 14),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            if (sightType != null)
+              Text(
+                sightType.toString(),
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onTertiary,
+                ),
+              )
+            else
+              Text(
+                AppStrings.notSelected,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).push<MaterialPageRoute>(
+                  MaterialPageRoute(
+                    builder: (context) => SelectCategory(onSelect: onSelect),
+                  ),
+                );
+              },
+              icon: SvgPicture.asset(AppAssets.iconView),
+              padding: EdgeInsets.zero,
+              splashRadius: 16,
+              constraints: const BoxConstraints(
+                minHeight: 24,
+                minWidth: 24,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        const Divider(thickness: 0.8, height: 0),
+      ],
+    );
   }
 }

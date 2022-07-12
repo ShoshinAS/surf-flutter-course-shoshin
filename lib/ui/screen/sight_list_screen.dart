@@ -28,8 +28,6 @@ class _SightListScreenState extends State<SightListScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final customColors = theme.extension<CustomColors>()!;
-    final buttonBorderRadius = BorderRadius.circular(24);
 
     return Consumer<Filter>(
       builder: (context, filter, child) {
@@ -61,50 +59,7 @@ class _SightListScreenState extends State<SightListScreen> {
           ),
           bottomNavigationBar: const AppBottomNavigationBar(),
           resizeToAvoidBottomInset: false,
-          floatingActionButton: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.zero,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: buttonBorderRadius,
-              ),
-            ),
-            child: Ink(
-              width: 177,
-              height: 48,
-              decoration: BoxDecoration(
-                borderRadius: buttonBorderRadius,
-                gradient: LinearGradient(
-                  colors: [
-                    customColors.gradient1!,
-                    customColors.gradient2!,
-                  ],
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(AppAssets.iconPlus),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    AppStrings.newPlace.toUpperCase(),
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: theme.colorScheme.onSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            onPressed: () {
-              Navigator.of(context).push<MaterialPageRoute>(
-                MaterialPageRoute(
-                  builder: (context) => const AddSightScreen(),
-                ),
-              );
-            },
-          ),
+          floatingActionButton: const _NewSightButton(),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
         );
@@ -137,6 +92,62 @@ class _FilterButton extends StatelessWidget {
         },
         splashRadius: 32,
       ),
+    );
+  }
+}
+
+class _NewSightButton extends StatelessWidget {
+  const _NewSightButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final buttonBorderRadius = BorderRadius.circular(24);
+    final theme = Theme.of(context);
+    final customColors = theme.extension<CustomColors>()!;
+
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.zero,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: buttonBorderRadius,
+        ),
+      ),
+      child: Ink(
+        width: 177,
+        height: 48,
+        decoration: BoxDecoration(
+          borderRadius: buttonBorderRadius,
+          gradient: LinearGradient(
+            colors: [
+              customColors.gradient1!,
+              customColors.gradient2!,
+            ],
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(AppAssets.iconPlus),
+            const SizedBox(
+              width: 8,
+            ),
+            Text(
+              AppStrings.newPlace.toUpperCase(),
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.onSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+      onPressed: () {
+        Navigator.of(context).push<MaterialPageRoute>(
+          MaterialPageRoute(
+            builder: (context) => const AddSightScreen(),
+          ),
+        );
+      },
     );
   }
 }

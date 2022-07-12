@@ -12,16 +12,18 @@ import 'package:provider/provider.dart';
 void main() {
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (context) => ThemeModel()),
-      ChangeNotifierProvider(create: (context) => Filter(maxDistance: AppValues.maxDistance, sightList: mocks)),
-      ChangeNotifierProvider(create: (context) => SearchHistory()),
+      ChangeNotifierProvider(create: (_) => ThemeModel()),
+      ChangeNotifierProvider(
+        create: (_) =>
+            Filter(maxDistance: AppValues.maxDistance, sightList: mocks),
+      ),
+      ChangeNotifierProvider(create: (_) => SearchHistory()),
     ],
     child: const App(),
   ));
 }
 
 class App extends StatelessWidget {
-
   const App({Key? key}) : super(key: key);
 
   @override

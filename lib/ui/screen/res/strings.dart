@@ -15,7 +15,7 @@ class AppStrings {
   static const empty = 'Пусто';
   static const clear = 'Очистить';
   static const categories = 'КАТЕГОРИИ';
-  static const category = 'КАТЕГОРИЯ';
+  static const category = 'Категория';
   static const name = 'НАЗВАНИЕ';
   static const latitude  = 'ШИРОТА';
   static const longitude  = 'ДОЛГОТА';

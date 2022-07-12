@@ -26,4 +26,5 @@ class AppAssets {
   static const iconSearch = 'res/icons/search.svg';
   static const iconFilter = 'res/icons/filter.svg';
   static const iconDelete = 'res/icons/delete.svg';
+  static const iconView = 'res/icons/view.svg';
 }
