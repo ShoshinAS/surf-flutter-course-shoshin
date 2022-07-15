@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/domain/sight.dart';
 import 'package:places/mocks.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
@@ -37,22 +38,9 @@ class VisitingScreen extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(children: [
-          SightList(
-            children:
-                wantToVisitSights.map(SightCardInScheduledList.new).toList(),
-            emptyScreen: const _EmptyScreen(
-              iconAssetName: AppAssets.iconFavoriteEmpty,
-              description: AppStrings.emptyFavoritesDescription,
-            ),
-          ),
-          SightList(
-            children: visitedSights.map(SightCardInVisitedList.new).toList(),
-            emptyScreen: const _EmptyScreen(
-              iconAssetName: AppAssets.iconVisitedEmpty,
-              description: AppStrings.emptyVisitedDescription,
-            ),
-          ),
+        body: const TabBarView(children: [
+          _ScheduledList(),
+          _VisitedList(),
         ]),
         bottomNavigationBar: const AppBottomNavigationBar(),
       ),
@@ -150,6 +138,63 @@ class _CustomTabBar extends StatelessWidget implements PreferredSizeWidget {
           tabs: tabs,
           splashFactory: NoSplash.splashFactory,
         ),
+      ),
+    );
+  }
+}
+
+class _ScheduledList extends StatefulWidget {
+  const _ScheduledList({Key? key}) : super(key: key);
+
+  @override
+  State<_ScheduledList> createState() => _ScheduledListState();
+}
+
+class _ScheduledListState extends State<_ScheduledList> {
+  final List<Sight> sights = wantToVisitSights;
+
+  @override
+  Widget build(BuildContext context) {
+    return SightList(
+      children:
+      sights.map((e) => SightCardInScheduledList(
+        sight: e,
+        onRemove: (sight) {
+          sights.remove(sight);
+          setState(() {});
+        },
+      )).toList(),
+      emptyScreen: const _EmptyScreen(
+        iconAssetName: AppAssets.iconFavoriteEmpty,
+        description: AppStrings.emptyFavoritesDescription,
+      ),
+    );
+  }
+}
+
+class _VisitedList extends StatefulWidget {
+  const _VisitedList({Key? key}) : super(key: key);
+
+  @override
+  State<_VisitedList> createState() => _VisitedListState();
+}
+
+class _VisitedListState extends State<_VisitedList> {
+  final List<Sight> sights = visitedSights;
+
+  @override
+  Widget build(BuildContext context) {
+    return SightList(
+      children: sights.map((e) => SightCardInVisitedList(
+        sight: e,
+        onRemove: (sight) {
+          sights.remove(sight);
+          setState(() {});
+        },
+      )).toList(),
+      emptyScreen: const _EmptyScreen(
+        iconAssetName: AppAssets.iconVisitedEmpty,
+        description: AppStrings.emptyVisitedDescription,
       ),
     );
   }

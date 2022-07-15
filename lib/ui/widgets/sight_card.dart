@@ -36,7 +36,7 @@ abstract class SightCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _SightCardImage(sight: sight),
-                        ),
+                      ),
                       Expanded(
                         child: _SightCardDescription(
                           header: _SightCardName(sight: sight),
@@ -46,19 +46,20 @@ abstract class SightCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Positioned.fill(child: Material(
-                    color: AppColors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).push<MaterialPageRoute>(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                SightDetailsScreen(sight),
-                          ),
-                        );
-                      },
+                  Positioned.fill(
+                    child: Material(
+                      color: AppColors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).push<MaterialPageRoute>(
+                            MaterialPageRoute(
+                              builder: (context) => SightDetailsScreen(sight),
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  )),
+                  ),
                   _SightCardType(sight: sight),
                   _SightCardButtonPanel(buttons: buttons),
                 ],
@@ -83,28 +84,40 @@ class SightCardInList extends SightCard {
 
 // Виджет отображает карточку интересного места в списке "Хочу посетить"
 class SightCardInScheduledList extends SightCard {
-  SightCardInScheduledList(Sight sight, {Key? key})
-      : super(
+  SightCardInScheduledList({
+    Key? key,
+    required Sight sight,
+    required ValueChanged<Sight> onRemove,
+  }) : super(
           sight,
           key: key,
           extraInformation: const _ScheduledDate(),
           buttons: [
             _AddToCalendarButton(sight: sight),
-            _RemoveFromFavorites(sight: sight),
+            _RemoveFromFavorites(
+              sight: sight,
+              onRemove: onRemove,
+            ),
           ],
         );
 }
 
 // Виджет отображает карточку интересного места в списке "Посетил"
 class SightCardInVisitedList extends SightCard {
-  SightCardInVisitedList(Sight sight, {Key? key})
-      : super(
+  SightCardInVisitedList({
+    Key? key,
+    required Sight sight,
+    required ValueChanged<Sight> onRemove,
+  }) : super(
           sight,
           key: key,
           extraInformation: const _VisitDate(),
           buttons: [
             _ShareButton(sight: sight),
-            _RemoveFromFavorites(sight: sight),
+            _RemoveFromFavorites(
+              sight: sight,
+              onRemove: onRemove,
+            ),
           ],
         );
 }
@@ -135,8 +148,8 @@ class _VisitDate extends StatelessWidget {
     return Text(
       MockStrings.visitDate,
       style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
     );
   }
 }
@@ -175,20 +188,19 @@ class _SightCardButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Material(
       color: Colors.transparent,
       child: IconButton(
         icon: SvgPicture.asset(
-           icon,
-           color: AppColors.white,
-         ),
+          icon,
+          color: AppColors.white,
+        ),
         constraints: const BoxConstraints(
           minWidth: 24,
           minHeight: 24,
         ),
         splashRadius: 16,
-        onPressed: () {},
+        onPressed: onPressed,
       ),
     );
   }
@@ -245,16 +257,22 @@ class _ShareButton extends StatelessWidget {
 
 class _RemoveFromFavorites extends StatelessWidget {
   final Sight sight;
+  final ValueChanged<Sight> onRemove;
 
-  const _RemoveFromFavorites({required this.sight, Key? key}) : super(key: key);
+  const _RemoveFromFavorites({
+    required this.sight,
+    Key? key,
+    required this.onRemove,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return _SightCardButton(
       icon: AppAssets.iconRemove,
       sight: sight,
-      onPressed: () =>
-          debugPrint('Нажата кнопка "Удалить из избранного" - ${sight.name}'),
+      onPressed: () {
+        onRemove(sight);
+      },
     );
   }
 }
@@ -316,8 +334,8 @@ class _SightCardOpeningTime extends StatelessWidget {
     return Text(
       MockStrings.openingHours,
       style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
     );
   }
 }
@@ -338,8 +356,8 @@ class _SightCardName extends StatelessWidget {
     return Text(
       sight.name,
       style: theme.textTheme.titleMedium?.copyWith(
-            color: theme.colorScheme.onSurface,
-          ),
+        color: theme.colorScheme.onSurface,
+      ),
     );
   }
 }
@@ -361,8 +379,8 @@ class _SightCardType extends StatelessWidget {
       child: Text(
         sight.type.toString(),
         style: theme.textTheme.titleSmall?.copyWith(
-              color: AppColors.white,
-            ),
+          color: AppColors.white,
+        ),
       ),
       top: 16,
       left: 16,
