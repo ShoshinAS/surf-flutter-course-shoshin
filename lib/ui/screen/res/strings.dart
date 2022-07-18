@@ -45,5 +45,6 @@ class AppStrings {
   static const somethingWentWrong = 'Что-то пошло не так.\nПопробуйте позже.';
   static const youSearched = 'ВЫ ИСКАЛИ';
   static const clearHistory = 'Очистить историю';
+  static const delete = 'Удалить';
 }
 

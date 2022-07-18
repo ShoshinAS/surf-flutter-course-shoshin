@@ -22,51 +22,50 @@ abstract class SightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Theme.of(context).colorScheme.background,
-      child: Column(
-        children: [
-          const SizedBox(height: 16),
-          AspectRatio(
-            aspectRatio: 3 / 2,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Stack(
-                children: [
-                  Column(
-                    children: [
-                      Expanded(
-                        child: _SightCardImage(sight: sight),
-                      ),
-                      Expanded(
-                        child: _SightCardDescription(
-                          header: _SightCardName(sight: sight),
-                          firstLine: extraInformation,
-                          secondLine: const _SightCardOpeningTime(),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Positioned.fill(
-                    child: Material(
-                      color: AppColors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.of(context).push<MaterialPageRoute>(
-                            MaterialPageRoute(
-                              builder: (context) => SightDetailsScreen(sight),
-                            ),
-                          );
-                        },
+      color: Colors.transparent,
+      child: SizedBox(
+        height: 192,
+        width: MediaQuery.of(context).size.width - 32,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: ColoredBox(
+            color: Theme.of(context).colorScheme.surface,
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    Expanded(
+                      child: _SightCardImage(sight: sight),
+                    ),
+                    Expanded(
+                      child: _SightCardDescription(
+                        header: _SightCardName(sight: sight),
+                        firstLine: extraInformation,
+                        secondLine: const _SightCardOpeningTime(),
                       ),
                     ),
+                  ],
+                ),
+                Positioned.fill(
+                  child: Material(
+                    color: AppColors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).push<MaterialPageRoute>(
+                          MaterialPageRoute(
+                            builder: (context) => SightDetailsScreen(sight),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                  _SightCardType(sight: sight),
-                  _SightCardButtonPanel(buttons: buttons),
-                ],
-              ),
+                ),
+                _SightCardType(sight: sight),
+                _SightCardButtonPanel(buttons: buttons),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -84,9 +83,9 @@ class SightCardInList extends SightCard {
 
 // Виджет отображает карточку интересного места в списке "Хочу посетить"
 class SightCardInScheduledList extends SightCard {
-  SightCardInScheduledList({
+  SightCardInScheduledList(
+    Sight sight, {
     Key? key,
-    required Sight sight,
     required ValueChanged<Sight> onRemove,
   }) : super(
           sight,
@@ -104,10 +103,11 @@ class SightCardInScheduledList extends SightCard {
 
 // Виджет отображает карточку интересного места в списке "Посетил"
 class SightCardInVisitedList extends SightCard {
-  SightCardInVisitedList({
+  SightCardInVisitedList(
+    Sight sight, {
     Key? key,
-    required Sight sight,
-    required ValueChanged<Sight> onRemove,
+    ValueChanged<Sight>? onRemove,
+
   }) : super(
           sight,
           key: key,
@@ -257,12 +257,12 @@ class _ShareButton extends StatelessWidget {
 
 class _RemoveFromFavorites extends StatelessWidget {
   final Sight sight;
-  final ValueChanged<Sight> onRemove;
+  final ValueChanged<Sight>? onRemove;
 
   const _RemoveFromFavorites({
     required this.sight,
     Key? key,
-    required this.onRemove,
+    this.onRemove,
   }) : super(key: key);
 
   @override
@@ -271,7 +271,9 @@ class _RemoveFromFavorites extends StatelessWidget {
       icon: AppAssets.iconRemove,
       sight: sight,
       onPressed: () {
-        onRemove(sight);
+        if (onRemove != null) {
+          onRemove!(sight);
+        }
       },
     );
   }
@@ -292,19 +294,14 @@ class _SightCardDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
-      height: 92,
+      //height: 92,
       width: double.infinity,
       constraints: const BoxConstraints(
-        maxHeight: 92,
+        //maxHeight: 92,
         minWidth: double.infinity,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -399,30 +396,30 @@ class _SightCardImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.network(
-      sight.url,
-      width: double.infinity,
-      fit: BoxFit.cover,
-      errorBuilder: (context, exception, tackTrace) {
-        return ColoredBox(
-          color: Theme.of(context).colorScheme.outline,
-          child: const SizedBox.expand(),
-        );
-      },
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) {
-          return child;
-        }
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.outline,
+      child: Image.network(
+        sight.url,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, exception, tackTrace) {
+          return const SizedBox.shrink();
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) {
+            return child;
+          }
 
-        return Center(
-          child: CircularProgressIndicator(
-            value: loadingProgress.expectedTotalBytes != null
-                ? loadingProgress.cumulativeBytesLoaded /
-                    loadingProgress.expectedTotalBytes!
-                : null,
-          ),
-        );
-      },
+          return Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+            ),
+          );
+        },
+      ),
     );
   }
 }

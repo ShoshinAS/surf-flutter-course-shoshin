@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/domain/sight.dart';
-import 'package:places/mocks.dart';
+import 'package:places/ui/models/favourites_model.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/bottom_navigation_bar.dart';
 import 'package:places/ui/widgets/sight_card.dart';
 import 'package:places/ui/widgets/sight_list.dart';
+import 'package:provider/provider.dart';
 
 // виджет отображает экран Хочу посетить / Интересные места
 class VisitingScreen extends StatelessWidget {
@@ -23,8 +23,8 @@ class VisitingScreen extends StatelessWidget {
         appBar: CustomAppBar(
           title: AppStrings.favoriteTitle,
           titleTextStyle: theme.textTheme.headlineSmall?.copyWith(
-                color: theme.colorScheme.onBackground,
-              ),
+            color: theme.colorScheme.onBackground,
+          ),
           height: 108,
           bottom: const _CustomTabBar(
             height: 52,
@@ -80,16 +80,16 @@ class _EmptyScreen extends StatelessWidget {
                   AppStrings.empty,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineSmall?.copyWith(
-                        color: theme.colorScheme.outline,
-                      ),
+                    color: theme.colorScheme.outline,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   description,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.outline,
-                      ),
+                    color: theme.colorScheme.outline,
+                  ),
                 ),
               ],
             ),
@@ -131,8 +131,7 @@ class _CustomTabBar extends StatelessWidget implements PreferredSizeWidget {
             color: theme.colorScheme.primary,
             borderRadius: BorderRadius.circular(40),
           ),
-          unselectedLabelColor:
-          theme.colorScheme.onPrimaryContainer,
+          unselectedLabelColor: theme.colorScheme.onPrimaryContainer,
           unselectedLabelStyle: theme.textTheme.titleSmall,
           labelColor: theme.colorScheme.onPrimary,
           tabs: tabs,
@@ -143,58 +142,63 @@ class _CustomTabBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class _ScheduledList extends StatefulWidget {
+class _ScheduledList extends StatelessWidget {
   const _ScheduledList({Key? key}) : super(key: key);
 
   @override
-  State<_ScheduledList> createState() => _ScheduledListState();
-}
-
-class _ScheduledListState extends State<_ScheduledList> {
-  final List<Sight> sights = wantToVisitSights;
-
-  @override
   Widget build(BuildContext context) {
-    return SightList(
-      children:
-      sights.map((e) => SightCardInScheduledList(
-        sight: e,
-        onRemove: (sight) {
-          sights.remove(sight);
-          setState(() {});
+    return Consumer<ScheduledSights>(
+      builder: (context, scheduledSights, child) => SightList(
+        children: scheduledSights
+            .toList()
+            .map((sight) => SightCardInScheduledList(
+          sight,
+          onRemove: (sight) {
+            scheduledSights.remove(sight);
+          },
+        ))
+            .toList(),
+        emptyScreen: const _EmptyScreen(
+          iconAssetName: AppAssets.iconVisitedEmpty,
+          description: AppStrings.emptyVisitedDescription,
+        ),
+        onMoveElement: (sourceElement, targetElement) {
+          scheduledSights.move(sourceElement, targetElement);
         },
-      )).toList(),
-      emptyScreen: const _EmptyScreen(
-        iconAssetName: AppAssets.iconFavoriteEmpty,
-        description: AppStrings.emptyFavoritesDescription,
+        onRemove: (sight) {
+          scheduledSights.remove(sight);
+        },
       ),
     );
   }
 }
 
-class _VisitedList extends StatefulWidget {
+class _VisitedList extends StatelessWidget {
   const _VisitedList({Key? key}) : super(key: key);
 
   @override
-  State<_VisitedList> createState() => _VisitedListState();
-}
-
-class _VisitedListState extends State<_VisitedList> {
-  final List<Sight> sights = visitedSights;
-
-  @override
   Widget build(BuildContext context) {
-    return SightList(
-      children: sights.map((e) => SightCardInVisitedList(
-        sight: e,
-        onRemove: (sight) {
-          sights.remove(sight);
-          setState(() {});
+    return Consumer<VisitedSights>(
+      builder: (context, visitedSights, child) => SightList(
+        children: visitedSights
+            .toList()
+            .map((sight) => SightCardInVisitedList(
+                  sight,
+                  onRemove: (sight) {
+                    visitedSights.remove(sight);
+                  },
+                ))
+            .toList(),
+        emptyScreen: const _EmptyScreen(
+          iconAssetName: AppAssets.iconVisitedEmpty,
+          description: AppStrings.emptyVisitedDescription,
+        ),
+        onMoveElement: (sourceElement, targetElement) {
+          visitedSights.move(sourceElement, targetElement);
         },
-      )).toList(),
-      emptyScreen: const _EmptyScreen(
-        iconAssetName: AppAssets.iconVisitedEmpty,
-        description: AppStrings.emptyVisitedDescription,
+        onRemove: (sight) {
+          visitedSights.remove(sight);
+        },
       ),
     );
   }

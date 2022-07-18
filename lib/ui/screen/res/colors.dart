@@ -17,5 +17,7 @@ class AppColors {
   static const gradientRightWhite = Color(0xFF4CAF50);
   static const gradientLeftBlack = Color(0xFFFFE769);
   static const gradientRightBlack = Color(0xFF6ADA6F);
+  static const redWhite = Color(0xFFEF4343);
+  static const redBlack = Color(0xFFCF2A2A);
   static const splashColor = Color.fromRGBO(196, 196, 196, 0.5);
 }

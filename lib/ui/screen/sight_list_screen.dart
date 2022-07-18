@@ -54,8 +54,12 @@ class _SightListScreenState extends State<SightListScreen> {
               keyboardType: TextInputType.none,
             ),
           ),
-          body: SightList(
-            children: filter.result.map(SightCardInList.new).toList(),
+          body: Align(
+            alignment: Alignment.topCenter,
+            child: SightList(
+              children: filter.result.map(SightCardInList.new).toList(),
+              editable: false,
+            ),
           ),
           bottomNavigationBar: const AppBottomNavigationBar(),
           resizeToAvoidBottomInset: false,

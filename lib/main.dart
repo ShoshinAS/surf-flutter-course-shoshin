@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:places/mocks.dart';
+import 'package:places/ui/models/favourites_model.dart';
 import 'package:places/ui/models/filter_model.dart';
 import 'package:places/ui/models/search_history_model.dart';
 import 'package:places/ui/models/theme_model.dart';
@@ -19,6 +20,8 @@ void main() {
             Filter(maxDistance: AppValues.maxDistance, sightList: mocks),
       ),
       ChangeNotifierProvider(create: (_) => SearchHistory()),
+      ChangeNotifierProvider(create: (_) => VisitedSights(visitedSights)),
+      ChangeNotifierProvider(create: (_) => ScheduledSights(scheduledSights)),
     ],
     child: const App(),
   ));
