@@ -32,9 +32,7 @@ class ClearTextButton extends StatelessWidget {
           ),
           onPressed: () {
             controller.clear();
-            if (onClear != null) {
-              onClear!();
-            }
+            onClear?.call();
           },
         ),
       ),

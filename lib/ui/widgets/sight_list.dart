@@ -77,17 +77,13 @@ class _EditableListState extends State<_EditableList> {
                         sightCard: sightCard,
                         onDismissed: (direction) {
                           setState(() {
-                            if (widget.onRemove != null) {
-                              widget.onRemove!(sightCard.sight);
-                            }
+                            widget.onRemove?.call(sightCard.sight);
                           });
                         },
                       ),
                       onWillAccept: (sight) => true,
                       onAccept: (sight) {
-                        if (widget.onMoveElement != null) {
-                          widget.onMoveElement!(sight, sightCard.sight);
-                        }
+                        widget.onMoveElement?.call(sight, sightCard.sight);
                       },
                     ),
                     childWhenDragging: const SizedBox.shrink(),
@@ -110,17 +106,15 @@ class _EditableListState extends State<_EditableList> {
           // пользователь мог перетащить карточку в конец списка
           if (isDragging)
             DragTarget<Sight>(
-              builder: (context, candidateData, rejectedData) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Container(
+              builder: (context, candidateData, rejectedData) => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: SizedBox(
                   height: 192,
                 ),
               ),
               onWillAccept: (sight) => true,
               onAccept: (sight) {
-                if (widget.onMoveElement != null) {
-                  widget.onMoveElement!(sight, null);
-                }
+                widget.onMoveElement?.call(sight, null);
               },
             )
           else

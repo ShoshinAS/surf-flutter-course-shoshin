@@ -271,9 +271,7 @@ class _RemoveFromFavorites extends StatelessWidget {
       icon: AppAssets.iconRemove,
       sight: sight,
       onPressed: () {
-        if (onRemove != null) {
-          onRemove!(sight);
-        }
+        onRemove?.call(sight);
       },
     );
   }
