@@ -73,4 +73,13 @@ class AppTypography {
     height: 20 / 16,
     letterSpacing: 0,
   );
+
+  static const styleSuperSmall2 = TextStyle(
+    fontSize: 12,
+    fontFamily: 'Roboto',
+    fontWeight: FontWeight.w500,
+    height: 16 / 12,
+    letterSpacing: 0,
+  );
+
 }

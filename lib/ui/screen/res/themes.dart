@@ -11,6 +11,7 @@ const textTheme = TextTheme(
   titleSmall: AppTypography.styleSmallBold, // 14
   bodyLarge: AppTypography.styleMenu, // 16
   bodyMedium: AppTypography.styleSmall, // 14
+  bodySmall: AppTypography.styleSuperSmall2, // 12,
   labelMedium: AppTypography.styleButton, // 14
   labelSmall: AppTypography.styleSuperSmall, // 12
 );
@@ -39,6 +40,7 @@ final lightTheme = ThemeData(
     outline: AppColors.inactiveBlack,
     tertiary: AppColors.white,
     onTertiary: AppColors.mainWhite,
+    error: AppColors.redWhite,
   ),
   extensions: const <ThemeExtension<dynamic>>[
     CustomColors(
@@ -72,6 +74,7 @@ final darkTheme = ThemeData(
     outline: AppColors.inactiveBlack,
     tertiary: AppColors.mainBlack,
     onTertiary: AppColors.white,
+    error: AppColors.redBlack,
   ),
   extensions: const [
     CustomColors(

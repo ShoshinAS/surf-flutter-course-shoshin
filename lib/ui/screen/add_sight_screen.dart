@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/domain/location.dart';
 import 'package:places/domain/sight.dart';
 import 'package:places/domain/sight_type.dart';
+import 'package:places/mocks.dart';
 import 'package:places/ui/models/filter_model.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
@@ -31,6 +32,8 @@ class _AddSightScreenState extends State<AddSightScreen> {
   final TextEditingController _controllerLatitude = TextEditingController();
   final TextEditingController _controllerLongitude = TextEditingController();
   final TextEditingController _controllerDescription = TextEditingController();
+
+  final List<Image> _images = [];
 
   SightType? _sightType;
 
@@ -61,6 +64,42 @@ class _AddSightScreenState extends State<AddSightScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(
+              height: 24,
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _AddImageButton(
+                    onPressed: () {
+                      setState(() {
+                        final image = Image.network(
+                          MockImages.randomURL(),
+                          height: 72,
+                          width: 72,
+                          fit: BoxFit.cover,
+                        );
+                        _images.add(image);
+                      });
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  Row(
+                    children: _images
+                        .map((e) => _LoadedImage(
+                              image: e,
+                              onRemove: (image) {
+                                setState(() {
+                                  _images.remove(image);
+                                });
+                              },
+                            ))
+                        .toList(),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(
               height: 24,
             ),
@@ -401,6 +440,94 @@ class _CustomCategoryButton extends StatelessWidget {
         const SizedBox(height: 14),
         const Divider(thickness: 0.8, height: 0),
       ],
+    );
+  }
+}
+
+class _AddImageButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _AddImageButton({Key? key, required this.onPressed}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    // return MaterialButton(
+    //   onPressed: onPressed,
+    //   child: SvgPicture.asset(
+    //     AppAssets.iconButtonPlus,
+    //     color: theme.colorScheme.secondary,
+    //   ),
+    //   padding: EdgeInsets.zero,
+    //   minWidth: 0,
+    //   shape: const RoundedRectangleBorder(
+    //     borderRadius: BorderRadius.all(
+    //       Radius.circular(12),
+    //     ),
+    //   ),
+    // );
+
+    return GestureDetector(
+      onTap: onPressed,
+      child: SvgPicture.asset(
+        AppAssets.iconButtonPlus,
+        color: theme.colorScheme.secondary,
+      ),
+    );
+  }
+}
+
+class _LoadedImage extends StatelessWidget {
+  final Image image;
+  final ValueChanged<Image> onRemove;
+
+  const _LoadedImage({Key? key, required this.image, required this.onRemove})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Dismissible(
+      direction: DismissDirection.up,
+      key: ValueKey(image),
+      onDismissed: (_) {
+        onRemove(image);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Stack(
+          children: [
+            ClipRRect(
+              child: image,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Material(
+                color: Colors.transparent,
+                child: IconButton(
+                  onPressed: () {
+                    onRemove(image);
+                  },
+                  icon: SvgPicture.asset(
+                    AppAssets.iconClear,
+                    color: theme.colorScheme.tertiary,
+                  ),
+                  padding: const EdgeInsets.all(6),
+                  constraints: const BoxConstraints(
+                    minWidth: 20,
+                    minHeight: 20,
+                  ),
+                  splashRadius: 16,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

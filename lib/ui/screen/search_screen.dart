@@ -375,9 +375,7 @@ class _SearchResult extends StatelessWidget {
                     left: Radius.circular(12),
                   ),
                   onTap: () {
-                    if (onTap != null) {
-                      onTap!(sight);
-                    }
+                    onTap?.call(sight);
                   },
                 ),
               ),
