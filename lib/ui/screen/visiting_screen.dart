@@ -6,7 +6,7 @@ import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/bottom_navigation_bar.dart';
 import 'package:places/ui/widgets/sight_card.dart';
-import 'package:places/ui/widgets/sight_list.dart';
+import 'package:places/ui/widgets/sight_list_draggable.dart';
 import 'package:provider/provider.dart';
 
 // виджет отображает экран Хочу посетить / Интересные места
@@ -142,21 +142,22 @@ class _CustomTabBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
+// Виджет, реализующий список мест, запланированных к посещению
 class _ScheduledList extends StatelessWidget {
   const _ScheduledList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ScheduledSights>(
-      builder: (context, scheduledSights, child) => SightList(
+      builder: (context, scheduledSights, child) => SightListDraggable(
         children: scheduledSights
             .toList()
             .map((sight) => SightCardInScheduledList(
-          sight,
-          onRemove: (sight) {
-            scheduledSights.remove(sight);
-          },
-        ))
+                  sight,
+                  onRemove: (sight) {
+                    scheduledSights.remove(sight);
+                  },
+                ))
             .toList(),
         emptyScreen: const _EmptyScreen(
           iconAssetName: AppAssets.iconVisitedEmpty,
@@ -173,13 +174,14 @@ class _ScheduledList extends StatelessWidget {
   }
 }
 
+// Виджет, реализующий список посещенных мест
 class _VisitedList extends StatelessWidget {
   const _VisitedList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Consumer<VisitedSights>(
-      builder: (context, visitedSights, child) => SightList(
+      builder: (context, visitedSights, child) => SightListDraggable(
         children: visitedSights
             .toList()
             .map((sight) => SightCardInVisitedList(

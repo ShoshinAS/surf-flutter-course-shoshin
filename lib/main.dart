@@ -38,8 +38,8 @@ class App extends StatelessWidget {
           theme: model.darkTheme ? darkTheme : lightTheme,
           //theme: darkTheme,
           title: AppStrings.appTitle,
-          //home: const SightListScreen(),
-          home: const VisitingScreen(),
+          home: const SightListScreen(),
+          //home: const VisitingScreen(),
         );
       },
     );

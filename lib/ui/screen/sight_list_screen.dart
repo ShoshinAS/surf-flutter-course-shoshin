@@ -58,7 +58,6 @@ class _SightListScreenState extends State<SightListScreen> {
             alignment: Alignment.topCenter,
             child: SightList(
               children: filter.result.map(SightCardInList.new).toList(),
-              editable: false,
             ),
           ),
           bottomNavigationBar: const AppBottomNavigationBar(),
