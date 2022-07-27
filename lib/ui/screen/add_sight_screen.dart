@@ -184,7 +184,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
                     double.parse(_controllerLatitude.text),
                     double.parse(_controllerLongitude.text),
                   ),
-                  url: '',
+                  imageURLs: [],
                   details: _controllerDescription.text,
                   type: _sightType!,
                 );
