@@ -10,6 +10,7 @@ import 'package:places/ui/screen/sight_details_screen.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/clear_text_button.dart';
 import 'package:places/ui/widgets/empty_state.dart';
+import 'package:places/ui/widgets/network_image.dart';
 import 'package:places/ui/widgets/search_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -406,31 +407,10 @@ class _SearchResultImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: Image.network(
+      child: CustomImage(
         url,
-        fit: BoxFit.cover,
         width: 56,
         height: 56,
-        errorBuilder: (context, exception, tackTrace) {
-          return ColoredBox(
-            color: Theme.of(context).colorScheme.outline,
-            child: const SizedBox(height: 56, width: 56),
-          );
-        },
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) {
-            return child;
-          }
-
-          return Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
-                  : null,
-            ),
-          );
-        },
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/big_button.dart';
+import 'package:places/ui/widgets/network_image.dart';
 
 // Виджет отображает детальную информацию об интересном месте
 // для отображения на отдельном экране
@@ -195,30 +196,10 @@ class _SightImage extends StatelessWidget {
     return Expanded(
       child: Stack(
         children: [
-          Image.network(
+          CustomImage(
             sight.url,
-            fit: BoxFit.cover,
             height: 360,
-            errorBuilder: (context, exception, tackTrace) {
-              return ColoredBox(
-                color: Theme.of(context).colorScheme.outline,
-                child: const SizedBox.expand(),
-              );
-            },
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) {
-                return child;
-              }
-
-              return Center(
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                      : null,
-                ),
-              );
-            },
+            width: double.infinity,
           ),
           const Positioned(
             child: ReturnButton(),

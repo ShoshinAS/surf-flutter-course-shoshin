@@ -5,6 +5,7 @@ import 'package:places/mocks.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/colors.dart';
 import 'package:places/ui/screen/sight_details_screen.dart';
+import 'package:places/ui/widgets/network_image.dart';
 
 // Виджет реализует абстрактный класс для отображения карточки интересного места в списке
 abstract class SightCard extends StatelessWidget {
@@ -35,7 +36,10 @@ abstract class SightCard extends StatelessWidget {
                 Column(
                   children: [
                     Expanded(
-                      child: _SightCardImage(sight: sight),
+                      child: CustomImage(
+                        sight.url,
+                        width: double.infinity,
+                      ),
                     ),
                     Expanded(
                       child: _SightCardDescription(
@@ -379,45 +383,6 @@ class _SightCardType extends StatelessWidget {
       ),
       top: 16,
       left: 16,
-    );
-  }
-}
-
-// Виджет отображает картинку интересного места в списке
-class _SightCardImage extends StatelessWidget {
-  final Sight sight;
-
-  const _SightCardImage({
-    Key? key,
-    required this.sight,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Theme.of(context).colorScheme.outline,
-      child: Image.network(
-        sight.url,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        errorBuilder: (context, exception, tackTrace) {
-          return const SizedBox.shrink();
-        },
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) {
-            return child;
-          }
-
-          return Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
-                  : null,
-            ),
-          );
-        },
-      ),
     );
   }
 }

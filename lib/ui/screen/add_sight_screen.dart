@@ -12,6 +12,7 @@ import 'package:places/ui/screen/select_category_screen.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/big_button.dart';
 import 'package:places/ui/widgets/clear_text_button.dart';
+import 'package:places/ui/widgets/network_image.dart';
 import 'package:provider/provider.dart';
 
 // экран добавления интересного места в список
@@ -33,7 +34,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
   final TextEditingController _controllerLongitude = TextEditingController();
   final TextEditingController _controllerDescription = TextEditingController();
 
-  final List<Image> _images = [];
+  final List<Widget> _images = [];
 
   SightType? _sightType;
 
@@ -67,38 +68,18 @@ class _AddSightScreenState extends State<AddSightScreen> {
             const SizedBox(
               height: 24,
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _AddImageButton(
-                    onPressed: () {
-                      setState(() {
-                        final image = Image.network(
-                          MockImages.randomURL(),
-                          height: 72,
-                          width: 72,
-                          fit: BoxFit.cover,
-                        );
-                        _images.add(image);
-                      });
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  Row(
-                    children: _images
-                        .map((e) => _LoadedImage(
-                              image: e,
-                              onRemove: (image) {
-                                setState(() {
-                                  _images.remove(image);
-                                });
-                              },
-                            ))
-                        .toList(),
-                  ),
-                ],
-              ),
+            _LoadedImages(
+              images: _images,
+              onAdd: (image) {
+                setState(() {
+                  _images.add(image);
+                });
+              },
+              onRemove: (image) {
+                setState(() {
+                  _images.remove(image);
+                });
+              },
             ),
             const SizedBox(
               height: 24,
@@ -444,6 +425,48 @@ class _CustomCategoryButton extends StatelessWidget {
   }
 }
 
+// Виджет, реализующий горизонтальный список из кнопки добавления изображений
+// и картинок уже добавленных изображений
+class _LoadedImages extends StatelessWidget {
+  final List<Widget> images;
+  final ValueChanged<Widget> onAdd;
+  final ValueChanged<Widget> onRemove;
+
+  const _LoadedImages({
+    Key? key,
+    required this.images,
+    required this.onAdd,
+    required this.onRemove,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 72,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: images.length + 1,
+        itemBuilder: (context, index) => (index == 0)
+            ? _AddImageButton(
+                onPressed: () {
+                  final image = CustomImage(
+                    MockImages.randomURL(),
+                    height: 72,
+                    width: 72,
+                  );
+                  onAdd(image);
+                },
+              )
+            : _LoadedImage(
+                image: images[index - 1],
+                onRemove: onRemove,
+              ),
+      ),
+    );
+  }
+}
+
+// кнопка добавления изображения
 class _AddImageButton extends StatelessWidget {
   final VoidCallback onPressed;
 
@@ -468,19 +491,24 @@ class _AddImageButton extends StatelessWidget {
     //   ),
     // );
 
-    return GestureDetector(
-      onTap: onPressed,
-      child: SvgPicture.asset(
-        AppAssets.iconButtonPlus,
-        color: theme.colorScheme.secondary,
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: GestureDetector(
+        onTap: onPressed,
+        child: SvgPicture.asset(
+          height: 72,
+          AppAssets.iconButtonPlus,
+          color: theme.colorScheme.secondary,
+        ),
       ),
     );
   }
 }
 
+// добавленное изображение
 class _LoadedImage extends StatelessWidget {
-  final Image image;
-  final ValueChanged<Image> onRemove;
+  final Widget image;
+  final ValueChanged<Widget> onRemove;
 
   const _LoadedImage({Key? key, required this.image, required this.onRemove})
       : super(key: key);
