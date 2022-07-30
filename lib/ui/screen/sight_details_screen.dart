@@ -23,7 +23,7 @@ class SightDetailsScreen extends StatelessWidget {
       backgroundColor: theme.colorScheme.background,
       body: Column(
         children: [
-          _SightImage(sight: sight),
+          _SightImages(sight: sight),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
@@ -43,9 +43,10 @@ class SightDetailsScreen extends StatelessWidget {
                 _SightDescription(sight: sight),
                 const SizedBox(height: 24),
                 BigButton(
-                    title: AppStrings.route,
-                    icon: AppAssets.iconGo,
-                    onPressed: () => debugPrint('Нажата кнопка "Построить маршрут"'),
+                  title: AppStrings.route,
+                  icon: AppAssets.iconGo,
+                  onPressed: () =>
+                      debugPrint('Нажата кнопка "Построить маршрут"'),
                 ),
                 const SizedBox(height: 24),
                 const Divider(),
@@ -77,8 +78,8 @@ class _SightDescription extends StatelessWidget {
     return Text(
       sight.details,
       style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onBackground,
-          ),
+        color: theme.colorScheme.onBackground,
+      ),
       overflow: TextOverflow.clip,
     );
   }
@@ -97,8 +98,8 @@ class _SightOpeningHours extends StatelessWidget {
     return Text(
       MockStrings.openingHours,
       style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
     );
   }
 }
@@ -119,8 +120,8 @@ class _SightDetailsType extends StatelessWidget {
     return Text(
       sight.type.toString(),
       style: theme.textTheme.titleSmall?.copyWith(
-            color: theme.colorScheme.onSurface,
-          ),
+        color: theme.colorScheme.onSurface,
+      ),
     );
   }
 }
@@ -183,30 +184,96 @@ class _BottomPanel extends StatelessWidget {
 
 // Виджет отображает изображение интересного места
 // с кнопкой возврата на предыдущий экран
-class _SightImage extends StatelessWidget {
+class _SightImages extends StatefulWidget {
   final Sight sight;
 
-  const _SightImage({
+  const _SightImages({
     Key? key,
     required this.sight,
   }) : super(key: key);
+
+  @override
+  State<_SightImages> createState() => _SightImagesState();
+}
+
+class _SightImagesState extends State<_SightImages> {
+  int _currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Stack(
         children: [
-          CustomImage(
-            sight.url,
-            height: 360,
-            width: double.infinity,
+          PageView.builder(
+            itemCount: widget.sight.imageURLs.length,
+            itemBuilder: (context, index) => CustomImage(
+              widget.sight.imageURLs[index],
+              height: 360,
+              width: double.infinity,
+            ),
+            onPageChanged: (page) {
+              setState(() {
+                _currentPage = page;
+              });
+            },
           ),
           const Positioned(
             child: ReturnButton(),
             left: 16,
             top: 36,
           ),
+          Positioned(
+            bottom: 0,
+            child: _CustomIndicator(
+              length: widget.sight.imageURLs.length,
+              currentPage: _currentPage,
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+// Виджет реализует индикатор перелистывания PageView с галереей фото
+class _CustomIndicator extends StatelessWidget {
+  final int length;
+  final int currentPage;
+
+  const _CustomIndicator({
+    Key? key,
+    required this.length,
+    required this.currentPage,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onTertiary;
+
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: Row(
+        children: List<Expanded>.generate(
+          length,
+          (index) => Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.horizontal(
+                  left: (index == 0)
+                      ? Radius.zero
+                      : const Radius.circular(8),
+                  right: (index == length - 1)
+                      ? Radius.zero
+                      : const Radius.circular(8),
+                ),
+                color: (index == currentPage)
+                    ? color
+                    : Colors.transparent,
+              ),
+              height: 7.57,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -230,9 +297,8 @@ class _BottomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = active
-        ? theme.colorScheme.onBackground
-        : theme.colorScheme.outline;
+    final color =
+        active ? theme.colorScheme.onBackground : theme.colorScheme.outline;
 
     return Expanded(
       child: ElevatedButton.icon(

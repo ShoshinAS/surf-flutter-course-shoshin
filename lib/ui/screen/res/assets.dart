@@ -29,4 +29,7 @@ class AppAssets {
   static const iconView = 'res/icons/view.svg';
   static const iconButtonPlus = 'res/icons/button_plus.svg';
   static const iconBucket = 'res/icons/bucket.svg';
+  static const iconOnboardingWelcome = 'res/icons/onboarding_welcome.svg';
+  static const iconOnboardingRoute = 'res/icons/onboarding_route.svg';
+  static const iconOnboardingAddSights = 'res/icons/onboarding_add_sights.svg';
 }

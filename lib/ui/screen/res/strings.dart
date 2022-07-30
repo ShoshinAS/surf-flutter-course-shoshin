@@ -46,5 +46,12 @@ class AppStrings {
   static const youSearched = 'ВЫ ИСКАЛИ';
   static const clearHistory = 'Очистить историю';
   static const delete = 'Удалить';
+  static const skip = 'Пропустить';
+  static const onboardingWelcomeTitle = 'Добро пожаловать\nв Путеводитель';
+  static const onboardingWelcomeSubtitle = 'Ищи новые локации и сохраняй\nсамые любимые. ';
+  static const onboardingRouteTitle = 'Построй маршрут\nи отправляйся в путь';
+  static const onboardingRouteSubtitle = 'Достигай цели максимально\nбыстро и комфортно.';
+  static const onboardingAddSightsTitle = 'Добавляй места,\nкоторые нашёл сам';
+  static const onboardingAddSightsSubtitle = 'Делись самыми интересными\nи помоги нам стать лучше!';
 }
 

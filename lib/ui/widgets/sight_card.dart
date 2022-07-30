@@ -37,7 +37,7 @@ abstract class SightCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: CustomImage(
-                        sight.url,
+                        sight.coverURL,
                         width: double.infinity,
                       ),
                     ),

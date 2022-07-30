@@ -75,10 +75,16 @@ class _SearchScreenState extends State<SearchScreen> {
       _resizeToAvoidBottomInset = true;
     } else if (_search.status == SearchStatus.finished) {
       if (_search.result.isEmpty) {
-        content = const EmptyState(
-          icon: AppAssets.iconSearch,
-          titleText: AppStrings.nothingFound,
-          subtitleText: AppStrings.tryToChangeSearchParameters,
+        content = Expanded(
+          child: EmptyState(
+            icon: AppAssets.iconSearch,
+            titleText: AppStrings.nothingFound,
+            subtitleText: AppStrings.tryToChangeSearchParameters,
+            titleColor: theme.colorScheme.outline,
+            subtitleColor: theme.colorScheme.outline,
+            iconHeight: 64,
+            iconWidth: 64,
+          ),
         );
         _resizeToAvoidBottomInset = true;
       } else {
@@ -97,10 +103,16 @@ class _SearchScreenState extends State<SearchScreen> {
         _resizeToAvoidBottomInset = false;
       }
     } else {
-      content = const EmptyState(
-        icon: AppAssets.iconDelete,
-        titleText: AppStrings.error,
-        subtitleText: AppStrings.somethingWentWrong,
+      content = Expanded(
+        child: EmptyState(
+          icon: AppAssets.iconDelete,
+          titleText: AppStrings.error,
+          subtitleText: AppStrings.somethingWentWrong,
+          titleColor: theme.colorScheme.outline,
+          subtitleColor: theme.colorScheme.outline,
+          iconHeight: 64,
+          iconWidth: 64,
+        ),
       );
       _resizeToAvoidBottomInset = true;
     }
@@ -344,7 +356,7 @@ class _SearchResult extends StatelessWidget {
           children: [
             Row(
               children: [
-                _SearchResultImage(url: sight.url),
+                _SearchResultImage(url: sight.coverURL),
                 const SizedBox(width: 16),
                 Flexible(
                   child: Column(

@@ -4,6 +4,7 @@ import 'package:places/ui/models/favourites_model.dart';
 import 'package:places/ui/models/filter_model.dart';
 import 'package:places/ui/models/search_history_model.dart';
 import 'package:places/ui/models/theme_model.dart';
+import 'package:places/ui/screen/onboarding_screen.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/screen/res/themes.dart';
 import 'package:places/ui/screen/res/values.dart';
@@ -40,6 +41,7 @@ class App extends StatelessWidget {
           title: AppStrings.appTitle,
           home: const SightListScreen(),
           //home: const VisitingScreen(),
+          //home: const OnboardingScreen(),
         );
       },
     );
