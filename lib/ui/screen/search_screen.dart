@@ -126,6 +126,11 @@ class _SearchScreenState extends State<SearchScreen> {
           color: theme.colorScheme.onBackground,
         ),
         bottom: SearchBar(
+          height: 52,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 6,
+          ),
           autofocus: true,
           suffixIcon: ClearTextButton(
             controller: _controller,

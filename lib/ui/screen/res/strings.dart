@@ -1,7 +1,7 @@
 /// Строковые константы приложения
 class AppStrings {
   static const appTitle = 'Интересные места';
-  static const appBarTitle = 'Список интересных мест';
+  static const appBarTitle = 'Список интересных\u{00A0}мест';
   static const route = 'ПОСТРОИТЬ МАРШРУТ';
   static const plan = 'Запланировать';
   static const toFavourites = 'В Избранное';

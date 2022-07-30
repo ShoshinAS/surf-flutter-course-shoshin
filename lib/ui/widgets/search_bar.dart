@@ -14,13 +14,14 @@ class SearchBar extends StatelessWidget implements PreferredSizeWidget {
   final bool autofocus;
   final FocusNode? focusNode;
   final TextEditingController? controller;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Size get preferredSize => Size.fromHeight(height);
 
   const SearchBar(
       {Key? key,
-      this.height = 52,
+      required this.height,
       this.suffixIcon,
       this.onTap,
       this.keyboardType,
@@ -29,6 +30,7 @@ class SearchBar extends StatelessWidget implements PreferredSizeWidget {
       this.onSubmitted,
       this.onChanged,
       this.controller,
+      this.padding,
       })
       : super(key: key);
 
@@ -41,11 +43,8 @@ class SearchBar extends StatelessWidget implements PreferredSizeWidget {
     );
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 6,
-        horizontal: 16,
-      ),
-      height: 52,
+      padding: padding,
+      height: height,
       child: TextField(
         decoration: InputDecoration(
           filled: true,
