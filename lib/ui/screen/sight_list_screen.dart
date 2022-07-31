@@ -7,7 +7,6 @@ import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/screen/res/themes.dart';
 import 'package:places/ui/screen/search_screen.dart';
-import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/bottom_navigation_bar.dart';
 import 'package:places/ui/widgets/search_bar.dart';
 import 'package:places/ui/widgets/sight_card.dart';
@@ -33,32 +32,54 @@ class _SightListScreenState extends State<SightListScreen> {
       builder: (context, filter, child) {
         return Scaffold(
           backgroundColor: theme.colorScheme.background,
-          appBar: CustomAppBar(
-            title: AppStrings.appBarTitle,
-            height: 108,
-            titleTextStyle: theme.textTheme.headlineSmall?.copyWith(
-              color: theme.colorScheme.onBackground,
-            ),
-            bottom: SearchBar(
-              suffixIcon: _FilterButton(filter: filter),
-              focusNode: _searchBarFocusNode,
-              onTap: () {
-                Navigator.of(context).push<MaterialPageRoute>(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        SearchScreen(sightList: filter.result),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: CustomScrollView(slivers: [
+              SliverAppBar(
+                backgroundColor: theme.colorScheme.background,
+                collapsedHeight: 56,
+                expandedHeight: 128,
+                pinned: true,
+                elevation: 0,
+                flexibleSpace: FlexibleSpaceBar(
+                  title: Text(
+                    AppStrings.appBarTitle,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      color: theme.colorScheme.onBackground,
+                    ),
                   ),
-                );
-                _searchBarFocusNode.unfocus();
-              },
-              keyboardType: TextInputType.none,
-            ),
-          ),
-          body: Align(
-            alignment: Alignment.topCenter,
-            child: SightList(
-              children: filter.result.map(SightCardInList.new).toList(),
-            ),
+                  expandedTitleScale: 1.8,
+                  centerTitle: true,
+                  titlePadding: const EdgeInsets.only(bottom: 16),
+                ),
+              ),
+              SliverList(
+                delegate: SliverChildListDelegate([
+                  const SizedBox(height: 8),
+                  SearchBar(
+                    height: 52,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                    ),
+                    suffixIcon: _FilterButton(filter: filter),
+                    focusNode: _searchBarFocusNode,
+                    onTap: () {
+                      Navigator.of(context).push<MaterialPageRoute>(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SearchScreen(sightList: filter.result),
+                        ),
+                      );
+                      _searchBarFocusNode.unfocus();
+                    },
+                    keyboardType: TextInputType.none,
+                  ),
+                ]),
+              ),
+              SightList(
+                children: filter.result.map(SightCardInList.new).toList(),
+              ),
+            ]),
           ),
           bottomNavigationBar: const AppBottomNavigationBar(),
           resizeToAvoidBottomInset: false,
@@ -71,6 +92,7 @@ class _SightListScreenState extends State<SightListScreen> {
   }
 }
 
+// кнопка перехода к экрану фильтрации
 class _FilterButton extends StatelessWidget {
   final Filter filter;
 
@@ -99,6 +121,7 @@ class _FilterButton extends StatelessWidget {
   }
 }
 
+// кнопка создания нового интересного места
 class _NewSightButton extends StatelessWidget {
   const _NewSightButton({Key? key}) : super(key: key);
 

@@ -21,43 +21,51 @@ class SightDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
-      body: Column(
-        children: [
-          _SightImages(sight: sight),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 24),
-                _SightDetailsName(sight: sight),
-                const SizedBox(height: 2),
-                Row(
+      body: CustomScrollView(
+        slivers: [
+          _SightImagesBar(sight: sight),
+          SliverList(
+            delegate: SliverChildListDelegate([
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SightDetailsType(sight: sight),
-                    const SizedBox(width: 16),
-                    const _SightOpeningHours(),
+                    const SizedBox(height: 24),
+                    _SightDetailsName(sight: sight),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        _SightDetailsType(sight: sight),
+                        const SizedBox(width: 16),
+                        const _SightOpeningHours(),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    _SightDescription(sight: sight),
+                    const SizedBox(height: 24),
+                    BigButton(
+                      title: AppStrings.route,
+                      icon: AppAssets.iconGo,
+                      onPressed: () =>
+                          debugPrint('Нажата кнопка "Построить маршрут"'),
+                    ),
+                    const SizedBox(height: 24),
+                    Divider(
+                      height: 0,
+                      thickness: 0.8,
+                      color: theme.colorScheme.outline,
+                    ),
+                    const SizedBox(height: 8),
+                    const _BottomPanel(),
+                    const SizedBox(height: 8),
                   ],
                 ),
-                const SizedBox(height: 24),
-                _SightDescription(sight: sight),
-                const SizedBox(height: 24),
-                BigButton(
-                  title: AppStrings.route,
-                  icon: AppAssets.iconGo,
-                  onPressed: () =>
-                      debugPrint('Нажата кнопка "Построить маршрут"'),
-                ),
-                const SizedBox(height: 24),
-                const Divider(),
-              ],
-            ),
+              ),
+            ]),
           ),
-          const _BottomPanel(),
         ],
-        crossAxisAlignment: CrossAxisAlignment.start,
       ),
-      resizeToAvoidBottomInset: false,
     );
   }
 }
@@ -154,13 +162,7 @@ class _BottomPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 8,
-        bottom: 8,
-      ),
+    return Align(
       alignment: Alignment.bottomCenter,
       child: Row(
         children: [
@@ -182,63 +184,67 @@ class _BottomPanel extends StatelessWidget {
   }
 }
 
-// Виджет отображает изображение интересного места
-// с кнопкой возврата на предыдущий экран
-class _SightImages extends StatefulWidget {
+// Виджет отображает карусель изображений интересного места
+// с кнопкой возврата на предыдущий экран.
+// При сроллинге экрана изображения уменьшаются в размерах
+class _SightImagesBar extends StatefulWidget {
   final Sight sight;
 
-  const _SightImages({
+  const _SightImagesBar({
     Key? key,
     required this.sight,
   }) : super(key: key);
 
   @override
-  State<_SightImages> createState() => _SightImagesState();
+  State<_SightImagesBar> createState() => _SightImagesBarState();
 }
 
-class _SightImagesState extends State<_SightImages> {
+class _SightImagesBarState extends State<_SightImagesBar> {
   int _currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Stack(
-        children: [
-          PageView.builder(
-            itemCount: widget.sight.imageURLs.length,
-            itemBuilder: (context, index) => CustomImage(
-              widget.sight.imageURLs[index],
-              height: 360,
-              width: double.infinity,
-            ),
-            onPageChanged: (page) {
-              setState(() {
-                _currentPage = page;
-              });
-            },
+    final theme = Theme.of(context);
+
+    return SliverAppBar(
+      leading: const UnconstrainedBox(
+        child: ReturnButton(),
+      ),
+      expandedHeight: 360,
+      backgroundColor: theme.colorScheme.outline,
+      flexibleSpace: FlexibleSpaceBar(
+        background: PageView.builder(
+          itemCount: widget.sight.imageURLs.length,
+          itemBuilder: (context, index) => CustomImage(
+            widget.sight.imageURLs[index],
           ),
-          const Positioned(
-            child: ReturnButton(),
-            left: 16,
-            top: 36,
-          ),
-          Positioned(
-            bottom: 0,
-            child: _CustomIndicator(
-              length: widget.sight.imageURLs.length,
-              currentPage: _currentPage,
-            ),
-          ),
-        ],
+          onPageChanged: (page) {
+            setState(() {
+              _currentPage = page;
+            });
+          },
+        ),
+      ),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(10),
+        child: _CustomIndicator(
+          length: widget.sight.imageURLs.length,
+          currentPage: _currentPage,
+        ),
       ),
     );
   }
 }
 
 // Виджет реализует индикатор перелистывания PageView с галереей фото
-class _CustomIndicator extends StatelessWidget {
+class _CustomIndicator extends StatelessWidget implements PreferredSizeWidget {
+  static const double _height = 7.57;
+
   final int length;
   final int currentPage;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(_height);
 
   const _CustomIndicator({
     Key? key,
@@ -259,18 +265,14 @@ class _CustomIndicator extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.horizontal(
-                  left: (index == 0)
-                      ? Radius.zero
-                      : const Radius.circular(8),
+                  left: (index == 0) ? Radius.zero : const Radius.circular(8),
                   right: (index == length - 1)
                       ? Radius.zero
                       : const Radius.circular(8),
                 ),
-                color: (index == currentPage)
-                    ? color
-                    : Colors.transparent,
+                color: (index == currentPage) ? color : Colors.transparent,
               ),
-              height: 7.57,
+              height: _height,
             ),
           ),
         ),

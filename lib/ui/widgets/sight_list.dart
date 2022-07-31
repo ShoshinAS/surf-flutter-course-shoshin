@@ -15,11 +15,11 @@ class SightList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return children.isNotEmpty
-        ? ListView.builder(
-            itemBuilder: (context, index) =>
-                _CardInList(sightCard: children[index]),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: children.length,
+        ? SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => _CardInList(sightCard: children[index]),
+              childCount: children.length,
+            ),
           )
         : emptyScreen;
   }
