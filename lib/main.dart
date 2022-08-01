@@ -9,6 +9,7 @@ import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/screen/res/themes.dart';
 import 'package:places/ui/screen/res/values.dart';
 import 'package:places/ui/screen/sight_list_screen.dart';
+import 'package:places/ui/screen/splash_screen.dart';
 import 'package:places/ui/screen/visiting_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -39,7 +40,8 @@ class App extends StatelessWidget {
           theme: model.darkTheme ? darkTheme : lightTheme,
           //theme: darkTheme,
           title: AppStrings.appTitle,
-          home: const SightListScreen(),
+          //home: const SightListScreen(),
+          home: const SplashScreen(),
           //home: const VisitingScreen(),
           //home: const OnboardingScreen(),
         );

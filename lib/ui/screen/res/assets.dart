@@ -32,4 +32,5 @@ class AppAssets {
   static const iconOnboardingWelcome = 'res/icons/onboarding_welcome.svg';
   static const iconOnboardingRoute = 'res/icons/onboarding_route.svg';
   static const iconOnboardingAddSights = 'res/icons/onboarding_add_sights.svg';
+  static const appIcon = 'res/icons/appIcon.svg';
 }
