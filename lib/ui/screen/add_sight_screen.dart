@@ -179,6 +179,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
                   _controllerDescription.text.isNotEmpty,
               onPressed: () {
                 final newSight = Sight(
+                  id: '99',
                   name: _controllerName.text,
                   location: Location(
                     double.parse(_controllerLatitude.text),

@@ -4,7 +4,6 @@ import 'package:places/domain/sight.dart';
 import 'package:places/mocks.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/colors.dart';
-import 'package:places/ui/screen/sight_details_screen.dart';
 import 'package:places/ui/widgets/network_image.dart';
 
 // Виджет реализует абстрактный класс для отображения карточки интересного места в списке
@@ -55,11 +54,8 @@ abstract class SightCard extends StatelessWidget {
                     color: AppColors.transparent,
                     child: InkWell(
                       onTap: () {
-                        Navigator.of(context).push<MaterialPageRoute>(
-                          MaterialPageRoute(
-                            builder: (context) => SightDetailsScreen(sight),
-                          ),
-                        );
+                        Navigator.of(context)
+                            .pushNamed('/details', arguments: sight.id);
                       },
                     ),
                   ),
@@ -111,7 +107,6 @@ class SightCardInVisitedList extends SightCard {
     Sight sight, {
     Key? key,
     ValueChanged<Sight>? onRemove,
-
   }) : super(
           sight,
           key: key,

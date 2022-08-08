@@ -14,10 +14,15 @@ class Search {
 
   SearchStatus? _status;
 
-  Search({required List<Sight> sightList})
-      : _sightList = sightList,
+  Search()
+      : _sightList = [],
         _result = [],
         _words = [];
+
+  void initialize(List<Sight> sightList) {
+    _sightList..clear()
+    ..addAll(sightList);
+  }
 
   Future<void> find(
       String query,

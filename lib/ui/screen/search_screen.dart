@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/domain/sight.dart';
 import 'package:places/search.dart';
+import 'package:places/ui/models/filter_model.dart';
 import 'package:places/ui/models/search_history_model.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/colors.dart';
 import 'package:places/ui/screen/res/strings.dart';
-import 'package:places/ui/screen/sight_details_screen.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/clear_text_button.dart';
 import 'package:places/ui/widgets/empty_state.dart';
@@ -16,8 +16,7 @@ import 'package:provider/provider.dart';
 
 // экран поиска интересных мест
 class SearchScreen extends StatefulWidget {
-  final List<Sight> sightList;
-  const SearchScreen({Key? key, required this.sightList}) : super(key: key);
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -26,21 +25,15 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final _focusNode = FocusNode();
   final _controller = TextEditingController();
-
-  late final Search _search;
+  final Search _search = Search();
 
   bool _resizeToAvoidBottomInset = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _search = Search(sightList: widget.sightList);
-  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final searchHistory = Provider.of<SearchHistory>(context);
+    _search.initialize(Provider.of<Filter>(context).sightList);
 
     final Widget content;
 
@@ -66,7 +59,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 });
                 searchHistory.add(query);
                 setState(() {});
-              },);
+              },
+            );
       _resizeToAvoidBottomInset = false;
     } else if (_search.status == SearchStatus.inProgress) {
       content = const Expanded(
@@ -92,11 +86,7 @@ class _SearchScreenState extends State<SearchScreen> {
           searchWords: _search.words,
           searchResults: _search.result,
           onTap: (sight) {
-            Navigator.of(context).push<MaterialPageRoute>(
-              MaterialPageRoute(
-                builder: (context) => SightDetailsScreen(sight),
-              ),
-            );
+            Navigator.of(context).pushNamed('/details', arguments: sight.id);
             searchHistory.add(_controller.text);
           },
         );
@@ -211,14 +201,14 @@ class _SearchHistory extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Column(
-          children: queries
-              .map((e) => _SearchQuery(
-                    query: e,
-                    onDelete: onDelete,
-                    onTap: onTap,
-                  ))
-              .toList(),
+        ListView.builder(
+            shrinkWrap: true,
+            itemCount: queries.length,
+            itemBuilder: (context, index) => _SearchQuery(
+                  query: queries[index],
+                  onDelete: onDelete,
+                  onTap: onTap,
+                ),
         ),
         TextButton(
           onPressed: onClear,
@@ -317,16 +307,17 @@ class _SearchResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: searchResults
-          .map(
-            (e) => _SearchResult(
-              searchWords: searchWords,
-              sight: e,
-              onTap: onTap,
-            ),
-          )
-          .toList(),
+    return Expanded(
+      child: ListView.builder(
+        itemCount: searchResults.length,
+        itemBuilder: (context, index) {
+          return _SearchResult(
+            searchWords: searchWords,
+            sight: searchResults[index],
+            onTap: onTap,
+          );
+        },
+      ),
     );
   }
 }
