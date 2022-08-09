@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:places/ui/models/theme_model.dart';
+import 'package:places/ui/screen/onboarding_screen.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/app_bar.dart';
@@ -24,8 +25,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: CustomAppBar(
         title: AppStrings.settings,
         titleTextStyle: theme.textTheme.headlineSmall?.copyWith(
-              color: theme.colorScheme.onBackground,
-            ),
+          color: theme.colorScheme.onBackground,
+        ),
         height: 56,
       ),
       body: Padding(
@@ -64,14 +65,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   elevation: MaterialStateProperty.all(0),
                 ),
                 onPressed: () {
-                  debugPrint('Нажата кнопка "Смотреть туториал"');
+                  Navigator.of(context).pushNamed(
+                    '/onboarding',
+                    arguments: OnboardingSettings(startedByUser: true),
+                  );
                 },
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: const AppBottomNavigationBar(),
+      bottomNavigationBar: const AppBottomNavigationBar(index: 3),
     );
   }
 }

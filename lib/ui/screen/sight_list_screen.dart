@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/ui/models/filter_model.dart';
-import 'package:places/ui/screen/add_sight_screen.dart';
-import 'package:places/ui/screen/filters_screen.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/screen/res/themes.dart';
-import 'package:places/ui/screen/search_screen.dart';
 import 'package:places/ui/widgets/bottom_navigation_bar.dart';
 import 'package:places/ui/widgets/search_bar.dart';
 import 'package:places/ui/widgets/sight_card.dart';
@@ -64,12 +61,7 @@ class _SightListScreenState extends State<SightListScreen> {
                     suffixIcon: _FilterButton(filter: filter),
                     focusNode: _searchBarFocusNode,
                     onTap: () {
-                      Navigator.of(context).push<MaterialPageRoute>(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              SearchScreen(sightList: filter.result),
-                        ),
-                      );
+                      Navigator.of(context).pushNamed('/search');
                       _searchBarFocusNode.unfocus();
                     },
                     keyboardType: TextInputType.none,
@@ -81,7 +73,7 @@ class _SightListScreenState extends State<SightListScreen> {
               ),
             ]),
           ),
-          bottomNavigationBar: const AppBottomNavigationBar(),
+          bottomNavigationBar: const AppBottomNavigationBar(index: 0,),
           resizeToAvoidBottomInset: false,
           floatingActionButton: const _NewSightButton(),
           floatingActionButtonLocation:
@@ -109,11 +101,7 @@ class _FilterButton extends StatelessWidget {
         ),
         icon: SvgPicture.asset(AppAssets.iconFilter),
         onPressed: () {
-          Navigator.of(context).push<MaterialPageRoute>(
-            MaterialPageRoute(
-              builder: (context) => FiltersScreen(initialFilter: filter),
-            ),
-          );
+          Navigator.of(context).pushNamed('/filter');
         },
         splashRadius: 32,
       ),
@@ -168,11 +156,7 @@ class _NewSightButton extends StatelessWidget {
         ),
       ),
       onPressed: () {
-        Navigator.of(context).push<MaterialPageRoute>(
-          MaterialPageRoute(
-            builder: (context) => const AddSightScreen(),
-          ),
-        );
+        Navigator.of(context).pushNamed('/add');
       },
     );
   }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/ui/screen/onboarding_screen.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/themes.dart';
 
+// сплеш-скрин
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
@@ -45,7 +47,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _navigateToNext() async {
     if (await isInitialized) {
-      debugPrint('Переход на следующий экран');
+      await Navigator.of(context).pushReplacementNamed(
+        '/onboarding',
+        arguments: OnboardingSettings(startedByUser: false),
+      );
     }
   }
 }

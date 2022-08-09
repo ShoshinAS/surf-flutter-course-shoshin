@@ -3,10 +3,13 @@ class AppAssets {
   static const iconFavoriteEmpty = 'res/icons/favorites_empty.svg';
   static const iconVisitedEmpty = 'res/icons/visited_empty.svg';
   static const iconList = 'res/icons/list.svg';
+  static const iconListFill = 'res/icons/list_fill.svg';
   static const iconHeart = 'res/icons/heart.svg';
-  static const iconHeartFull = 'res/icons/heart_full.svg';
+  static const iconHeartFill = 'res/icons/heart_fill.svg';
   static const iconSettings = 'res/icons/settings.svg';
   static const iconSettingsFill = 'res/icons/settings_fill.svg';
+  static const iconMap = 'res/icons/map.svg';
+  static const iconMapFill = 'res/icons/map_fill.svg';
   static const iconCalendar = 'res/icons/calendar.svg';
   static const iconRemove = 'res/icons/remove.svg';
   static const iconShare = 'res/icons/share.svg';

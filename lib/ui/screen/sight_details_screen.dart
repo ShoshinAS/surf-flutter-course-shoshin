@@ -8,16 +8,22 @@ import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/big_button.dart';
 import 'package:places/ui/widgets/network_image.dart';
 
+class SightDetailsScreenSettings {
+  final String sightId;
+
+  SightDetailsScreenSettings({required this.sightId});
+}
+
 // Виджет отображает детальную информацию об интересном месте
 // для отображения на отдельном экране
 class SightDetailsScreen extends StatelessWidget {
-  final Sight sight;
-
-  const SightDetailsScreen(this.sight, {Key? key}) : super(key: key);
+  const SightDetailsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final id = ModalRoute.of(context)!.settings.arguments as String;
+    final sight = findSightById(id)!;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,

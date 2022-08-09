@@ -2,8 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/app_bar.dart';
+import 'package:places/ui/widgets/big_button.dart';
 import 'package:places/ui/widgets/empty_state.dart';
 
+// параметры экрана онбординга
+class OnboardingSettings {
+  final bool startedByUser;
+
+  OnboardingSettings({required this.startedByUser});
+}
+
+// экран онбординга
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
 
@@ -17,57 +26,85 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final settings = ModalRoute.of(context)!.settings.arguments as OnboardingSettings;
 
     return Scaffold(
       appBar: CustomAppBar(
         height: 56,
         actions: [
-          _SkipButton(onPressed: () {}),
+          Visibility(
+            visible: _page != 2,
+            child: _SkipButton(onPressed: () {
+              _finish(Navigator.of(context),
+              settings.startedByUser,
+              );
+            }),
+          ),
         ],
       ),
-      body: Stack(
-        alignment: Alignment.center,
+      body: Column(
         children: [
-          PageView(
-            onPageChanged: (page) {
-              setState(() {
-                _page = page;
-              });
-            },
-            children: [
-              EmptyState(
-                icon: AppAssets.iconOnboardingWelcome,
-                titleText: AppStrings.onboardingWelcomeTitle,
-                subtitleText: AppStrings.onboardingWelcomeSubtitle,
-                titleColor: theme.colorScheme.onTertiary,
-                subtitleColor: theme.colorScheme.onSurfaceVariant,
-              ),
-              EmptyState(
-                icon: AppAssets.iconOnboardingRoute,
-                titleText: AppStrings.onboardingRouteTitle,
-                subtitleText: AppStrings.onboardingRouteSubtitle,
-                titleColor: theme.colorScheme.onTertiary,
-                subtitleColor: theme.colorScheme.onSurfaceVariant,
-              ),
-              EmptyState(
-                icon: AppAssets.iconOnboardingAddSights,
-                titleText: AppStrings.onboardingAddSightsTitle,
-                subtitleText: AppStrings.onboardingAddSightsSubtitle,
-                titleColor: theme.colorScheme.onTertiary,
-                subtitleColor: theme.colorScheme.onSurfaceVariant,
-              ),
-            ],
+          Expanded(
+            child: PageView(
+              onPageChanged: (page) {
+                setState(() {
+                  _page = page;
+                });
+              },
+              children: [
+                EmptyState(
+                  icon: AppAssets.iconOnboardingWelcome,
+                  titleText: AppStrings.onboardingWelcomeTitle,
+                  subtitleText: AppStrings.onboardingWelcomeSubtitle,
+                  titleColor: theme.colorScheme.onTertiary,
+                  subtitleColor: theme.colorScheme.onSurfaceVariant,
+                ),
+                EmptyState(
+                  icon: AppAssets.iconOnboardingRoute,
+                  titleText: AppStrings.onboardingRouteTitle,
+                  subtitleText: AppStrings.onboardingRouteSubtitle,
+                  titleColor: theme.colorScheme.onTertiary,
+                  subtitleColor: theme.colorScheme.onSurfaceVariant,
+                ),
+                EmptyState(
+                  icon: AppAssets.iconOnboardingAddSights,
+                  titleText: AppStrings.onboardingAddSightsTitle,
+                  subtitleText: AppStrings.onboardingAddSightsSubtitle,
+                  titleColor: theme.colorScheme.onTertiary,
+                  subtitleColor: theme.colorScheme.onSurfaceVariant,
+                ),
+              ],
+            ),
           ),
-          Positioned(
-            bottom: 88,
-            child: _CustomIndicator(
-              length: 3,
-              currentPage: _page,
+          _CustomIndicator(
+            length: 3,
+            currentPage: _page,
+          ),
+          const SizedBox(height: 24,),
+          Container(
+            height: 64,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8,),
+            child: Visibility(
+              visible: _page == 2,
+              child: BigButton(
+                  title: AppStrings.start.toUpperCase(),
+                  onPressed: () {
+                    _finish(Navigator.of(context), settings.startedByUser);
+                  },
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _finish(NavigatorState navigatorState, bool startedByUser) {
+    if (startedByUser) {
+      navigatorState.pop();
+    } else {
+      navigatorState.pushReplacementNamed('/list');
+    }
   }
 }
 
@@ -111,6 +148,7 @@ class _CustomIndicator extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: List<Widget>.generate(
         length,
         (index) => Container(

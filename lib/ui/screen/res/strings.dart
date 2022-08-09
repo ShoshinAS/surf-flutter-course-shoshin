@@ -47,6 +47,7 @@ class AppStrings {
   static const clearHistory = 'Очистить историю';
   static const delete = 'Удалить';
   static const skip = 'Пропустить';
+  static const start = 'На старт';
   static const onboardingWelcomeTitle = 'Добро пожаловать\nв Путеводитель';
   static const onboardingWelcomeSubtitle = 'Ищи новые локации и сохраняй\nсамые любимые. ';
   static const onboardingRouteTitle = 'Построй маршрут\nи отправляйся в путь';

@@ -42,7 +42,7 @@ class VisitingScreen extends StatelessWidget {
           _ScheduledList(),
           _VisitedList(),
         ]),
-        bottomNavigationBar: const AppBottomNavigationBar(),
+        bottomNavigationBar: const AppBottomNavigationBar(index: 2),
       ),
     );
   }
