@@ -54,5 +54,8 @@ class AppStrings {
   static const onboardingRouteSubtitle = 'Достигай цели максимально\nбыстро и комфортно.';
   static const onboardingAddSightsTitle = 'Добавляй места,\nкоторые нашёл сам';
   static const onboardingAddSightsSubtitle = 'Делись самыми интересными\nи помоги нам стать лучше!';
+  static const camera = 'Камера';
+  static const photo = 'Фотография';
+  static const file = 'Файл';
 }
 

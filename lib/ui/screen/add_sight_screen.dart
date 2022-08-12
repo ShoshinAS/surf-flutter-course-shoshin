@@ -4,11 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/domain/location.dart';
 import 'package:places/domain/sight.dart';
 import 'package:places/domain/sight_type.dart';
-import 'package:places/mocks.dart';
 import 'package:places/ui/models/filter_model.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/screen/select_category_screen.dart';
+import 'package:places/ui/widgets/add_image_dialog.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/big_button.dart';
 import 'package:places/ui/widgets/clear_text_button.dart';
@@ -70,9 +70,9 @@ class _AddSightScreenState extends State<AddSightScreen> {
             ),
             _LoadedImages(
               images: _images,
-              onAdd: (image) {
+              onAdd: (images) {
                 setState(() {
-                  _images.add(image);
+                  _images.addAll(images);
                 });
               },
               onRemove: (image) {
@@ -430,7 +430,7 @@ class _CustomCategoryButton extends StatelessWidget {
 // и картинок уже добавленных изображений
 class _LoadedImages extends StatelessWidget {
   final List<Widget> images;
-  final ValueChanged<Widget> onAdd;
+  final ValueChanged<List<CustomImage>> onAdd;
   final ValueChanged<Widget> onRemove;
 
   const _LoadedImages({
@@ -448,16 +448,7 @@ class _LoadedImages extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: images.length + 1,
         itemBuilder: (context, index) => (index == 0)
-            ? _AddImageButton(
-                onPressed: () {
-                  final image = CustomImage(
-                    MockImages.randomURL(),
-                    height: 72,
-                    width: 72,
-                  );
-                  onAdd(image);
-                },
-              )
+            ? _AddImageButton(onAdd: onAdd)
             : _LoadedImage(
                 image: images[index - 1],
                 onRemove: onRemove,
@@ -469,33 +460,28 @@ class _LoadedImages extends StatelessWidget {
 
 // кнопка добавления изображения
 class _AddImageButton extends StatelessWidget {
-  final VoidCallback onPressed;
+  final ValueChanged<List<CustomImage>> onAdd;
 
-  const _AddImageButton({Key? key, required this.onPressed}) : super(key: key);
+  const _AddImageButton({Key? key, required this.onAdd}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // return MaterialButton(
-    //   onPressed: onPressed,
-    //   child: SvgPicture.asset(
-    //     AppAssets.iconButtonPlus,
-    //     color: theme.colorScheme.secondary,
-    //   ),
-    //   padding: EdgeInsets.zero,
-    //   minWidth: 0,
-    //   shape: const RoundedRectangleBorder(
-    //     borderRadius: BorderRadius.all(
-    //       Radius.circular(12),
-    //     ),
-    //   ),
-    // );
-
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: GestureDetector(
-        onTap: onPressed,
+        onTap: () async {
+          final images = await showDialog<List<CustomImage>?>(
+              context: context,
+              builder: (context) {
+                return const AddImageDialog();
+              },
+          );
+          if (images != null) {
+            onAdd(images);
+          }
+        },
         child: SvgPicture.asset(
           height: 72,
           AppAssets.iconButtonPlus,

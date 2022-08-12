@@ -12,7 +12,6 @@ import 'package:places/ui/screen/res/themes.dart';
 import 'package:places/ui/screen/res/values.dart';
 import 'package:places/ui/screen/search_screen.dart';
 import 'package:places/ui/screen/settings_screen.dart';
-import 'package:places/ui/screen/sight_details_screen.dart';
 import 'package:places/ui/screen/sight_list_screen.dart';
 import 'package:places/ui/screen/splash_screen.dart';
 import 'package:places/ui/screen/visiting_screen.dart';
@@ -52,7 +51,6 @@ class App extends StatelessWidget {
             '/splash': (_) => const SplashScreen(),
             '/onboarding': (_) => const OnboardingScreen(),
             '/list': (_) => const SightListScreen(),
-            '/details': (_) => const SightDetailsScreen(),
             '/settings': (_) => const SettingsScreen(),
             '/visiting': (_) => const VisitingScreen(),
             '/map': (_) => const Scaffold(
