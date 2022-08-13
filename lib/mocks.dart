@@ -188,7 +188,7 @@ class MockImages {
 }
 
 Sight? findSightById(String id) {
-  for (var sight in mocks) {
+  for (final sight in mocks) {
     if (sight.id == id) {
       return sight;
     }

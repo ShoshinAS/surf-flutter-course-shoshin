@@ -36,4 +36,8 @@ class AppAssets {
   static const iconOnboardingRoute = 'res/icons/onboarding_route.svg';
   static const iconOnboardingAddSights = 'res/icons/onboarding_add_sights.svg';
   static const appIcon = 'res/icons/appIcon.svg';
+  static const iconClose = 'res/icons/close.svg';
+  static const iconCamera = 'res/icons/camera.svg';
+  static const iconPhoto = 'res/icons/photo.svg';
+  static const iconFile = 'res/icons/file.svg';
 }

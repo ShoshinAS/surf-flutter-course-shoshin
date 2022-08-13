@@ -5,6 +5,7 @@ import 'package:places/mocks.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/colors.dart';
 import 'package:places/ui/widgets/network_image.dart';
+import 'package:places/ui/widgets/silgh_details_bottomsheet.dart';
 
 // Виджет реализует абстрактный класс для отображения карточки интересного места в списке
 abstract class SightCard extends StatelessWidget {
@@ -54,8 +55,13 @@ abstract class SightCard extends StatelessWidget {
                     color: AppColors.transparent,
                     child: InkWell(
                       onTap: () {
-                        Navigator.of(context)
-                            .pushNamed('/details', arguments: sight.id);
+                        showModalBottomSheet<void>(
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          context: context,
+                          builder: (context) =>
+                              SightDetailsBottomSheet(sightId: sight.id),
+                        );
                       },
                     ),
                   ),
