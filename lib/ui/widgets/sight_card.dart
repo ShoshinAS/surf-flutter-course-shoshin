@@ -238,9 +238,15 @@ class _AddToCalendarButton extends StatelessWidget {
     return _SightCardButton(
       icon: AppAssets.iconCalendar,
       sight: sight,
-      onPressed: () => debugPrint(
-        'Нажата кнопка "Запланировать к посещению" - ${sight.name}',
-      ),
+      onPressed: () async {
+        final selectedDate = await showDatePicker(
+            context: context,
+            initialDate:DateTime.now(),
+            firstDate: DateTime.now(),
+            lastDate: DateTime.utc(2050),
+        );
+        debugPrint('Выбрана дата посещения $sight: $selectedDate');
+      },
     );
   }
 }
