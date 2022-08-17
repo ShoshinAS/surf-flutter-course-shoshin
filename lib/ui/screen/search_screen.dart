@@ -12,7 +12,7 @@ import 'package:places/ui/widgets/clear_text_button.dart';
 import 'package:places/ui/widgets/empty_state.dart';
 import 'package:places/ui/widgets/network_image.dart';
 import 'package:places/ui/widgets/search_bar.dart';
-import 'package:places/ui/widgets/silgh_details_bottomsheet.dart';
+import 'package:places/ui/widgets/sight_details_bottomsheet.dart';
 import 'package:provider/provider.dart';
 
 // экран поиска интересных мест

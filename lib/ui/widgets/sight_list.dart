@@ -14,8 +14,15 @@ class SightList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final portrait = MediaQuery.of(context).orientation == Orientation.portrait;
+
     return children.isNotEmpty
-        ? SliverList(
+        ? SliverGrid(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: portrait ? 1 : 2,
+              mainAxisExtent: 220,
+              crossAxisSpacing: 36,
+            ),
             delegate: SliverChildBuilderDelegate(
               (context, index) => _CardInList(sightCard: children[index]),
               childCount: children.length,
