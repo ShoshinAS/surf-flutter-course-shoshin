@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/domain/sight.dart';
@@ -5,7 +8,7 @@ import 'package:places/mocks.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/colors.dart';
 import 'package:places/ui/widgets/network_image.dart';
-import 'package:places/ui/widgets/silgh_details_bottomsheet.dart';
+import 'package:places/ui/widgets/sight_details_bottomsheet.dart';
 
 // Виджет реализует абстрактный класс для отображения карточки интересного места в списке
 abstract class SightCard extends StatelessWidget {
@@ -239,16 +242,93 @@ class _AddToCalendarButton extends StatelessWidget {
       icon: AppAssets.iconCalendar,
       sight: sight,
       onPressed: () async {
-        final selectedDate = await showDatePicker(
-            context: context,
-            initialDate:DateTime.now(),
-            firstDate: DateTime.now(),
-            lastDate: DateTime.utc(2050),
-        );
-        debugPrint('Выбрана дата посещения $sight: $selectedDate');
+        final selectedDateTime = (Platform.isIOS)
+            ? await _showIOSDateTimePicker(context: context)
+            : await _showAndroidDateTimePicker(context: context);
+
+        debugPrint('Выбрана дата посещения $sight: $selectedDateTime');
       },
     );
   }
+}
+
+Future<DateTime?> _showIOSDateTimePicker({
+  required BuildContext context,
+}) async {
+  final theme = Theme.of(context);
+
+  final selectedDateTime = await showCupertinoModalPopup<DateTime>(
+    context: context,
+    builder: (context) {
+      var currentDateTime = DateTime.now();
+
+      return Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+        ),
+        height: 240,
+        color: theme.colorScheme.background,
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(currentDateTime);
+                },
+                child: Text(
+                  'Выбрать',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.secondary,
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: CupertinoDatePicker(
+                onDateTimeChanged: (value) {
+                  currentDateTime = value;
+                },
+                initialDateTime: currentDateTime,
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  return selectedDateTime;
+}
+
+Future<DateTime?> _showAndroidDateTimePicker({
+  required BuildContext context,
+}) async {
+  final selectedDate = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime.now(),
+    lastDate: DateTime.utc(2050),
+  );
+  if (selectedDate == null) {
+    return null;
+  }
+
+  final selectedTime = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay.now(),
+  );
+  if (selectedTime == null) {
+    return null;
+  }
+
+  return DateTime(
+    selectedDate.year,
+    selectedDate.month,
+    selectedDate.day,
+    selectedTime.hour,
+    selectedTime.minute,
+  );
 }
 
 class _ShareButton extends StatelessWidget {
@@ -304,7 +384,7 @@ class _SightCardDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      //height: 92,
+      height: 96,
       width: double.infinity,
       constraints: const BoxConstraints(
         //maxHeight: 92,

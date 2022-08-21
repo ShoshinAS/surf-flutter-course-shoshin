@@ -24,13 +24,17 @@ class _SightListScreenState extends State<SightListScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final portrait = MediaQuery.of(context).orientation == Orientation.portrait;
+
 
     return Consumer<Filter>(
       builder: (context, filter, child) {
         return Scaffold(
           backgroundColor: theme.colorScheme.background,
           body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(
+              horizontal: portrait ? 16 : 34,
+            ),
             child: CustomScrollView(slivers: [
               SliverAppBar(
                 backgroundColor: theme.colorScheme.background,

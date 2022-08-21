@@ -11,7 +11,8 @@ import 'package:places/ui/widgets/big_button.dart';
 class FiltersScreen extends StatefulWidget {
   final Filter initialFilter;
 
-  const FiltersScreen({Key? key, required this.initialFilter}) : super(key: key);
+  const FiltersScreen({Key? key, required this.initialFilter})
+      : super(key: key);
 
   @override
   State<FiltersScreen> createState() => _FiltersScreenState();
@@ -29,41 +30,47 @@ class _FiltersScreenState extends State<FiltersScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final smallScreen = MediaQuery.of(context).size.height <= 600;
+    final categoriesCrossAxisCount = smallScreen ? 1 : 2;
+    final categoriesHeight = 92 * categoriesCrossAxisCount.toDouble() +
+        40 * (categoriesCrossAxisCount.toDouble() - 1);
 
     return Scaffold(
-        appBar: CustomAppBar(
-          height: 56,
-          leading: const ReturnButton(),
-          actions: [
-            _ClearFiltersButton(
-              onPressed: () {
-                setState(screenFilter.clear);
-              },
-            ),
-          ],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              const SizedBox(height: 16),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  AppStrings.categories,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.outline,
-                  ),
+      appBar: CustomAppBar(
+        height: 56,
+        leading: const ReturnButton(),
+        actions: [
+          _ClearFiltersButton(
+            onPressed: () {
+              setState(screenFilter.clear);
+            },
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          children: [
+            const SizedBox(height: 24),
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                AppStrings.categories,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.outline,
                 ),
               ),
-              //const SizedBox(height: 24),
-              GridView.count(
-                crossAxisCount: 3,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              height: categoriesHeight,
+              child: GridView.count(
+                scrollDirection: Axis.horizontal,
+                crossAxisCount: categoriesCrossAxisCount,
                 shrinkWrap: true,
                 children: SightType.values
                     .map(
-                      (e) =>
-                      _CategoryCard(
+                      (e) => _CategoryCard(
                         title: e.toString(),
                         icon: e.getIcon(),
                         selected: screenFilter.selected(e),
@@ -73,54 +80,56 @@ class _FiltersScreenState extends State<FiltersScreen> {
                           });
                         },
                       ),
-                )
+                    )
                     .toList(),
               ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppStrings.distance,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onTertiary,
-                    ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppStrings.distance,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onTertiary,
                   ),
-                  Text(
-                    'до ${(screenFilter.selectedDistance / 1000).toStringAsFixed(
-                        2,)} км',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
-                    ),
+                ),
+                Text(
+                  'до ${(screenFilter.selectedDistance / 1000).toStringAsFixed(
+                    2,
+                  )} км',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onPrimaryContainer,
                   ),
-                ],
-              ),
-              Slider(
-                value: screenFilter.selectedDistance,
-                max: screenFilter.maxDistance,
-                activeColor: theme.colorScheme.secondary,
-                inactiveColor: theme.colorScheme.outline,
-                onChanged: (newValue) {
-                  setState(() {
-                    screenFilter.selectedDistance = newValue;
-                  });
-                },
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+            Slider(
+              value: screenFilter.selectedDistance,
+              max: screenFilter.maxDistance,
+              activeColor: theme.colorScheme.secondary,
+              inactiveColor: theme.colorScheme.outline,
+              onChanged: (newValue) {
+                setState(() {
+                  screenFilter.selectedDistance = newValue;
+                });
+              },
+            ),
+          ],
         ),
-        bottomSheet: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: BigButton(
-            active: screenFilter.amount > 0,
-            title: '${AppStrings.show} (${screenFilter.amount})',
-            onPressed: () {
-              widget.initialFilter.fill(screenFilter);
-              Navigator.pop(context);
-            },
-          ),
+      ),
+      bottomSheet: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: BigButton(
+          active: screenFilter.amount > 0,
+          title: '${AppStrings.show} (${screenFilter.amount})',
+          onPressed: () {
+            widget.initialFilter.fill(screenFilter);
+            Navigator.pop(context);
+          },
         ),
-      );
+      ),
+    );
   }
 }
 
