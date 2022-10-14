@@ -28,7 +28,7 @@ class SightList extends StatelessWidget {
               childCount: children.length,
             ),
           )
-        : emptyScreen;
+        : SliverToBoxAdapter(child: emptyScreen);
   }
 }
 

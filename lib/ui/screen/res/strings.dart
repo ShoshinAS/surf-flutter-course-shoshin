@@ -58,4 +58,3 @@ class AppStrings {
   static const photo = 'Фотография';
   static const file = 'Файл';
 }
-

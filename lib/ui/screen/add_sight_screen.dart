@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/data/interactor/place_interactor.dart';
+import 'package:places/data/model/place.dart';
+import 'package:places/data/model/place_type.dart';
 import 'package:places/domain/location.dart';
-import 'package:places/domain/sight.dart';
-import 'package:places/domain/sight_type.dart';
-import 'package:places/ui/models/filter_model.dart';
+import 'package:places/ui/models/place_type_synonym.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/screen/select_category_screen.dart';
@@ -15,9 +16,16 @@ import 'package:places/ui/widgets/clear_text_button.dart';
 import 'package:places/ui/widgets/network_image.dart';
 import 'package:provider/provider.dart';
 
-// экран добавления интересного места в список
 class AddSightScreen extends StatefulWidget {
   const AddSightScreen({Key? key}) : super(key: key);
+
+  @override
+  State<AddSightScreen> createState() => _AddSightScreenState();
+}
+
+// экран добавления интересного места в список
+class AddSightScreen2 extends StatefulWidget {
+  const AddSightScreen2({Key? key}) : super(key: key);
 
   @override
   State<AddSightScreen> createState() => _AddSightScreenState();
@@ -36,7 +44,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
 
   final List<Widget> _images = [];
 
-  SightType? _sightType;
+  PlaceType? _placeType;
 
   @override
   Widget build(BuildContext context) {
@@ -85,10 +93,11 @@ class _AddSightScreenState extends State<AddSightScreen> {
               height: 24,
             ),
             _CustomCategoryButton(
-              sightType: _sightType,
+              placeType: _placeType,
               onSelect: (selectedSightType) {
-                _sightType = selectedSightType;
-                setState(() {});
+                setState(() {
+                  _placeType = selectedSightType;
+                });
                 _focusNodeName.requestFocus();
               },
             ),
@@ -169,30 +178,29 @@ class _AddSightScreenState extends State<AddSightScreen> {
         visible: MediaQuery.of(context).viewInsets.bottom == 0.0,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Consumer<Filter>(
-            builder: (context, filter, child) => BigButton(
-              title: AppStrings.create,
-              active: _sightType != null &&
-                  _controllerName.text.isNotEmpty &&
-                  _controllerLatitude.text.isNotEmpty &&
-                  _controllerLongitude.text.isNotEmpty &&
-                  _controllerDescription.text.isNotEmpty,
-              onPressed: () {
-                final newSight = Sight(
-                  id: '99',
-                  name: _controllerName.text,
-                  location: Location(
-                    double.parse(_controllerLatitude.text),
-                    double.parse(_controllerLongitude.text),
-                  ),
-                  imageURLs: [],
-                  details: _controllerDescription.text,
-                  type: _sightType!,
-                );
-                filter.addSight(newSight);
-                Navigator.pop(context);
-              },
-            ),
+          child: BigButton(
+            title: AppStrings.create,
+            active: _placeType != null &&
+                _controllerName.text.isNotEmpty &&
+                _controllerLatitude.text.isNotEmpty &&
+                _controllerLongitude.text.isNotEmpty &&
+                _controllerDescription.text.isNotEmpty,
+            onPressed: () {
+              final newPlace = Place(
+                id: '99',
+                name: _controllerName.text,
+                location: Location(
+                  double.parse(_controllerLatitude.text),
+                  double.parse(_controllerLongitude.text),
+                ),
+                urls: [],
+                description: _controllerDescription.text,
+                placeType: _placeType!,
+              );
+              final createdPlace = Provider.of<PlaceInteractor>(context, listen: false)
+                  .addNewPlace(newPlace);
+              Navigator.pop(context, createdPlace);
+            },
           ),
         ),
       ),
@@ -361,12 +369,12 @@ class LimitRangeTextInputFormatter extends TextInputFormatter {
 }
 
 class _CustomCategoryButton extends StatelessWidget {
-  final SightType? sightType;
-  final ValueChanged<SightType> onSelect;
+  final PlaceType? placeType;
+  final ValueChanged<PlaceType> onSelect;
 
   const _CustomCategoryButton({
     Key? key,
-    this.sightType,
+    this.placeType,
     required this.onSelect,
   }) : super(key: key);
 
@@ -387,9 +395,9 @@ class _CustomCategoryButton extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            if (sightType != null)
+            if (placeType != null)
               Text(
-                sightType.toString(),
+                placeType!.synonym(),
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.onTertiary,
                 ),
@@ -473,10 +481,10 @@ class _AddImageButton extends StatelessWidget {
       child: GestureDetector(
         onTap: () async {
           final images = await showDialog<List<CustomImage>?>(
-              context: context,
-              builder: (context) {
-                return const AddImageDialog();
-              },
+            context: context,
+            builder: (context) {
+              return const AddImageDialog();
+            },
           );
           if (images != null) {
             onAdd(images);

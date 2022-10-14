@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/ui/models/favourites_model.dart';
+import 'package:places/data/interactor/place_interactor.dart';
+import 'package:places/data/model/place.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/app_bar.dart';
@@ -143,35 +144,68 @@ class _CustomTabBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 // Виджет, реализующий список мест, запланированных к посещению
-class _ScheduledList extends StatelessWidget {
+class _ScheduledList extends StatefulWidget {
   const _ScheduledList({Key? key}) : super(key: key);
 
   @override
+  State<_ScheduledList> createState() => _ScheduledListState();
+}
+
+class _ScheduledListState extends State<_ScheduledList> {
+  late PlaceInteractor _placeInteractor;
+  late Future<List<Place>> _futureFavorites;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _placeInteractor = Provider.of<PlaceInteractor>(context);
+    updateFavorites();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Consumer<ScheduledSights>(
-      builder: (context, scheduledSights, child) => SightListDraggable(
-        children: scheduledSights
-            .toList()
-            .map((sight) => SightCardInScheduledList(
-                  sight,
-                  onRemove: (sight) {
-                    scheduledSights.remove(sight);
+    return FutureBuilder<List<Place>>(
+        future: _futureFavorites,
+        builder: (context, snapshot) {
+          return snapshot.hasData
+              ? SightListDraggable(
+                  children: snapshot.data!
+                      .map((place) => SightCardInScheduledList(
+                            place,
+                            onRemove: (place) {
+                              setState(() {
+                                _placeInteractor.removeFromFavorites(place);
+                                updateFavorites();
+                              });
+                            },
+                          ))
+                      .toList(),
+                  emptyScreen: const _EmptyScreen(
+                    iconAssetName: AppAssets.iconVisitedEmpty,
+                    description: AppStrings.emptyVisitedDescription,
+                  ),
+                  onMoveElement: (sourceElement, targetElement) {
+                    setState(() {
+                      _placeInteractor.moveOnFavorites(sourceElement, targetElement);
+                      updateFavorites();
+                    });
                   },
-                ))
-            .toList(),
-        emptyScreen: const _EmptyScreen(
-          iconAssetName: AppAssets.iconVisitedEmpty,
-          description: AppStrings.emptyVisitedDescription,
-        ),
-        onMoveElement: (sourceElement, targetElement) {
-          scheduledSights.move(sourceElement, targetElement);
+                  onRemove: (place) {
+                    setState(() {
+                      _placeInteractor.removeFromFavorites(place);
+                      updateFavorites();
+                    });
+                  },
+                )
+              : const SizedBox.shrink();
         },
-        onRemove: (sight) {
-          scheduledSights.remove(sight);
-        },
-      ),
     );
   }
+
+  Future<void> updateFavorites() async {
+    _futureFavorites = _placeInteractor.getFavoritesPlaces();
+  }
+
 }
 
 // Виджет, реализующий список посещенных мест
@@ -180,28 +214,36 @@ class _VisitedList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<VisitedSights>(
-      builder: (context, visitedSights, child) => SightListDraggable(
-        children: visitedSights
-            .toList()
-            .map((sight) => SightCardInVisitedList(
-                  sight,
-                  onRemove: (sight) {
-                    visitedSights.remove(sight);
-                  },
-                ))
-            .toList(),
-        emptyScreen: const _EmptyScreen(
-          iconAssetName: AppAssets.iconVisitedEmpty,
-          description: AppStrings.emptyVisitedDescription,
-        ),
-        onMoveElement: (sourceElement, targetElement) {
-          visitedSights.move(sourceElement, targetElement);
-        },
-        onRemove: (sight) {
-          visitedSights.remove(sight);
-        },
-      ),
+    final placeInteractor = Provider.of<PlaceInteractor>(context);
+    final futureVisitedPlaces = placeInteractor.getVisitPlaces();
+
+    return FutureBuilder<List<Place>>(
+      future: futureVisitedPlaces,
+      builder: (context, snapshot) {
+        return snapshot.hasData
+            ? SightListDraggable(
+                children: snapshot.data!
+                    .toList()
+                    .map((sight) => SightCardInVisitedList(
+                          sight,
+                          onRemove: (sight) {
+                            snapshot.data!.remove(sight);
+                          },
+                        ))
+                    .toList(),
+                emptyScreen: const _EmptyScreen(
+                  iconAssetName: AppAssets.iconVisitedEmpty,
+                  description: AppStrings.emptyVisitedDescription,
+                ),
+                onMoveElement: (sourceElement, targetElement) {
+                  //snapshot.data!.move(sourceElement, targetElement);
+                },
+                onRemove: (sight) {
+                  snapshot.data!.remove(sight);
+                },
+              )
+            : const SizedBox.shrink();
+      },
     );
   }
 }

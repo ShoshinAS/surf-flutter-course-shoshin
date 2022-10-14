@@ -18,7 +18,7 @@ class CustomImage extends StatelessWidget {
       width: width,
       height: height,
       color: Theme.of(context).colorScheme.outline,
-      child: Image.network(
+      child: url.isNotEmpty ? Image.network(
         url,
         width: width,
         height: height,
@@ -40,7 +40,7 @@ class CustomImage extends StatelessWidget {
             ),
           );
         },
-      ),
+      ) : null,
     );
   }
 }

@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:places/data/interactor/settings_interactor.dart';
 
 // класс реализует переключение темы
 class ThemeModel extends ChangeNotifier{
+  final SettingsInteractor _searchInteractor;
 
-  bool get darkTheme => _darkTheme;
+  bool get isDarkTheme => _isDarkTheme;
 
-  set darkTheme(bool value) {
-    _darkTheme = value;
-    notifyListeners();
+  bool _isDarkTheme = false;
+
+  ThemeModel() : _searchInteractor = SettingsInteractor();
+
+  Future<void> setTheme({required bool isDarkTheme}) async {
+    await _searchInteractor.setTheme(isDarkTheme: isDarkTheme);
+    await updateTheme();
   }
 
-  bool _darkTheme = false;
+  Future<void> updateTheme() async {
+    _isDarkTheme = await _searchInteractor.getTheme();
+    notifyListeners();
+  }
 
 }

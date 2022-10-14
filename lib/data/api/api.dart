@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:places/data/api_constants.dart';
 
 class Api {
 
+  static const baseUrl = 'https://test-backend-flutter.surfstudio.ru';
+
   static Dio dio() {
     final baseOptions = BaseOptions(
-      baseUrl: ApiConstants.baseUrl,
+      baseUrl: baseUrl,
       connectTimeout: 5000,
       receiveTimeout: 5000,
       sendTimeout: 5000,

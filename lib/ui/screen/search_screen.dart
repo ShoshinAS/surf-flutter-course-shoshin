@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/domain/sight.dart';
-import 'package:places/search.dart';
-import 'package:places/ui/models/filter_model.dart';
-import 'package:places/ui/models/search_history_model.dart';
+import 'package:places/data/interactor/search_interactor.dart';
+import 'package:places/data/model/filter.dart';
+import 'package:places/data/model/place.dart';
+import 'package:places/ui/models/place_type_synonym.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/colors.dart';
 import 'package:places/ui/screen/res/strings.dart';
@@ -14,6 +14,12 @@ import 'package:places/ui/widgets/network_image.dart';
 import 'package:places/ui/widgets/search_bar.dart';
 import 'package:places/ui/widgets/sight_details_bottomsheet.dart';
 import 'package:provider/provider.dart';
+
+class SearchScreenArguments {
+  final Filter filter;
+
+  SearchScreenArguments({required this.filter});
+}
 
 // экран поиска интересных мест
 class SearchScreen extends StatefulWidget {
@@ -26,96 +32,90 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final _focusNode = FocusNode();
   final _controller = TextEditingController();
-  final Search _search = Search();
 
-  bool _resizeToAvoidBottomInset = true;
+  late final Filter _filter;
+
+  late SearchInteractor _searchInteractor;
+
+  Future<List<Place>>? _futurePlaceList;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _searchInteractor = Provider.of<SearchInteractor>(context);
+    final args = ModalRoute.of(context)!.settings.arguments as SearchScreenArguments;
+    _filter = args.filter;
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final searchHistory = Provider.of<SearchHistory>(context);
-    _search.initialize(Provider.of<Filter>(context).sightList);
-
     final Widget content;
 
-    if (_controller.text.isEmpty) {
-      content = searchHistory.isEmpty
-          ? const SizedBox.shrink()
-          : _SearchHistory(
-              queries: searchHistory.toList(),
-              onDelete: (query) {
-                searchHistory.remove(query);
-                setState(() {});
-              },
-              onClear: () {
-                searchHistory.clear();
-                setState(() {});
-              },
-              onTap: (query) {
-                _controller
-                  ..text = query
-                  ..selection = TextSelection.collapsed(offset: query.length);
-                _search.find(query, onFinish: () {
-                  setState(() {});
-                });
-                searchHistory.add(query);
-                setState(() {});
-              },
-            );
-      _resizeToAvoidBottomInset = false;
-    } else if (_search.status == SearchStatus.inProgress) {
-      content = const Expanded(
-        child: Center(child: CircularProgressIndicator()),
-      );
-      _resizeToAvoidBottomInset = true;
-    } else if (_search.status == SearchStatus.finished) {
-      if (_search.result.isEmpty) {
-        content = Expanded(
-          child: EmptyState(
-            icon: AppAssets.iconSearch,
-            titleText: AppStrings.nothingFound,
-            subtitleText: AppStrings.tryToChangeSearchParameters,
-            titleColor: theme.colorScheme.outline,
-            subtitleColor: theme.colorScheme.outline,
-            iconHeight: 64,
-            iconWidth: 64,
-          ),
-        );
-        _resizeToAvoidBottomInset = true;
-      } else {
-        content = _SearchResults(
-          searchWords: _search.words,
-          searchResults: _search.result,
-          onTap: (sight) {
-            showModalBottomSheet<void>(
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              context: context,
-              builder: (context) =>
-                  SightDetailsBottomSheet(sightId: sight.id),
-            );
-            searchHistory.add(_controller.text);
-          },
-        );
-        _resizeToAvoidBottomInset = false;
-      }
-    } else {
-      content = Expanded(
-        child: EmptyState(
-          icon: AppAssets.iconDelete,
-          titleText: AppStrings.error,
-          subtitleText: AppStrings.somethingWentWrong,
-          titleColor: theme.colorScheme.outline,
-          subtitleColor: theme.colorScheme.outline,
-          iconHeight: 64,
-          iconWidth: 64,
-        ),
-      );
-      _resizeToAvoidBottomInset = true;
-    }
+    content = _controller.text.isEmpty
+        ? _SearchHistoryBuilder(onTap: (query) {
+            _controller
+              ..text = query
+              ..selection = TextSelection.collapsed(offset: query.length);
+            _search(query);
+          })
+        : FutureBuilder<List<Place>>(
+            future: _futurePlaceList,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return snapshot.data!.isEmpty
+                    ? Expanded(
+                        child: EmptyState(
+                          icon: AppAssets.iconSearch,
+                          titleText: AppStrings.nothingFound,
+                          subtitleText: AppStrings.tryToChangeSearchParameters,
+                          titleColor: theme.colorScheme.outline,
+                          subtitleColor: theme.colorScheme.outline,
+                          iconHeight: 64,
+                          iconWidth: 64,
+                        ),
+                      )
+                    : _SearchResults(
+                        searchWords: _controller.text
+                            .split(' ')
+                            .where((element) => element.isNotEmpty)
+                            .toList(),
+                        searchResults: snapshot.data!,
+                        onTap: (sight) {
+                          showModalBottomSheet<void>(
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            builder: (context) =>
+                                SightDetailsBottomSheet(
+                                  sightId: sight.id,
+                                ),
+                          );
+                        },
+                      );
+              } else if (snapshot.hasError) {
+                return Expanded(
+                  child: EmptyState(
+                    icon: AppAssets.iconDelete,
+                    titleText: AppStrings.error,
+                    subtitleText: AppStrings.somethingWentWrong,
+                    titleColor: theme.colorScheme.outline,
+                    subtitleColor: theme.colorScheme.outline,
+                    iconHeight: 64,
+                    iconWidth: 64,
+                  ),
+                );
+              } else {
+                return const Expanded(
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+            },
+          );
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
+      resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
         title: AppStrings.appBarTitle,
         height: 108,
@@ -142,30 +142,14 @@ class _SearchScreenState extends State<SearchScreen> {
           },
           onChanged: (query) {
             if (query.endsWith(' ')) {
-              _search.find(
-                query,
-                onFinish: () {
-                  setState(() {});
-                },
-              );
-              setState(() {});
+              _search(query);
             } else if (query.isEmpty) {
               setState(() {});
             }
           },
-          onSubmitted: (query) {
-            _search.find(
-              query,
-              onFinish: () {
-                setState(() {});
-              },
-            );
-            searchHistory.add(query);
-            setState(() {});
-          },
+          onSubmitted: _search,
         ),
       ),
-      resizeToAvoidBottomInset: _resizeToAvoidBottomInset,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
@@ -177,16 +161,68 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
     );
   }
+
+  Future<void> _search(String query) async {
+    setState(() {
+      _filter.nameFilter = query;
+      _futurePlaceList = _searchInteractor.searchPlaces(_filter);
+    });
+  }
+}
+
+class _SearchHistoryBuilder extends StatefulWidget {
+  final ValueChanged<String> onTap;
+
+  const _SearchHistoryBuilder({Key? key, required this.onTap})
+      : super(key: key);
+
+  @override
+  State<_SearchHistoryBuilder> createState() => _SearchHistoryBuilderState();
+}
+
+class _SearchHistoryBuilderState extends State<_SearchHistoryBuilder> {
+  late SearchInteractor _searchInteractor;
+  late Future<List<String>> _futureSearchHistory;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _searchInteractor = Provider.of<SearchInteractor>(context);
+    _futureSearchHistory = _searchInteractor.getHistory();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<String>>(
+      future: _futureSearchHistory,
+      builder: (context, snapshot) {
+        return snapshot.hasData & (snapshot.data?.isNotEmpty ?? false)
+            ? _SearchHistoryList(
+                queries: snapshot.data!.toList(),
+                onDelete: (query) async {
+                  await _searchInteractor.removeFromHistory(query);
+                  setState(() {});
+                },
+                onClear: () async {
+                  await _searchInteractor.clearHistory();
+                  setState(() {});
+                },
+                onTap: widget.onTap,
+              )
+            : const SizedBox.shrink();
+      },
+    );
+  }
 }
 
 // виджет истории поиска на экране
-class _SearchHistory extends StatelessWidget {
+class _SearchHistoryList extends StatelessWidget {
   final List<String> queries;
   final ValueChanged<String> onDelete;
   final Function(String) onTap;
   final VoidCallback onClear;
 
-  const _SearchHistory({
+  const _SearchHistoryList({
     Key? key,
     required this.queries,
     required this.onDelete,
@@ -208,14 +244,19 @@ class _SearchHistory extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        ListView.builder(
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height - 250,
+          ),
+          child: ListView.builder(
             shrinkWrap: true,
             itemCount: queries.length,
             itemBuilder: (context, index) => _SearchQuery(
-                  query: queries[index],
-                  onDelete: onDelete,
-                  onTap: onTap,
-                ),
+              query: queries[index],
+              onDelete: onDelete,
+              onTap: onTap,
+            ),
+          ),
         ),
         TextButton(
           onPressed: onClear,
@@ -302,8 +343,8 @@ class _SearchQuery extends StatelessWidget {
 // виджет отображающий результаты поиска
 class _SearchResults extends StatelessWidget {
   final List<String> searchWords;
-  final List<Sight> searchResults;
-  final Function(Sight)? onTap;
+  final List<Place> searchResults;
+  final Function(Place)? onTap;
 
   const _SearchResults({
     Key? key,
@@ -332,8 +373,8 @@ class _SearchResults extends StatelessWidget {
 // виджет отображающий карточку интересного мест в результатах поиска
 class _SearchResult extends StatelessWidget {
   final List<String> searchWords;
-  final Sight sight;
-  final Function(Sight)? onTap;
+  final Place sight;
+  final Function(Place)? onTap;
 
   const _SearchResult({
     Key? key,
@@ -373,7 +414,7 @@ class _SearchResult extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        sight.type.toString(),
+                        sight.placeType.synonym(),
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),

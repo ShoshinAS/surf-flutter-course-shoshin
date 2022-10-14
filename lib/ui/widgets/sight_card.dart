@@ -1,10 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/domain/sight.dart';
+import 'package:places/data/model/place.dart';
 import 'package:places/mocks.dart';
+import 'package:places/ui/models/place_type_synonym.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/colors.dart';
 import 'package:places/ui/widgets/network_image.dart';
@@ -12,7 +12,7 @@ import 'package:places/ui/widgets/sight_details_bottomsheet.dart';
 
 // Виджет реализует абстрактный класс для отображения карточки интересного места в списке
 abstract class SightCard extends StatelessWidget {
-  final Sight sight;
+  final Place sight;
   final Widget extraInformation;
   final List<Widget> buttons;
 
@@ -63,7 +63,9 @@ abstract class SightCard extends StatelessWidget {
                           backgroundColor: Colors.transparent,
                           context: context,
                           builder: (context) =>
-                              SightDetailsBottomSheet(sightId: sight.id),
+                              SightDetailsBottomSheet(
+                                sightId: sight.id,
+                              ),
                         );
                       },
                     ),
@@ -82,20 +84,32 @@ abstract class SightCard extends StatelessWidget {
 
 // Виджет отображает карточку интересного места в списке
 class SightCardInList extends SightCard {
-  SightCardInList(Sight sight, {Key? key})
+  SightCardInList(Place sight,
+      {required bool inFavorites,
+      required ValueChanged<Place> onAddToFavorites,
+      required ValueChanged<Place> onRemoveFromFavorites,
+      Key? key,
+      })
       : super(
           sight,
           key: key,
-          buttons: [_AddToFavoritesButton(sight: sight)],
+          buttons: [
+            _AddToFavoritesButton(
+              sight: sight,
+              inFavorites: inFavorites,
+              onAddToFavorites: onAddToFavorites,
+              onRemoveFromFavorites: onRemoveFromFavorites,
+            ),
+          ],
         );
 }
 
 // Виджет отображает карточку интересного места в списке "Хочу посетить"
 class SightCardInScheduledList extends SightCard {
   SightCardInScheduledList(
-    Sight sight, {
+    Place sight, {
     Key? key,
-    required ValueChanged<Sight> onRemove,
+    required ValueChanged<Place> onRemove,
   }) : super(
           sight,
           key: key,
@@ -113,9 +127,9 @@ class SightCardInScheduledList extends SightCard {
 // Виджет отображает карточку интересного места в списке "Посетил"
 class SightCardInVisitedList extends SightCard {
   SightCardInVisitedList(
-    Sight sight, {
+    Place sight, {
     Key? key,
-    ValueChanged<Sight>? onRemove,
+    ValueChanged<Place>? onRemove,
   }) : super(
           sight,
           key: key,
@@ -184,7 +198,7 @@ class _SightCardButtonPanel extends StatelessWidget {
 // Виджет отображает кнопку на панели _SightCardButtonPanel
 class _SightCardButton extends StatelessWidget {
   final String icon;
-  final Sight sight;
+  final Place sight;
   final VoidCallback onPressed;
 
   const _SightCardButton({
@@ -215,24 +229,38 @@ class _SightCardButton extends StatelessWidget {
 }
 
 class _AddToFavoritesButton extends StatelessWidget {
-  final Sight sight;
+  final Place sight;
+  final bool inFavorites;
+  final ValueChanged<Place> onAddToFavorites;
+  final ValueChanged<Place> onRemoveFromFavorites;
 
-  const _AddToFavoritesButton({required this.sight, Key? key})
-      : super(key: key);
+  const _AddToFavoritesButton({
+    Key? key,
+    required this.sight,
+    required this.inFavorites,
+    required this.onAddToFavorites,
+    required this.onRemoveFromFavorites,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+
     return _SightCardButton(
-      icon: AppAssets.iconHeart,
+      icon: inFavorites ? AppAssets.iconHeartFill : AppAssets.iconHeart,
       sight: sight,
-      onPressed: () =>
-          debugPrint('Нажата кнопка "Добавить в избранное" - ${sight.name}'),
+      onPressed: () {
+        if (inFavorites) {
+          onRemoveFromFavorites(sight);
+        } else {
+          onAddToFavorites(sight);
+        }
+      },
     );
   }
 }
 
 class _AddToCalendarButton extends StatelessWidget {
-  final Sight sight;
+  final Place sight;
 
   const _AddToCalendarButton({required this.sight, Key? key}) : super(key: key);
 
@@ -332,7 +360,7 @@ Future<DateTime?> _showAndroidDateTimePicker({
 }
 
 class _ShareButton extends StatelessWidget {
-  final Sight sight;
+  final Place sight;
 
   const _ShareButton({required this.sight, Key? key}) : super(key: key);
 
@@ -347,8 +375,8 @@ class _ShareButton extends StatelessWidget {
 }
 
 class _RemoveFromFavorites extends StatelessWidget {
-  final Sight sight;
-  final ValueChanged<Sight>? onRemove;
+  final Place sight;
+  final ValueChanged<Place>? onRemove;
 
   const _RemoveFromFavorites({
     required this.sight,
@@ -428,7 +456,7 @@ class _SightCardOpeningTime extends StatelessWidget {
 
 // Виджет отображает имя интересного места в списке
 class _SightCardName extends StatelessWidget {
-  final Sight sight;
+  final Place sight;
 
   const _SightCardName({
     Key? key,
@@ -450,7 +478,7 @@ class _SightCardName extends StatelessWidget {
 
 // Виджет отображает тип интересного места в списке
 class _SightCardType extends StatelessWidget {
-  final Sight sight;
+  final Place sight;
 
   const _SightCardType({
     Key? key,
@@ -463,7 +491,7 @@ class _SightCardType extends StatelessWidget {
 
     return Positioned(
       child: Text(
-        sight.type.toString(),
+        sight.placeType.synonym(),
         style: theme.textTheme.titleSmall?.copyWith(
           color: AppColors.white,
         ),

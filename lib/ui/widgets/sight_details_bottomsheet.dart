@@ -1,23 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/domain/sight.dart';
+import 'package:places/data/interactor/place_interactor.dart';
+import 'package:places/data/model/place.dart';
 import 'package:places/mocks.dart';
+import 'package:places/ui/models/place_type_synonym.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/big_button.dart';
 import 'package:places/ui/widgets/network_image.dart';
+import 'package:provider/provider.dart';
 
 // BottomSheet содеражщий детальную информацию об интересном месте
-class SightDetailsBottomSheet extends StatelessWidget {
+class SightDetailsBottomSheet extends StatefulWidget {
   final String sightId;
 
-  const SightDetailsBottomSheet({Key? key, required this.sightId})
-      : super(key: key);
+  const SightDetailsBottomSheet({
+    Key? key,
+    required this.sightId,
+  }) : super(key: key);
+
+  @override
+  State<SightDetailsBottomSheet> createState() =>
+      _SightDetailsBottomSheetState();
+}
+
+class _SightDetailsBottomSheetState extends State<SightDetailsBottomSheet> {
+  late PlaceInteractor _placeInteractor;
+  late Future<Place> _futurePlaceDetails;
+  late Future<List<Place>> _futureFavorites;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _placeInteractor = Provider.of<PlaceInteractor>(context);
+    updatePlaceDetails();
+    updateFavorites();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final sight = findSightById(sightId)!;
     const borderRadius = BorderRadius.only(
       topLeft: Radius.circular(12),
       topRight: Radius.circular(12),
@@ -31,59 +53,106 @@ class SightDetailsBottomSheet extends StatelessWidget {
       height: MediaQuery.of(context).size.height - 64,
       child: ClipRRect(
         borderRadius: borderRadius,
-        child: CustomScrollView(
-          slivers: [
-            _SightImagesBar(sight: sight),
-            SliverList(
-              delegate: SliverChildListDelegate([
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 24),
-                      _SightDetailsName(sight: sight),
-                      const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          _SightDetailsType(sight: sight),
-                          const SizedBox(width: 16),
-                          const _SightOpeningHours(),
-                        ],
+        child: FutureBuilder<Place>(
+          future: _futurePlaceDetails,
+          builder: (context, snapshot) {
+            final place = snapshot.data;
+
+            return place == null
+                ? const SizedBox.shrink()
+                : CustomScrollView(
+                    slivers: [
+                      _SightImagesBar(sight: place),
+                      SliverList(
+                        delegate: SliverChildListDelegate([
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 24),
+                                _SightDetailsName(sight: place),
+                                const SizedBox(height: 2),
+                                Row(
+                                  children: [
+                                    _SightDetailsType(sight: place),
+                                    const SizedBox(width: 16),
+                                    const _SightOpeningHours(),
+                                  ],
+                                ),
+                                const SizedBox(height: 24),
+                                _SightDescription(sight: place),
+                                const SizedBox(height: 24),
+                                BigButton(
+                                  title: AppStrings.route,
+                                  icon: AppAssets.iconGo,
+                                  onPressed: () => debugPrint(
+                                    'Нажата кнопка "Построить маршрут"',
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                Divider(
+                                  height: 0,
+                                  thickness: 0.8,
+                                  color: theme.colorScheme.outline,
+                                ),
+                                const SizedBox(height: 8),
+                                FutureBuilder<List<Place>>(
+                                  future: _futureFavorites,
+                                  builder: (_, snapshotFavorites) {
+                                    final favoritesId =
+                                        snapshotFavorites.hasData
+                                            ? snapshotFavorites.data!
+                                                .map((e) => e.id)
+                                                .toSet()
+                                            : <String>{};
+
+                                    return _BottomPanel(
+                                      place: place,
+                                      inFavorites:
+                                          favoritesId.contains(widget.sightId),
+                                      onAddToFavorites: (place) {
+                                        _placeInteractor.addToFavorites(place);
+                                        setState(() {
+                                          updateFavorites();
+                                        });
+                                      },
+                                      onRemoveFromFavorites: (place) {
+                                        _placeInteractor
+                                            .removeFromFavorites(place);
+                                        setState(() {
+                                          updateFavorites();
+                                        });
+                                      },
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                            ),
+                          ),
+                        ]),
                       ),
-                      const SizedBox(height: 24),
-                      _SightDescription(sight: sight),
-                      const SizedBox(height: 24),
-                      BigButton(
-                        title: AppStrings.route,
-                        icon: AppAssets.iconGo,
-                        onPressed: () =>
-                            debugPrint('Нажата кнопка "Построить маршрут"'),
-                      ),
-                      const SizedBox(height: 24),
-                      Divider(
-                        height: 0,
-                        thickness: 0.8,
-                        color: theme.colorScheme.outline,
-                      ),
-                      const SizedBox(height: 8),
-                      const _BottomPanel(),
-                      const SizedBox(height: 8),
                     ],
-                  ),
-                ),
-              ]),
-            ),
-          ],
+                  );
+          },
         ),
       ),
     );
+  }
+
+  Future<void> updateFavorites() async {
+    _futureFavorites = _placeInteractor.getFavoritesPlaces();
+  }
+
+  Future<void> updatePlaceDetails() async {
+    _futurePlaceDetails = _placeInteractor.getPlaceDetails(widget.sightId);
   }
 }
 
 // Виджет отображает краткое описание интересного места на экране информации
 class _SightDescription extends StatelessWidget {
-  final Sight sight;
+  final Place sight;
 
   const _SightDescription({
     Key? key,
@@ -95,7 +164,7 @@ class _SightDescription extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Text(
-      sight.details,
+      sight.description,
       style: theme.textTheme.bodyMedium?.copyWith(
         color: theme.colorScheme.onBackground,
       ),
@@ -125,7 +194,7 @@ class _SightOpeningHours extends StatelessWidget {
 
 // Виджет отображает информацию о типе интересного места
 class _SightDetailsType extends StatelessWidget {
-  final Sight sight;
+  final Place sight;
 
   const _SightDetailsType({
     Key? key,
@@ -137,7 +206,7 @@ class _SightDetailsType extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Text(
-      sight.type.toString(),
+      sight.placeType.synonym(),
       style: theme.textTheme.titleSmall?.copyWith(
         color: theme.colorScheme.onSurface,
       ),
@@ -147,7 +216,7 @@ class _SightDetailsType extends StatelessWidget {
 
 // Виджет отображает имя интересного места
 class _SightDetailsName extends StatelessWidget {
-  final Sight sight;
+  final Place sight;
 
   const _SightDetailsName({
     Key? key,
@@ -167,8 +236,17 @@ class _SightDetailsName extends StatelessWidget {
 
 // Виджет отображает нижнюю панель
 class _BottomPanel extends StatelessWidget {
+  final Place place;
+  final bool inFavorites;
+  final ValueChanged<Place> onAddToFavorites;
+  final ValueChanged<Place> onRemoveFromFavorites;
+
   const _BottomPanel({
     Key? key,
+    required this.onAddToFavorites,
+    required this.onRemoveFromFavorites,
+    required this.place,
+    required this.inFavorites,
   }) : super(key: key);
 
   @override
@@ -186,8 +264,14 @@ class _BottomPanel extends StatelessWidget {
           _BottomButton(
             text: AppStrings.toFavourites,
             active: true,
-            icon: AppAssets.iconHeart,
-            onPressed: () => debugPrint('Нажата кнопка "В Избранное"'),
+            icon: inFavorites ? AppAssets.iconHeartFill : AppAssets.iconHeart,
+            onPressed: () {
+              if (inFavorites) {
+                onRemoveFromFavorites(place);
+              } else {
+                onAddToFavorites(place);
+              }
+            },
           ),
         ],
       ),
@@ -199,7 +283,7 @@ class _BottomPanel extends StatelessWidget {
 // с кнопкой возврата на предыдущий экран.
 // При сроллинге экрана изображения уменьшаются в размерах
 class _SightImagesBar extends StatefulWidget {
-  final Sight sight;
+  final Place sight;
 
   const _SightImagesBar({
     Key? key,
@@ -233,9 +317,9 @@ class _SightImagesBarState extends State<_SightImagesBar> {
           alignment: Alignment.topCenter,
           children: [
             PageView.builder(
-              itemCount: widget.sight.imageURLs.length,
+              itemCount: widget.sight.urls.length,
               itemBuilder: (context, index) => CustomImage(
-                widget.sight.imageURLs[index],
+                widget.sight.urls[index],
               ),
               onPageChanged: (page) {
                 setState(() {
@@ -260,7 +344,7 @@ class _SightImagesBarState extends State<_SightImagesBar> {
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(10),
         child: _CustomIndicator(
-          length: widget.sight.imageURLs.length,
+          length: widget.sight.urls.length,
           currentPage: _currentPage,
         ),
       ),
