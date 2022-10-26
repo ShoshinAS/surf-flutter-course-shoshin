@@ -1,18 +1,19 @@
 import 'package:places/data/model/place_type.dart';
+import 'package:places/ui/screen/res/strings.dart';
 
 extension PlaceTypeMapper on PlaceType {
 
   static PlaceType fromApi(String data) {
     switch(data){
-      case 'hotel':
+      case AppStrings.typeHotelApi:
         return PlaceType.hotel;
-      case 'restaurant':
+      case AppStrings.typeRestaurantApi:
         return PlaceType.restaurant;
-      case 'park':
+      case AppStrings.typeParkApi:
         return PlaceType.park;
-      case 'museum':
+      case AppStrings.typeMuseumApi:
         return PlaceType.museum;
-      case 'cafe':
+      case AppStrings.typeCafeApi:
         return PlaceType.cafe;
       default:
         return PlaceType.particular;
@@ -22,19 +23,19 @@ extension PlaceTypeMapper on PlaceType {
   String toApi() {
     switch(this){
       case PlaceType.hotel:
-        return 'hotel';
+        return AppStrings.typeHotelApi;
       case PlaceType.restaurant:
-        return 'restaurant';
+        return AppStrings.typeRestaurantApi;
       case PlaceType.particular:
-        return 'other';
+        return AppStrings.typeOtherApi;
       case PlaceType.park:
-        return 'park';
+        return AppStrings.typeParkApi;
       case PlaceType.museum:
-        return 'museum';
+        return AppStrings.typeMuseumApi;
       case PlaceType.cafe:
-        return 'cafe';
+        return AppStrings.typeCafeApi;
       default:
-        return '';
+        return AppStrings.typeOtherApi;
     }
   }
 

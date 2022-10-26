@@ -114,9 +114,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
                   ),
                 ),
                 Text(
-                  'до ${(_filter.radius / 1000).toStringAsFixed(
+                  '${AppStrings.upTo} ${(_filter.radius / 1000).toStringAsFixed(
                     2,
-                  )} км',
+                  )} ${AppStrings.km}',
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.onPrimaryContainer,
                   ),

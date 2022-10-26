@@ -57,4 +57,12 @@ class AppStrings {
   static const camera = 'Камера';
   static const photo = 'Фотография';
   static const file = 'Файл';
+  static const typeHotelApi = 'hotel';
+  static const typeRestaurantApi = 'restaurant';
+  static const typeOtherApi = 'other';
+  static const typeParkApi = 'park';
+  static const typeMuseumApi = 'museum';
+  static const typeCafeApi = 'cafe';
+  static const upTo = 'до';
+  static const km = 'км';
 }
