@@ -1,30 +1,45 @@
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/domain/sight_type.dart';
-import 'package:places/ui/models/filter_model.dart';
+import 'package:places/data/interactor/place_interactor.dart';
+import 'package:places/data/model/filter.dart';
+import 'package:places/data/model/place_type.dart';
+import 'package:places/ui/models/place_type_synonym.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/big_button.dart';
+import 'package:provider/provider.dart';
+
+class FiltersScreenArguments {
+  final Filter initialFilter;
+
+  FiltersScreenArguments({required this.initialFilter});
+}
 
 // экран фильтра
 class FiltersScreen extends StatefulWidget {
-  final Filter initialFilter;
-
-  const FiltersScreen({Key? key, required this.initialFilter})
-      : super(key: key);
+  const FiltersScreen({Key? key}) : super(key: key);
 
   @override
   State<FiltersScreen> createState() => _FiltersScreenState();
 }
 
 class _FiltersScreenState extends State<FiltersScreen> {
-  late final Filter screenFilter;
+  late final Filter _filter;
+
+  late PlaceInteractor _placeInteractor;
+
+  CancelableOperation<void>? _updateAmountOperation;
+  int? _amount;
 
   @override
-  void initState() {
-    super.initState();
-    screenFilter = Filter.from(widget.initialFilter);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _placeInteractor = Provider.of<PlaceInteractor>(context);
+    final args = ModalRoute.of(context)!.settings.arguments as FiltersScreenArguments;
+    _filter = Filter.from(args.initialFilter);
+    updateAmount();
   }
 
   @override
@@ -42,7 +57,10 @@ class _FiltersScreenState extends State<FiltersScreen> {
         actions: [
           _ClearFiltersButton(
             onPressed: () {
-              setState(screenFilter.clear);
+              setState(() {
+                _filter.clear();
+                delayedUpdateAmount();
+              });
             },
           ),
         ],
@@ -68,15 +86,16 @@ class _FiltersScreenState extends State<FiltersScreen> {
                 scrollDirection: Axis.horizontal,
                 crossAxisCount: categoriesCrossAxisCount,
                 shrinkWrap: true,
-                children: SightType.values
+                children: PlaceType.values
                     .map(
                       (e) => _CategoryCard(
-                        title: e.toString(),
+                        title: e.synonym(),
                         icon: e.getIcon(),
-                        selected: screenFilter.selected(e),
+                        selected: _filter.typeSelected(e),
                         onPressed: () {
                           setState(() {
-                            screenFilter.invert(e);
+                            _filter.invertTypeSelection(e);
+                            delayedUpdateAmount();
                           });
                         },
                       ),
@@ -95,9 +114,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
                   ),
                 ),
                 Text(
-                  'до ${(screenFilter.selectedDistance / 1000).toStringAsFixed(
+                  '${AppStrings.upTo} ${(_filter.radius / 1000).toStringAsFixed(
                     2,
-                  )} км',
+                  )} ${AppStrings.km}',
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.onPrimaryContainer,
                   ),
@@ -105,13 +124,14 @@ class _FiltersScreenState extends State<FiltersScreen> {
               ],
             ),
             Slider(
-              value: screenFilter.selectedDistance,
-              max: screenFilter.maxDistance,
+              value: _filter.radius,
+              max: Filter.maxRadius,
               activeColor: theme.colorScheme.secondary,
               inactiveColor: theme.colorScheme.outline,
               onChanged: (newValue) {
                 setState(() {
-                  screenFilter.selectedDistance = newValue;
+                  _filter.radius = newValue;
+                  delayedUpdateAmount();
                 });
               },
             ),
@@ -121,15 +141,31 @@ class _FiltersScreenState extends State<FiltersScreen> {
       bottomSheet: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: BigButton(
-          active: screenFilter.amount > 0,
-          title: '${AppStrings.show} (${screenFilter.amount})',
+          active: (_amount != null) && (_amount! > 0),
+          title: (_amount != null)
+              ? '${AppStrings.show} ($_amount)'
+              : AppStrings.show,
           onPressed: () {
-            widget.initialFilter.fill(screenFilter);
-            Navigator.pop(context);
+            Navigator.pop(context, _filter);
           },
         ),
       ),
     );
+  }
+
+  Future<void> updateAmount() async {
+    final placeList = await _placeInteractor.getPlaces(_filter);
+    setState(() {
+      _amount = placeList.length;
+    });
+  }
+
+  void delayedUpdateAmount() {
+    _updateAmountOperation?.cancel();
+    _updateAmountOperation = CancelableOperation<void>.fromFuture(
+      Future.delayed(const Duration(seconds: 1), () {}),
+    );
+    _updateAmountOperation!.value.whenComplete(updateAmount);
   }
 }
 
@@ -234,20 +270,20 @@ class _CategoryCard extends StatelessWidget {
 }
 
 // расширение SightType для определения иконки для каждой категории
-extension _Category on SightType {
+extension _Category on PlaceType {
   String getIcon() {
     switch (this) {
-      case SightType.hotel:
+      case PlaceType.hotel:
         return AppAssets.iconCategoryHotel;
-      case SightType.restaurant:
+      case PlaceType.restaurant:
         return AppAssets.iconCategoryRestaurant;
-      case SightType.particular:
+      case PlaceType.particular:
         return AppAssets.iconCategoryParticular;
-      case SightType.park:
+      case PlaceType.park:
         return AppAssets.iconCategoryPark;
-      case SightType.museum:
+      case PlaceType.museum:
         return AppAssets.iconCategoryMuseum;
-      case SightType.cafe:
+      case PlaceType.cafe:
         return AppAssets.iconCategoryCafe;
       default:
         return '';

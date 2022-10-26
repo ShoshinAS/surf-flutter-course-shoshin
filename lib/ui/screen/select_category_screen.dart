@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:places/domain/sight_type.dart';
+import 'package:places/data/model/place_type.dart';
+import 'package:places/ui/models/place_type_synonym.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 
 class SelectCategory extends StatelessWidget {
-  final ValueChanged<SightType> onSelect;
+  final ValueChanged<PlaceType> onSelect;
   const SelectCategory({Key? key, required this.onSelect}) : super(key: key);
 
   @override
@@ -25,7 +26,7 @@ class SelectCategory extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: SightType.values
+          children: PlaceType.values
               .map((e) => Column(
                     children: [
                       TextButton(
@@ -39,7 +40,7 @@ class SelectCategory extends StatelessWidget {
                           onSelect(e);
                         },
                         child: Text(
-                          e.toString(),
+                          e.synonym(),
                           style: theme.textTheme.bodyLarge?.copyWith(
                             color: theme.colorScheme.onTertiary,
                           ),

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/domain/sight.dart';
+import 'package:places/data/model/place.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/colors.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/sight_card.dart';
 
 typedef OnMoveElementCallback = void Function(
-  Sight sourceElement,
-  Sight? targetElement,
+    Place sourceElement,
+    Place? targetElement,
 );
 
 // виджет реализует список интересных мест
@@ -16,7 +16,7 @@ class SightListDraggable extends StatefulWidget {
   final List<SightCard> children;
   final Widget emptyScreen;
   final OnMoveElementCallback? onMoveElement;
-  final ValueChanged<Sight>? onRemove;
+  final ValueChanged<Place>? onRemove;
 
   const SightListDraggable({
     Key? key,
@@ -80,13 +80,13 @@ class _SightListDraggableState extends State<SightListDraggable> {
 // виджет, реализующий пустое место в конце списка для возможности перетаскивания
 // в конец списка
 class _EmptyDragTarget extends StatelessWidget {
-  final DragTargetAccept<Sight> onAccept;
+  final DragTargetAccept<Place> onAccept;
 
   const _EmptyDragTarget({Key? key, required this.onAccept}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return DragTarget<Sight>(
+    return DragTarget<Place>(
       builder: (context, candidateData, rejectedData) => const Padding(
         padding: EdgeInsets.symmetric(vertical: 12),
         child: SizedBox(
@@ -104,7 +104,7 @@ class _EmptyDragTarget extends StatelessWidget {
 class _CardInList extends StatelessWidget {
   final SightCard sightCard;
   final DismissDirectionCallback onDismissed;
-  final DragTargetAccept<Sight> onAccept;
+  final DragTargetAccept<Place> onAccept;
   final VoidCallback onDragStarted;
   final DragEndCallback onDragEnd;
 
@@ -119,9 +119,9 @@ class _CardInList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LongPressDraggable<Sight>(
+    return LongPressDraggable<Place>(
       feedback: sightCard,
-      child: DragTarget<Sight>(
+      child: DragTarget<Place>(
         builder: (context, candidateItems, rejectedItems) =>
             _DismissibleCardInList(
           sightCard: sightCard,

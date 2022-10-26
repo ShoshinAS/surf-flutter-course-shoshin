@@ -166,6 +166,7 @@ class MockStrings {
 class MockLocations {
   static Location location1 = Location(53.231653, 50.291682);
   static Location location2 = Location(53.208479, 50.124556);
+  static Location location3 = Location(55.742251, 37.620522);
 }
 
 // изображения для добавления нового интересного места

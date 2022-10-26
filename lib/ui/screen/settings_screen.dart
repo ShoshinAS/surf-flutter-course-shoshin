@@ -37,11 +37,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: AppStrings.darkTheme,
               child: Consumer<ThemeModel>(
                 builder: (context, themeModel, child) => Switch(
-                  value: themeModel.darkTheme,
+                  value: themeModel.isDarkTheme,
                   activeColor: theme.colorScheme.secondary,
                   onChanged: (newValue) {
                     setState(() {
-                      themeModel.darkTheme = newValue;
+                      themeModel.setTheme(isDarkTheme: newValue);
                     });
                   },
                 ),

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/ui/models/filter_model.dart';
+import 'package:places/data/interactor/place_interactor.dart';
+import 'package:places/data/model/filter.dart';
+import 'package:places/data/model/place.dart';
+import 'package:places/mocks.dart';
+import 'package:places/ui/screen/filters_screen.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/screen/res/themes.dart';
+import 'package:places/ui/screen/search_screen.dart';
 import 'package:places/ui/widgets/bottom_navigation_bar.dart';
 import 'package:places/ui/widgets/search_bar.dart';
 import 'package:places/ui/widgets/sight_card.dart';
@@ -19,80 +24,151 @@ class SightListScreen extends StatefulWidget {
 }
 
 class _SightListScreenState extends State<SightListScreen> {
-  final FocusNode _searchBarFocusNode = FocusNode();
+  final Filter _filter = Filter(location: MockLocations.location3);
+
+  late PlaceInteractor _placeInteractor;
+  late Future<List<Place>> _futurePlaces;
+  late Future<List<Place>> _futureFavorites;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _placeInteractor = Provider.of<PlaceInteractor>(context);
+    updatePlaces();
+    updateFavorites();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final portrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    final searchBarFocusNode = FocusNode();
 
-
-    return Consumer<Filter>(
-      builder: (context, filter, child) {
-        return Scaffold(
-          backgroundColor: theme.colorScheme.background,
-          body: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: portrait ? 16 : 34,
-            ),
-            child: CustomScrollView(slivers: [
-              SliverAppBar(
-                backgroundColor: theme.colorScheme.background,
-                collapsedHeight: 56,
-                expandedHeight: 128,
-                pinned: true,
-                elevation: 0,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(
-                    AppStrings.appBarTitle,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      color: theme.colorScheme.onBackground,
-                    ),
+    return Scaffold(
+      backgroundColor: theme.colorScheme.background,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+        ),
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              backgroundColor: theme.colorScheme.background,
+              collapsedHeight: 56,
+              expandedHeight: 128,
+              pinned: true,
+              elevation: 0,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(
+                  AppStrings.appBarTitle,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: theme.colorScheme.onBackground,
                   ),
-                  expandedTitleScale: 1.8,
-                  centerTitle: true,
-                  titlePadding: const EdgeInsets.only(bottom: 16),
                 ),
+                expandedTitleScale: 1.8,
+                centerTitle: true,
+                titlePadding: const EdgeInsets.only(bottom: 16),
               ),
-              SliverList(
-                delegate: SliverChildListDelegate([
-                  const SizedBox(height: 8),
-                  SearchBar(
-                    height: 52,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 6,
-                    ),
-                    suffixIcon: _FilterButton(filter: filter),
-                    focusNode: _searchBarFocusNode,
-                    onTap: () {
-                      Navigator.of(context).pushNamed('/search');
-                      _searchBarFocusNode.unfocus();
-                    },
-                    keyboardType: TextInputType.none,
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                const SizedBox(height: 8),
+                SearchBar(
+                  height: 52,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 6,
                   ),
-                ]),
-              ),
-              SightList(
-                children: filter.result.map(SightCardInList.new).toList(),
-              ),
-            ]),
-          ),
-          bottomNavigationBar: const AppBottomNavigationBar(index: 0,),
-          resizeToAvoidBottomInset: false,
-          floatingActionButton: const _NewSightButton(),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-        );
-      },
+                  suffixIcon: _FilterButton(
+                    filter: _filter,
+                    onFilterChange: (newFilter) {
+                      setState(() {
+                        _filter.load(newFilter);
+                        updatePlaces();
+                      });
+                    },
+                  ),
+                  focusNode: searchBarFocusNode,
+                  onTap: () {
+                    Navigator.of(context).pushNamed(
+                      '/search',
+                      arguments: SearchScreenArguments(filter: _filter),
+                    );
+                    searchBarFocusNode.unfocus();
+                  },
+                  keyboardType: TextInputType.none,
+                ),
+              ]),
+            ),
+            FutureBuilder<List<Place>>(
+              future: _futurePlaces,
+              builder: (context, snapshotPlaceList) {
+                return FutureBuilder<List<Place>>(
+                  future: _futureFavorites,
+                  builder: (context, snapshotFavorites) {
+                    final favoritesId = snapshotFavorites.hasData
+                        ? snapshotFavorites.data!.map((e) => e.id).toSet()
+                        : <String>{};
+
+                    return SightList(
+                      children: snapshotPlaceList.hasData
+                          ? snapshotPlaceList.data!
+                              .map(
+                                (e) => SightCardInList(
+                                  e,
+                                  inFavorites: favoritesId.contains(e.id),
+                                  onAddToFavorites: (place) {
+                                    setState(() {
+                                      _placeInteractor.addToFavorites(place);
+                                      updateFavorites();
+                                    });
+                                  },
+                                  onRemoveFromFavorites: (place) {
+                                    setState(() {
+                                      _placeInteractor.removeFromFavorites(place);
+                                      updateFavorites();
+                                    });
+                                  },
+                                ),
+                              )
+                              .toList()
+                          : [],
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: const AppBottomNavigationBar(
+        index: 0,
+      ),
+      resizeToAvoidBottomInset: false,
+      floatingActionButton: _NewSightButton(onAddPlace: (newPlace) {
+        setState(() {
+          updatePlaces();
+        });
+      }),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
+  }
+
+  Future<void> updatePlaces() async {
+    _futurePlaces = _placeInteractor.getPlaces(_filter);
+  }
+
+  Future<void> updateFavorites() async {
+    _futureFavorites = _placeInteractor.getFavoritesPlaces();
   }
 }
 
 // кнопка перехода к экрану фильтрации
 class _FilterButton extends StatelessWidget {
   final Filter filter;
+  final ValueChanged<Filter> onFilterChange;
 
-  const _FilterButton({Key? key, required this.filter}) : super(key: key);
+  const _FilterButton(
+      {Key? key, required this.filter, required this.onFilterChange,})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -104,8 +180,14 @@ class _FilterButton extends StatelessWidget {
           minHeight: 24,
         ),
         icon: SvgPicture.asset(AppAssets.iconFilter),
-        onPressed: () {
-          Navigator.of(context).pushNamed('/filter');
+        onPressed: () async {
+          final newFilter = await Navigator.of(context).pushNamed(
+            '/filter',
+            arguments: FiltersScreenArguments(initialFilter: filter),
+          ) as Filter?;
+          if (newFilter != null) {
+            onFilterChange(newFilter);
+          }
         },
         splashRadius: 32,
       ),
@@ -115,7 +197,9 @@ class _FilterButton extends StatelessWidget {
 
 // кнопка создания нового интересного места
 class _NewSightButton extends StatelessWidget {
-  const _NewSightButton({Key? key}) : super(key: key);
+  final ValueChanged<Place> onAddPlace;
+
+  const _NewSightButton({Key? key, required this.onAddPlace}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -159,8 +243,11 @@ class _NewSightButton extends StatelessWidget {
           ],
         ),
       ),
-      onPressed: () {
-        Navigator.of(context).pushNamed('/add');
+      onPressed: () async {
+        final newPlace = await Navigator.of(context).pushNamed('/add') as Place?;
+        if (newPlace != null) {
+          onAddPlace(newPlace);
+        }
       },
     );
   }
