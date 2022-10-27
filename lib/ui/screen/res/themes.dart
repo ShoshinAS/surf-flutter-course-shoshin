@@ -42,6 +42,10 @@ final lightTheme = ThemeData(
     onTertiary: AppColors.mainWhite,
     error: AppColors.redWhite,
   ),
+  progressIndicatorTheme: const ProgressIndicatorThemeData(
+    color: AppColors.secondary2,
+    circularTrackColor: AppColors.background,
+  ),
   extensions: const <ThemeExtension<dynamic>>[
     CustomColors(
       gradient1: AppColors.gradientLeftWhite,
@@ -75,6 +79,10 @@ final darkTheme = ThemeData(
     tertiary: AppColors.mainBlack,
     onTertiary: AppColors.white,
     error: AppColors.redBlack,
+  ),
+  progressIndicatorTheme: const ProgressIndicatorThemeData(
+    color: AppColors.secondary2,
+    circularTrackColor: AppColors.dark,
   ),
   extensions: const [
     CustomColors(

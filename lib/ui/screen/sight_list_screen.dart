@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/data/interactor/place_interactor.dart';
@@ -26,9 +28,10 @@ class SightListScreen extends StatefulWidget {
 class _SightListScreenState extends State<SightListScreen> {
   final Filter _filter = Filter(location: MockLocations.location3);
 
+  final _placesStreamController = StreamController<List<Place>>();
+  final _favoritesStreamController = StreamController<List<Place>>();
+
   late PlaceInteractor _placeInteractor;
-  late Future<List<Place>> _futurePlaces;
-  late Future<List<Place>> _futureFavorites;
 
   @override
   void didChangeDependencies() {
@@ -36,6 +39,13 @@ class _SightListScreenState extends State<SightListScreen> {
     _placeInteractor = Provider.of<PlaceInteractor>(context);
     updatePlaces();
     updateFavorites();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _placesStreamController.close();
+    _favoritesStreamController.close();
   }
 
   @override
@@ -80,10 +90,8 @@ class _SightListScreenState extends State<SightListScreen> {
                   suffixIcon: _FilterButton(
                     filter: _filter,
                     onFilterChange: (newFilter) {
-                      setState(() {
-                        _filter.load(newFilter);
-                        updatePlaces();
-                      });
+                      _filter.load(newFilter);
+                      updatePlaces();
                     },
                   ),
                   focusNode: searchBarFocusNode,
@@ -98,42 +106,49 @@ class _SightListScreenState extends State<SightListScreen> {
                 ),
               ]),
             ),
-            FutureBuilder<List<Place>>(
-              future: _futurePlaces,
-              builder: (context, snapshotPlaceList) {
-                return FutureBuilder<List<Place>>(
-                  future: _futureFavorites,
-                  builder: (context, snapshotFavorites) {
-                    final favoritesId = snapshotFavorites.hasData
-                        ? snapshotFavorites.data!.map((e) => e.id).toSet()
-                        : <String>{};
+            StreamBuilder<List<Place>>(
+              stream: _placesStreamController.stream,
+              builder: (_, snapshotPlaceList) {
+                return !snapshotPlaceList.hasData
+                    ? const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.all(18),
+                          child: Center(child: CircularProgressIndicator(
+                            strokeWidth: 6,
+                          )),
+                        ),
+                      )
+                    : StreamBuilder<List<Place>>(
+                        stream: _favoritesStreamController.stream,
+                        builder: (_, snapshotFavorites) {
+                          final favoritesId = snapshotFavorites.hasData
+                              ? snapshotFavorites.data!.map((e) => e.id).toSet()
+                              : <String>{};
 
-                    return SightList(
-                      children: snapshotPlaceList.hasData
-                          ? snapshotPlaceList.data!
-                              .map(
-                                (e) => SightCardInList(
-                                  e,
-                                  inFavorites: favoritesId.contains(e.id),
-                                  onAddToFavorites: (place) {
-                                    setState(() {
-                                      _placeInteractor.addToFavorites(place);
-                                      updateFavorites();
-                                    });
-                                  },
-                                  onRemoveFromFavorites: (place) {
-                                    setState(() {
-                                      _placeInteractor.removeFromFavorites(place);
-                                      updateFavorites();
-                                    });
-                                  },
-                                ),
-                              )
-                              .toList()
-                          : [],
-                    );
-                  },
-                );
+                          return SightList(
+                            children: snapshotPlaceList.hasData
+                                ? snapshotPlaceList.data!
+                                    .map(
+                                      (e) => SightCardInList(
+                                        e,
+                                        inFavorites: favoritesId.contains(e.id),
+                                        onAddToFavorites: (place) {
+                                          _placeInteractor
+                                              .addToFavorites(place);
+                                          updateFavorites();
+                                        },
+                                        onRemoveFromFavorites: (place) {
+                                          _placeInteractor
+                                              .removeFromFavorites(place);
+                                          updateFavorites();
+                                        },
+                                      ),
+                                    )
+                                    .toList()
+                                : [],
+                          );
+                        },
+                      );
               },
             ),
           ],
@@ -143,21 +158,22 @@ class _SightListScreenState extends State<SightListScreen> {
         index: 0,
       ),
       resizeToAvoidBottomInset: false,
-      floatingActionButton: _NewSightButton(onAddPlace: (newPlace) {
-        setState(() {
+      floatingActionButton: _NewSightButton(
+        onAddPlace: (newPlace) {
           updatePlaces();
-        });
-      }),
+        },
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
   Future<void> updatePlaces() async {
-    _futurePlaces = _placeInteractor.getPlaces(_filter);
+    _placesStreamController.sink.add(await _placeInteractor.getPlaces(_filter));
   }
 
   Future<void> updateFavorites() async {
-    _futureFavorites = _placeInteractor.getFavoritesPlaces();
+    _favoritesStreamController.sink
+        .add(await _placeInteractor.getFavoritesPlaces());
   }
 }
 
@@ -166,9 +182,11 @@ class _FilterButton extends StatelessWidget {
   final Filter filter;
   final ValueChanged<Filter> onFilterChange;
 
-  const _FilterButton(
-      {Key? key, required this.filter, required this.onFilterChange,})
-      : super(key: key);
+  const _FilterButton({
+    Key? key,
+    required this.filter,
+    required this.onFilterChange,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -244,7 +262,8 @@ class _NewSightButton extends StatelessWidget {
         ),
       ),
       onPressed: () async {
-        final newPlace = await Navigator.of(context).pushNamed('/add') as Place?;
+        final newPlace =
+            await Navigator.of(context).pushNamed('/add') as Place?;
         if (newPlace != null) {
           onAddPlace(newPlace);
         }
