@@ -1,5 +1,5 @@
 import 'package:places/data/model/place_type.dart';
-import 'package:places/domain/location.dart';
+import 'package:places/data/model/location.dart';
 
 class Place {
   final String id;

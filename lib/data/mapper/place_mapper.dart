@@ -1,6 +1,6 @@
 import 'package:places/data/mapper/place_type_mapper.dart';
 import 'package:places/data/model/place.dart';
-import 'package:places/domain/location.dart';
+import 'package:places/data/model/location.dart';
 
 extension PlaceMapper on Place {
 
