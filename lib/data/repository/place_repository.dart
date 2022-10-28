@@ -39,7 +39,7 @@ class PlaceRepository {
     );
     if (response.statusCode != 200) {
       throw NetworkException(
-        request: response.requestOptions.uri.toString(),
+        request: response.requestOptions.path,
         code: response.statusCode,
         description: response.statusMessage,
       );
@@ -59,7 +59,7 @@ class PlaceRepository {
     );
     if (response.statusCode != 200) {
       throw NetworkException(
-        request: response.requestOptions.uri.toString(),
+        request: response.requestOptions.path,
         code: response.statusCode,
         description: response.statusMessage,
       );
@@ -77,7 +77,7 @@ class PlaceRepository {
     );
     if (response.statusCode != 200) {
       throw NetworkException(
-        request: response.requestOptions.uri.toString(),
+        request: response.requestOptions.path,
         code: response.statusCode,
         description: response.statusMessage,
       );
@@ -94,7 +94,7 @@ class PlaceRepository {
     );
     if (response.statusCode != 200) {
       throw NetworkException(
-        request: response.requestOptions.uri.toString(),
+        request: response.requestOptions.path,
         code: response.statusCode,
         description: response.statusMessage,
       );
@@ -108,7 +108,7 @@ class PlaceRepository {
     );
     if (response.statusCode != 200) {
       throw NetworkException(
-        request: response.requestOptions.uri.toString(),
+        request: response.requestOptions.path,
         code: response.statusCode,
         description: response.statusMessage,
       );

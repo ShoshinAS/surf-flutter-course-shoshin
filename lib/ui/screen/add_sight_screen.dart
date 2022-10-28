@@ -198,18 +198,18 @@ class _AddSightScreenState extends State<AddSightScreen> {
                 description: _controllerDescription.text,
                 placeType: _placeType!,
               );
-              try {
-                final createdPlace = Provider.of<PlaceInteractor>(
-                    context, listen: false,
-                )
-                    .addNewPlace(newPlace);
+              Provider.of<PlaceInteractor>(context, listen: false)
+                  .addNewPlace(newPlace)
+                  .then((createdPlace) {
                 Navigator.pop(context, createdPlace);
-              } on NetworkException catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(e.toString()),
-                  duration: const Duration(seconds: 5),
-                ));
-              }
+              }).onError((error, stackTrace) {
+                if (error is NetworkException) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(error.toString()),
+                    duration: const Duration(seconds: 30),
+                  ));
+                }
+              });
             },
           ),
         ),
