@@ -5,6 +5,7 @@ import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/data/model/location.dart';
+import 'package:places/domain/exceptions/network_exception.dart';
 import 'package:places/ui/models/place_type_synonym.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
@@ -197,9 +198,18 @@ class _AddSightScreenState extends State<AddSightScreen> {
                 description: _controllerDescription.text,
                 placeType: _placeType!,
               );
-              final createdPlace = Provider.of<PlaceInteractor>(context, listen: false)
-                  .addNewPlace(newPlace);
-              Navigator.pop(context, createdPlace);
+              try {
+                final createdPlace = Provider.of<PlaceInteractor>(
+                    context, listen: false,
+                )
+                    .addNewPlace(newPlace);
+                Navigator.pop(context, createdPlace);
+              } on NetworkException catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(e.toString()),
+                  duration: const Duration(seconds: 5),
+                ));
+              }
             },
           ),
         ),

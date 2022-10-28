@@ -7,6 +7,7 @@ import 'package:places/ui/models/place_type_synonym.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/big_button.dart';
+import 'package:places/ui/widgets/error_placeholder.dart';
 import 'package:places/ui/widgets/network_image.dart';
 import 'package:provider/provider.dart';
 
@@ -56,85 +57,90 @@ class _SightDetailsBottomSheetState extends State<SightDetailsBottomSheet> {
         child: FutureBuilder<Place>(
           future: _futurePlaceDetails,
           builder: (context, snapshot) {
-            final place = snapshot.data;
+            if (snapshot.hasError) {
+              return const ErrorPlaceholder();
+            } else if (!snapshot.hasData) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 6,
+                ),
+              );
+            }
+            final place = snapshot.data!;
 
-            return place == null
-                ? const SizedBox.shrink()
-                : CustomScrollView(
-                    slivers: [
-                      _SightImagesBar(sight: place),
-                      SliverList(
-                        delegate: SliverChildListDelegate([
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 24),
-                                _SightDetailsName(sight: place),
-                                const SizedBox(height: 2),
-                                Row(
-                                  children: [
-                                    _SightDetailsType(sight: place),
-                                    const SizedBox(width: 16),
-                                    const _SightOpeningHours(),
-                                  ],
-                                ),
-                                const SizedBox(height: 24),
-                                _SightDescription(sight: place),
-                                const SizedBox(height: 24),
-                                BigButton(
-                                  title: AppStrings.route,
-                                  icon: AppAssets.iconGo,
-                                  onPressed: () => debugPrint(
-                                    'Нажата кнопка "Построить маршрут"',
-                                  ),
-                                ),
-                                const SizedBox(height: 24),
-                                Divider(
-                                  height: 0,
-                                  thickness: 0.8,
-                                  color: theme.colorScheme.outline,
-                                ),
-                                const SizedBox(height: 8),
-                                FutureBuilder<List<Place>>(
-                                  future: _futureFavorites,
-                                  builder: (_, snapshotFavorites) {
-                                    final favoritesId =
-                                        snapshotFavorites.hasData
-                                            ? snapshotFavorites.data!
-                                                .map((e) => e.id)
-                                                .toSet()
-                                            : <String>{};
-
-                                    return _BottomPanel(
-                                      place: place,
-                                      inFavorites:
-                                          favoritesId.contains(widget.sightId),
-                                      onAddToFavorites: (place) {
-                                        _placeInteractor.addToFavorites(place);
-                                        setState(() {
-                                          updateFavorites();
-                                        });
-                                      },
-                                      onRemoveFromFavorites: (place) {
-                                        _placeInteractor
-                                            .removeFromFavorites(place);
-                                        setState(() {
-                                          updateFavorites();
-                                        });
-                                      },
-                                    );
-                                  },
-                                ),
-                                const SizedBox(height: 8),
-                              ],
+            return CustomScrollView(
+              slivers: [
+                _SightImagesBar(sight: place),
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 24),
+                          _SightDetailsName(sight: place),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              _SightDetailsType(sight: place),
+                              const SizedBox(width: 16),
+                              const _SightOpeningHours(),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          _SightDescription(sight: place),
+                          const SizedBox(height: 24),
+                          BigButton(
+                            title: AppStrings.route,
+                            icon: AppAssets.iconGo,
+                            onPressed: () => debugPrint(
+                              'Нажата кнопка "Построить маршрут"',
                             ),
                           ),
-                        ]),
+                          const SizedBox(height: 24),
+                          Divider(
+                            height: 0,
+                            thickness: 0.8,
+                            color: theme.colorScheme.outline,
+                          ),
+                          const SizedBox(height: 8),
+                          FutureBuilder<List<Place>>(
+                            future: _futureFavorites,
+                            builder: (_, snapshotFavorites) {
+                              final favoritesId = snapshotFavorites.hasData
+                                  ? snapshotFavorites.data!
+                                      .map((e) => e.id)
+                                      .toSet()
+                                  : <String>{};
+
+                              return _BottomPanel(
+                                place: place,
+                                inFavorites:
+                                    favoritesId.contains(widget.sightId),
+                                onAddToFavorites: (place) {
+                                  _placeInteractor.addToFavorites(place);
+                                  setState(() {
+                                    updateFavorites();
+                                  });
+                                },
+                                onRemoveFromFavorites: (place) {
+                                  _placeInteractor.removeFromFavorites(place);
+                                  setState(() {
+                                    updateFavorites();
+                                  });
+                                },
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 8),
+                        ],
                       ),
-                    ],
-                  );
+                    ),
+                  ]),
+                ),
+              ],
+            );
           },
         ),
       ),

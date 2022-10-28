@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place.dart';
+import 'package:places/domain/exceptions/network_exception.dart';
 import 'package:places/mocks.dart';
 import 'package:places/ui/screen/filters_screen.dart';
 import 'package:places/ui/screen/res/assets.dart';
@@ -12,6 +13,7 @@ import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/screen/res/themes.dart';
 import 'package:places/ui/screen/search_screen.dart';
 import 'package:places/ui/widgets/bottom_navigation_bar.dart';
+import 'package:places/ui/widgets/error_placeholder.dart';
 import 'package:places/ui/widgets/search_bar.dart';
 import 'package:places/ui/widgets/sight_card.dart';
 import 'package:places/ui/widgets/sight_list.dart';
@@ -109,46 +111,52 @@ class _SightListScreenState extends State<SightListScreen> {
             StreamBuilder<List<Place>>(
               stream: _placesStreamController.stream,
               builder: (_, snapshotPlaceList) {
-                return !snapshotPlaceList.hasData
-                    ? const SliverToBoxAdapter(
+                return StreamBuilder<List<Place>>(
+                  stream: _favoritesStreamController.stream,
+                  builder: (_, snapshotFavorites) {
+                    final favoritesId = snapshotFavorites.hasData
+                        ? snapshotFavorites.data!.map((e) => e.id).toSet()
+                        : <String>{};
+
+                    if (snapshotPlaceList.hasError ||
+                        snapshotFavorites.hasError) {
+                      return const SliverFillRemaining(
+                          child: ErrorPlaceholder(),
+                      );
+                    } else if (!snapshotPlaceList.hasData ||
+                        !snapshotFavorites.hasData) {
+                      return const SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.all(18),
-                          child: Center(child: CircularProgressIndicator(
-                            strokeWidth: 6,
-                          )),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 6,
+                            ),
+                          ),
                         ),
-                      )
-                    : StreamBuilder<List<Place>>(
-                        stream: _favoritesStreamController.stream,
-                        builder: (_, snapshotFavorites) {
-                          final favoritesId = snapshotFavorites.hasData
-                              ? snapshotFavorites.data!.map((e) => e.id).toSet()
-                              : <String>{};
-
-                          return SightList(
-                            children: snapshotPlaceList.hasData
-                                ? snapshotPlaceList.data!
-                                    .map(
-                                      (e) => SightCardInList(
-                                        e,
-                                        inFavorites: favoritesId.contains(e.id),
-                                        onAddToFavorites: (place) {
-                                          _placeInteractor
-                                              .addToFavorites(place);
-                                          updateFavorites();
-                                        },
-                                        onRemoveFromFavorites: (place) {
-                                          _placeInteractor
-                                              .removeFromFavorites(place);
-                                          updateFavorites();
-                                        },
-                                      ),
-                                    )
-                                    .toList()
-                                : [],
-                          );
-                        },
                       );
+                    }
+
+                    return SightList(
+                      children: snapshotPlaceList.data!
+                          .map(
+                            (e) => SightCardInList(
+                              e,
+                              inFavorites: favoritesId.contains(e.id),
+                              onAddToFavorites: (place) {
+                                _placeInteractor.addToFavorites(place);
+                                updateFavorites();
+                              },
+                              onRemoveFromFavorites: (place) {
+                                _placeInteractor.removeFromFavorites(place);
+                                updateFavorites();
+                              },
+                            ),
+                          )
+                          .toList(),
+                    );
+                  },
+                );
               },
             ),
           ],
@@ -168,12 +176,21 @@ class _SightListScreenState extends State<SightListScreen> {
   }
 
   Future<void> updatePlaces() async {
-    _placesStreamController.sink.add(await _placeInteractor.getPlaces(_filter));
+    try {
+      _placesStreamController.sink
+          .add(await _placeInteractor.getPlaces(_filter));
+    } on NetworkException catch (e) {
+      _placesStreamController.sink.addError(e);
+    }
   }
 
   Future<void> updateFavorites() async {
-    _favoritesStreamController.sink
-        .add(await _placeInteractor.getFavoritesPlaces());
+    try {
+      _favoritesStreamController.sink
+          .add(await _placeInteractor.getFavoritesPlaces());
+    } on NetworkException catch (e) {
+      _placesStreamController.sink.addError(e);
+    }
   }
 }
 
