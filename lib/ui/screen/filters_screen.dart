@@ -27,16 +27,20 @@ class FiltersScreen extends StatefulWidget {
 
 class _FiltersScreenState extends State<FiltersScreen> {
   late final Filter _filter;
-
-  late PlaceInteractor _placeInteractor;
+  late final PlaceInteractor _placeInteractor;
 
   CancelableOperation<void>? _updateAmountOperation;
   int? _amount;
 
   @override
+  void initState() {
+    super.initState();
+    _placeInteractor = Provider.of<PlaceInteractor>(context, listen: false);
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _placeInteractor = Provider.of<PlaceInteractor>(context);
     final args = ModalRoute.of(context)!.settings.arguments as FiltersScreenArguments;
     _filter = Filter.from(args.initialFilter);
     updateAmount();

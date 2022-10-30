@@ -152,13 +152,13 @@ class _ScheduledList extends StatefulWidget {
 }
 
 class _ScheduledListState extends State<_ScheduledList> {
-  late PlaceInteractor _placeInteractor;
+  late final PlaceInteractor _placeInteractor;
   late Future<List<Place>> _futureFavorites;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _placeInteractor = Provider.of<PlaceInteractor>(context);
+  void initState() {
+    super.initState();
+    _placeInteractor = Provider.of<PlaceInteractor>(context, listen: false);
     updateFavorites();
   }
 

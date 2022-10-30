@@ -33,12 +33,12 @@ class _SightListScreenState extends State<SightListScreen> {
   final _placesStreamController = StreamController<List<Place>>();
   final _favoritesStreamController = StreamController<List<Place>>();
 
-  late PlaceInteractor _placeInteractor;
+  late final PlaceInteractor _placeInteractor;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _placeInteractor = Provider.of<PlaceInteractor>(context);
+  void initState() {
+    super.initState();
+    _placeInteractor = Provider.of<PlaceInteractor>(context, listen: false);
     updatePlaces();
     updateFavorites();
   }

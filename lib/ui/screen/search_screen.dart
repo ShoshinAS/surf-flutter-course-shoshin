@@ -35,15 +35,19 @@ class _SearchScreenState extends State<SearchScreen> {
   final _controller = TextEditingController();
 
   late final Filter _filter;
-
-  late SearchInteractor _searchInteractor;
+  late final SearchInteractor _searchInteractor;
 
   Future<List<Place>>? _futurePlaceList;
 
   @override
+  void initState() {
+    super.initState();
+    _searchInteractor = Provider.of<SearchInteractor>(context, listen: false);
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _searchInteractor = Provider.of<SearchInteractor>(context);
     final args = ModalRoute.of(context)!.settings.arguments as SearchScreenArguments;
     _filter = args.filter;
   }
@@ -178,9 +182,9 @@ class _SearchHistoryBuilderState extends State<_SearchHistoryBuilder> {
   late Future<List<String>> _futureSearchHistory;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _searchInteractor = Provider.of<SearchInteractor>(context);
+  void initState() {
+    super.initState();
+    _searchInteractor = Provider.of<SearchInteractor>(context, listen: false);
     _futureSearchHistory = _searchInteractor.getHistory();
   }
 
