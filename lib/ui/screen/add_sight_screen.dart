@@ -4,7 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_type.dart';
-import 'package:places/domain/location.dart';
+import 'package:places/data/model/location.dart';
+import 'package:places/domain/exceptions/network_exception.dart';
 import 'package:places/ui/models/place_type_synonym.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
@@ -197,9 +198,18 @@ class _AddSightScreenState extends State<AddSightScreen> {
                 description: _controllerDescription.text,
                 placeType: _placeType!,
               );
-              final createdPlace = Provider.of<PlaceInteractor>(context, listen: false)
-                  .addNewPlace(newPlace);
-              Navigator.pop(context, createdPlace);
+              Provider.of<PlaceInteractor>(context, listen: false)
+                  .addNewPlace(newPlace)
+                  .then((createdPlace) {
+                Navigator.pop(context, createdPlace);
+              }).onError((error, stackTrace) {
+                if (error is NetworkException) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(error.toString()),
+                    duration: const Duration(seconds: 30),
+                  ));
+                }
+              });
             },
           ),
         ),

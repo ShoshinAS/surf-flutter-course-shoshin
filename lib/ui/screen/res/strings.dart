@@ -65,4 +65,6 @@ class AppStrings {
   static const typeCafeApi = 'cafe';
   static const upTo = 'до';
   static const km = 'км';
+  static const inRequest = 'В запросе';
+  static const errorOccurred = 'возникла ошибка';
 }

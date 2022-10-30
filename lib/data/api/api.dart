@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:places/domain/exceptions/network_exception.dart';
 
 class Api {
 
@@ -32,6 +33,7 @@ class _LogInterceptor extends Interceptor {
   void onError(DioError err, ErrorInterceptorHandler handler) {
     debugPrint('Error: ${err.toString()}');
     super.onError(err, handler);
+    throw NetworkException(request: err.requestOptions.baseUrl);
   }
 
   @override

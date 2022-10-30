@@ -6,6 +6,7 @@ import 'package:places/data/mapper/place_mapper.dart';
 import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/places_query_parameters.dart';
+import 'package:places/domain/exceptions/network_exception.dart';
 
 class PlaceRepository {
   final Dio dio;
@@ -18,7 +19,11 @@ class PlaceRepository {
       data: filter.toApi(),
     );
     if (response.statusCode != 200) {
-      throw Exception(response.statusMessage);
+      throw NetworkException(
+        request: response.requestOptions.path,
+        code: response.statusCode,
+        description: response.statusMessage,
+      );
     }
     final parsedData =
         (jsonDecode(response.data!) as List).cast<Map<String, dynamic>>();
@@ -33,7 +38,11 @@ class PlaceRepository {
       data: place.toApi(),
     );
     if (response.statusCode != 200) {
-      throw Exception(response.statusMessage);
+      throw NetworkException(
+        request: response.requestOptions.path,
+        code: response.statusCode,
+        description: response.statusMessage,
+      );
     }
     final parsedData = jsonDecode(response.data!) as Map<String, dynamic>;
     final result = PlaceMapper.fromApi(parsedData);
@@ -49,7 +58,11 @@ class PlaceRepository {
       queryParameters: placesQueryParameters.toMap(),
     );
     if (response.statusCode != 200) {
-      throw Exception(response.statusMessage);
+      throw NetworkException(
+        request: response.requestOptions.path,
+        code: response.statusCode,
+        description: response.statusMessage,
+      );
     }
     final parsedData =
         (jsonDecode(response.data!) as List).cast<Map<String, dynamic>>();
@@ -63,7 +76,11 @@ class PlaceRepository {
       '/place/$id',
     );
     if (response.statusCode != 200) {
-      throw Exception(response.statusMessage);
+      throw NetworkException(
+        request: response.requestOptions.path,
+        code: response.statusCode,
+        description: response.statusMessage,
+      );
     }
     final parsedData = jsonDecode(response.data!) as Map<String, dynamic>;
     final result = PlaceMapper.fromApi(parsedData);
@@ -76,7 +93,11 @@ class PlaceRepository {
       '/place/$id',
     );
     if (response.statusCode != 200) {
-      throw Exception(response.statusMessage);
+      throw NetworkException(
+        request: response.requestOptions.path,
+        code: response.statusCode,
+        description: response.statusMessage,
+      );
     }
   }
 
@@ -86,7 +107,11 @@ class PlaceRepository {
       data: place.toApi(),
     );
     if (response.statusCode != 200) {
-      throw Exception(response.statusMessage);
+      throw NetworkException(
+        request: response.requestOptions.path,
+        code: response.statusCode,
+        description: response.statusMessage,
+      );
     }
     final parsedData = jsonDecode(response.data!) as Map<String, dynamic>;
     final result = PlaceMapper.fromApi(parsedData);

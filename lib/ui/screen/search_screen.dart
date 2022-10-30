@@ -10,6 +10,7 @@ import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/clear_text_button.dart';
 import 'package:places/ui/widgets/empty_state.dart';
+import 'package:places/ui/widgets/error_placeholder.dart';
 import 'package:places/ui/widgets/network_image.dart';
 import 'package:places/ui/widgets/search_bar.dart';
 import 'package:places/ui/widgets/sight_details_bottomsheet.dart';
@@ -94,16 +95,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         },
                       );
               } else if (snapshot.hasError) {
-                return Expanded(
-                  child: EmptyState(
-                    icon: AppAssets.iconDelete,
-                    titleText: AppStrings.error,
-                    subtitleText: AppStrings.somethingWentWrong,
-                    titleColor: theme.colorScheme.outline,
-                    subtitleColor: theme.colorScheme.outline,
-                    iconHeight: 64,
-                    iconWidth: 64,
-                  ),
+                return const Expanded(
+                  child: ErrorPlaceholder(),
                 );
               } else {
                 return const Expanded(
