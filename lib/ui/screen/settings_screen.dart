@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:places/data/interactor/settings_interactor.dart';
 import 'package:places/ui/screen/onboarding_screen.dart';
 import 'package:places/ui/screen/res/assets.dart';
+import 'package:places/ui/screen/res/router.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/bottom_navigation_bar.dart';
@@ -24,7 +25,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _settingsInteractor = Provider.of<SettingsInteractor>(context, listen: false);
+    _settingsInteractor = context.read<SettingsInteractor>();
     loadSettings();
   }
 
@@ -71,8 +72,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 onPressed: () {
                   Navigator.of(context).pushNamed(
-                    '/onboarding',
-                    arguments: OnboardingSettings(startedByUser: true),
+                    AppRouter.onboarding,
+                    arguments: OnboardingScreenArguments(startedByUser: true),
                   );
                 },
               ),

@@ -198,7 +198,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
                 description: _controllerDescription.text,
                 placeType: _placeType!,
               );
-              Provider.of<PlaceInteractor>(context, listen: false)
+              context.read<PlaceInteractor>()
                   .addNewPlace(newPlace)
                   .then((createdPlace) {
                 Navigator.pop(context, createdPlace);

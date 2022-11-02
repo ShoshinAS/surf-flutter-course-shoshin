@@ -33,7 +33,7 @@ class _SightDetailsBottomSheetState extends State<SightDetailsBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _placeInteractor = Provider.of<PlaceInteractor>(context, listen: false);
+    _placeInteractor = context.read<PlaceInteractor>();
     updatePlaceDetails();
     updateFavorites();
   }
