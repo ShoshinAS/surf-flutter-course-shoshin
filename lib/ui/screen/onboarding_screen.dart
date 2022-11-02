@@ -6,15 +6,17 @@ import 'package:places/ui/widgets/big_button.dart';
 import 'package:places/ui/widgets/empty_state.dart';
 
 // параметры экрана онбординга
-class OnboardingSettings {
+class OnboardingScreenArguments {
   final bool startedByUser;
 
-  OnboardingSettings({required this.startedByUser});
+  OnboardingScreenArguments({required this.startedByUser});
 }
 
 // экран онбординга
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({Key? key}) : super(key: key);
+  final bool startedByUser;
+
+  const OnboardingScreen({Key? key, required this.startedByUser}) : super(key: key);
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -26,7 +28,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final settings = ModalRoute.of(context)!.settings.arguments as OnboardingSettings;
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -36,7 +37,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             visible: _page != 2,
             child: _SkipButton(onPressed: () {
               _finish(Navigator.of(context),
-              settings.startedByUser,
+              widget.startedByUser,
               );
             }),
           ),
@@ -89,7 +90,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: BigButton(
                   title: AppStrings.start.toUpperCase(),
                   onPressed: () {
-                    _finish(Navigator.of(context), settings.startedByUser);
+                    _finish(Navigator.of(context), widget.startedByUser);
                   },
               ),
             ),

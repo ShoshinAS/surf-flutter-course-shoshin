@@ -9,6 +9,7 @@ import 'package:places/domain/exceptions/network_exception.dart';
 import 'package:places/mocks.dart';
 import 'package:places/ui/screen/filters_screen.dart';
 import 'package:places/ui/screen/res/assets.dart';
+import 'package:places/ui/screen/res/router.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/screen/res/themes.dart';
 import 'package:places/ui/screen/search_screen.dart';
@@ -33,12 +34,12 @@ class _SightListScreenState extends State<SightListScreen> {
   final _placesStreamController = StreamController<List<Place>>();
   final _favoritesStreamController = StreamController<List<Place>>();
 
-  late PlaceInteractor _placeInteractor;
+  late final PlaceInteractor _placeInteractor;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _placeInteractor = Provider.of<PlaceInteractor>(context);
+  void initState() {
+    super.initState();
+    _placeInteractor = context.read<PlaceInteractor>();
     updatePlaces();
     updateFavorites();
   }
@@ -99,7 +100,7 @@ class _SightListScreenState extends State<SightListScreen> {
                   focusNode: searchBarFocusNode,
                   onTap: () {
                     Navigator.of(context).pushNamed(
-                      '/search',
+                      AppRouter.search,
                       arguments: SearchScreenArguments(filter: _filter),
                     );
                     searchBarFocusNode.unfocus();
@@ -217,7 +218,7 @@ class _FilterButton extends StatelessWidget {
         icon: SvgPicture.asset(AppAssets.iconFilter),
         onPressed: () async {
           final newFilter = await Navigator.of(context).pushNamed(
-            '/filter',
+            AppRouter.filter,
             arguments: FiltersScreenArguments(initialFilter: filter),
           ) as Filter?;
           if (newFilter != null) {
@@ -280,7 +281,7 @@ class _NewSightButton extends StatelessWidget {
       ),
       onPressed: () async {
         final newPlace =
-            await Navigator.of(context).pushNamed('/add') as Place?;
+            await Navigator.of(context).pushNamed(AppRouter.add) as Place?;
         if (newPlace != null) {
           onAddPlace(newPlace);
         }

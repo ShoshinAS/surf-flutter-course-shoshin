@@ -26,14 +26,14 @@ class SightDetailsBottomSheet extends StatefulWidget {
 }
 
 class _SightDetailsBottomSheetState extends State<SightDetailsBottomSheet> {
-  late PlaceInteractor _placeInteractor;
+  late final PlaceInteractor _placeInteractor;
   late Future<Place> _futurePlaceDetails;
   late Future<List<Place>> _futureFavorites;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _placeInteractor = Provider.of<PlaceInteractor>(context);
+  void initState() {
+    super.initState();
+    _placeInteractor = context.read<PlaceInteractor>();
     updatePlaceDetails();
     updateFavorites();
   }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:places/ui/models/theme_model.dart';
+import 'package:places/data/interactor/settings_interactor.dart';
 import 'package:places/ui/screen/onboarding_screen.dart';
 import 'package:places/ui/screen/res/assets.dart';
+import 'package:places/ui/screen/res/router.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/bottom_navigation_bar.dart';
@@ -17,6 +18,17 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  late final SettingsInteractor _settingsInteractor;
+
+  bool _isDarkTheme = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _settingsInteractor = context.read<SettingsInteractor>();
+    loadSettings();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -35,18 +47,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             _SettingsItem(
               title: AppStrings.darkTheme,
-              child: Consumer<ThemeModel>(
-                builder: (context, themeModel, child) => Switch(
-                  value: themeModel.isDarkTheme,
+              child: Switch(
+                  value: _isDarkTheme,
                   activeColor: theme.colorScheme.secondary,
-                  onChanged: (newValue) {
-                    setState(() {
-                      themeModel.setTheme(isDarkTheme: newValue);
-                    });
-                  },
+                  onChanged: saveSettings,
                 ),
               ),
-            ),
             _SettingsItem(
               title: AppStrings.watchTutorial,
               child: ElevatedButton(
@@ -66,8 +72,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 onPressed: () {
                   Navigator.of(context).pushNamed(
-                    '/onboarding',
-                    arguments: OnboardingSettings(startedByUser: true),
+                    AppRouter.onboarding,
+                    arguments: OnboardingScreenArguments(startedByUser: true),
                   );
                 },
               ),
@@ -78,6 +84,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
       bottomNavigationBar: const AppBottomNavigationBar(index: 3),
     );
   }
+
+  void loadSettings() {
+    _settingsInteractor.getTheme().then((isDarkTheme) {
+      setState(() {
+        _isDarkTheme = isDarkTheme;
+      });
+    });
+  }
+
+  void saveSettings(bool isDarkTheme) {
+    _settingsInteractor.setTheme(isDarkTheme: isDarkTheme).then((_) {
+      loadSettings();
+    });
+  }
+
 }
 
 // виджет элемента настрое приложения

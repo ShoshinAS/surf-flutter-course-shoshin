@@ -19,7 +19,8 @@ class FiltersScreenArguments {
 
 // экран фильтра
 class FiltersScreen extends StatefulWidget {
-  const FiltersScreen({Key? key}) : super(key: key);
+  final Filter initialFilter;
+  const FiltersScreen({Key? key, required this.initialFilter}) : super(key: key);
 
   @override
   State<FiltersScreen> createState() => _FiltersScreenState();
@@ -27,18 +28,16 @@ class FiltersScreen extends StatefulWidget {
 
 class _FiltersScreenState extends State<FiltersScreen> {
   late final Filter _filter;
-
-  late PlaceInteractor _placeInteractor;
+  late final PlaceInteractor _placeInteractor;
 
   CancelableOperation<void>? _updateAmountOperation;
   int? _amount;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _placeInteractor = Provider.of<PlaceInteractor>(context);
-    final args = ModalRoute.of(context)!.settings.arguments as FiltersScreenArguments;
-    _filter = Filter.from(args.initialFilter);
+  void initState() {
+    super.initState();
+    _filter = Filter.from(widget.initialFilter);
+    _placeInteractor = context.read<PlaceInteractor>();
     updateAmount();
   }
 

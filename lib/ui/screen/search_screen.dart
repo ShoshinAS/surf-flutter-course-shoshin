@@ -24,7 +24,9 @@ class SearchScreenArguments {
 
 // экран поиска интересных мест
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+  final Filter filter;
+
+  const SearchScreen({Key? key, required this.filter}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -34,18 +36,14 @@ class _SearchScreenState extends State<SearchScreen> {
   final _focusNode = FocusNode();
   final _controller = TextEditingController();
 
-  late final Filter _filter;
-
-  late SearchInteractor _searchInteractor;
+  late final SearchInteractor _searchInteractor;
 
   Future<List<Place>>? _futurePlaceList;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _searchInteractor = Provider.of<SearchInteractor>(context);
-    final args = ModalRoute.of(context)!.settings.arguments as SearchScreenArguments;
-    _filter = args.filter;
+  void initState() {
+    super.initState();
+    _searchInteractor = context.read<SearchInteractor>();
   }
 
   @override
@@ -157,8 +155,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<void> _search(String query) async {
     setState(() {
-      _filter.nameFilter = query;
-      _futurePlaceList = _searchInteractor.searchPlaces(_filter);
+      widget.filter.nameFilter = query;
+      _futurePlaceList = _searchInteractor.searchPlaces(widget.filter);
     });
   }
 }
@@ -178,9 +176,9 @@ class _SearchHistoryBuilderState extends State<_SearchHistoryBuilder> {
   late Future<List<String>> _futureSearchHistory;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _searchInteractor = Provider.of<SearchInteractor>(context);
+  void initState() {
+    super.initState();
+    _searchInteractor = context.read<SearchInteractor>();
     _futureSearchHistory = _searchInteractor.getHistory();
   }
 

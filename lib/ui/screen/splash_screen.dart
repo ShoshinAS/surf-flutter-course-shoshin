@@ -49,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (await isInitialized) {
       await Navigator.of(context).pushReplacementNamed(
         '/onboarding',
-        arguments: OnboardingSettings(startedByUser: false),
+        arguments: OnboardingScreenArguments(startedByUser: false),
       );
     }
   }

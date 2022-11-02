@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:places/ui/screen/res/assets.dart';
+import 'package:places/ui/screen/res/router.dart';
 
 // кастомизированный BottomNavigationBar
 class AppBottomNavigationBar extends StatelessWidget {
@@ -70,16 +71,16 @@ class AppBottomNavigationBar extends StatelessWidget {
     var routeName = '';
     switch (selectedIndex) {
       case 0:
-        routeName = '/list';
+        routeName = AppRouter.list;
         break;
       case 1:
-        routeName = '/map';
+        routeName = AppRouter.map;
         break;
       case 2:
-        routeName = '/visiting';
+        routeName = AppRouter.visiting;
         break;
       case 3:
-        routeName = '/settings';
+        routeName = AppRouter.settings;
         break;
     }
     navigatorState.pushNamed(routeName);
