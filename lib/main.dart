@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 void main() {
   runApp(MultiProvider(
     providers: [
+      Provider(create: (_) => PlaceRepository(Api.dio())),
       Provider(create: (_) => PlaceInteractor(PlaceRepository(Api.dio()))),
       Provider(create: (_) => SearchInteractor(PlaceRepository(Api.dio()))),
       ChangeNotifierProvider(create: (_) => SettingsInteractor()),
