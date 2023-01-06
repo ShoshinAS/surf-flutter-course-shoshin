@@ -2,6 +2,7 @@ import 'package:mobx/mobx.dart';
 import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/repository/place_repository.dart';
+import 'package:places/data/repository/user_data_repository.dart';
 
 part 'places_store.g.dart';
 
@@ -9,7 +10,7 @@ class PlacesStore = PlacesStoreBase with _$PlacesStore;
 
 abstract class PlacesStoreBase with Store {
   final PlaceRepository _placeRepository;
-  final List<Place> _favorites = [];
+  final UserDataRepository _userDataRepository;
 
   @observable
   ObservableFuture<List<Place>>? placesFuture;
@@ -17,7 +18,7 @@ abstract class PlacesStoreBase with Store {
   @observable
   ObservableFuture<List<Place>>? favoritesFuture;
 
-  PlacesStoreBase(this._placeRepository);
+  PlacesStoreBase(this._placeRepository, this._userDataRepository);
 
   @action
   void getPlaces(Filter filter) {
@@ -26,21 +27,18 @@ abstract class PlacesStoreBase with Store {
 
   @action
   void getFavorites() {
-    // Вероятно в будущем данные о местах к посещению будем хранить в памяти устройства
-    // и читать при необходимости. Пока это не рализовано, будем хранить список мест в поле объекта.
-    // Для имитации асинхронного чтения обернем список во Future
-    favoritesFuture = ObservableFuture(Future.value(_favorites));
+    favoritesFuture = ObservableFuture(_userDataRepository.getFavoritesPlaces());
   }
 
   @action
   void addToFavorites(Place place) {
-    _favorites.add(place);
+    _userDataRepository.addToFavorites(place);
     getFavorites();
   }
 
   @action
   void removeFromFavorites(Place place) {
-    _favorites.removeWhere((element) => element.id == place.id);
+    _userDataRepository.removeFromFavorites(place);
     getFavorites();
   }
 

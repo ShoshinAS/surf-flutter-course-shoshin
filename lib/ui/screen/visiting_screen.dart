@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/data/interactor/place_interactor.dart';
-import 'package:places/data/model/place.dart';
+import 'package:places/blocs/favourite_places/favourite_places_bloc.dart';
+import 'package:places/blocs/favourite_places/favourite_places_event.dart';
+import 'package:places/blocs/favourite_places/favourite_places_state.dart';
+import 'package:places/blocs/visited_places/visited_places_bloc.dart';
+import 'package:places/blocs/visited_places/visited_places_event.dart';
+import 'package:places/blocs/visited_places/visited_places_state.dart';
 import 'package:places/ui/screen/res/assets.dart';
 import 'package:places/ui/screen/res/strings.dart';
 import 'package:places/ui/widgets/app_bar.dart';
 import 'package:places/ui/widgets/bottom_navigation_bar.dart';
+import 'package:places/ui/widgets/error_placeholder.dart';
 import 'package:places/ui/widgets/sight_card.dart';
 import 'package:places/ui/widgets/sight_list_draggable.dart';
-import 'package:provider/provider.dart';
 
 // виджет отображает экран Хочу посетить / Интересные места
 class VisitingScreen extends StatelessWidget {
@@ -152,97 +157,122 @@ class _ScheduledList extends StatefulWidget {
 }
 
 class _ScheduledListState extends State<_ScheduledList> {
-  late final PlaceInteractor _placeInteractor;
-  late Future<List<Place>> _futureFavorites;
+  late final FavouritePlacesBloc bloc;
 
   @override
   void initState() {
     super.initState();
-    _placeInteractor = context.read<PlaceInteractor>();
-    updateFavorites();
+    bloc = context.read<FavouritePlacesBloc>()
+      ..add(const FavouritePlacesLoadEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Place>>(
-        future: _futureFavorites,
-        builder: (context, snapshot) {
-          return snapshot.hasData
-              ? SightListDraggable(
-                  children: snapshot.data!
-                      .map((place) => SightCardInScheduledList(
-                            place,
-                            onRemove: (place) {
-                              setState(() {
-                                _placeInteractor.removeFromFavorites(place);
-                                updateFavorites();
-                              });
-                            },
-                          ))
-                      .toList(),
-                  emptyScreen: const _EmptyScreen(
-                    iconAssetName: AppAssets.iconVisitedEmpty,
-                    description: AppStrings.emptyVisitedDescription,
-                  ),
-                  onMoveElement: (sourceElement, targetElement) {
-                    setState(() {
-                      _placeInteractor.moveOnFavorites(sourceElement, targetElement);
-                      updateFavorites();
-                    });
-                  },
-                  onRemove: (place) {
-                    setState(() {
-                      _placeInteractor.removeFromFavorites(place);
-                      updateFavorites();
-                    });
-                  },
-                )
-              : const SizedBox.shrink();
-        },
+    return BlocBuilder(
+      bloc: bloc,
+      builder: (_, state) {
+        if (state is FavouritePlacesLoadState) {
+          return const Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 6,
+            ),
+          );
+        }
+        if (state is FavouritePlacesSuccessState) {
+          return SightListDraggable(
+            children: state.favouritePlaces
+                .map((place) => SightCardInScheduledList(
+                      place,
+                      onRemove: (place) {
+                        bloc.add(FavouritePlacesRemoveFromFavouritesEvent(
+                          place: place,
+                        ));
+                      },
+                    ))
+                .toList(),
+            emptyScreen: const _EmptyScreen(
+              iconAssetName: AppAssets.iconVisitedEmpty,
+              description: AppStrings.emptyVisitedDescription,
+            ),
+            onMoveElement: (sourceElement, targetElement) {
+              bloc.add(FavouritePlacesMoveOnFavouritesEvent(
+                sourcePlace: sourceElement,
+                targetPlace: targetElement,
+              ));
+            },
+            onRemove: (place) {
+              bloc.add(FavouritePlacesRemoveFromFavouritesEvent(place: place));
+            },
+          );
+        }
+        if (state is FavouritePlacesErrorState) {
+          return const ErrorPlaceholder();
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
     );
   }
-
-  Future<void> updateFavorites() async {
-    _futureFavorites = _placeInteractor.getFavoritesPlaces();
-  }
-
 }
 
 // Виджет, реализующий список посещенных мест
-class _VisitedList extends StatelessWidget {
+class _VisitedList extends StatefulWidget {
   const _VisitedList({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final placeInteractor = context.read<PlaceInteractor>();
-    final futureVisitedPlaces = placeInteractor.getVisitPlaces();
+  State<_VisitedList> createState() => _VisitedListState();
+}
 
-    return FutureBuilder<List<Place>>(
-      future: futureVisitedPlaces,
-      builder: (context, snapshot) {
-        return snapshot.hasData
-            ? SightListDraggable(
-                children: snapshot.data!
-                    .toList()
-                    .map((sight) => SightCardInVisitedList(
-                          sight,
-                          onRemove: (sight) {
-                            snapshot.data!.remove(sight);
-                          },
-                        ))
-                    .toList(),
-                emptyScreen: const _EmptyScreen(
-                  iconAssetName: AppAssets.iconVisitedEmpty,
-                  description: AppStrings.emptyVisitedDescription,
-                ),
-                onMoveElement: (sourceElement, targetElement) {
-                  //snapshot.data!.move(sourceElement, targetElement);
-                },
-                onRemove: (sight) {
-                  snapshot.data!.remove(sight);
-                },
-              )
-            : const SizedBox.shrink();
+class _VisitedListState extends State<_VisitedList> {
+  late final VisitedPlacesBloc bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    bloc = context.read<VisitedPlacesBloc>()
+      ..add(const VisitedPlacesLoadEvent());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder(
+      bloc: bloc,
+      builder: (_, state) {
+        if (state is VisitedPlacesLoadState) {
+          return const Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 6,
+            ),
+          );
+        } else if (state is VisitedPlacesSuccessState) {
+          return SightListDraggable(
+            children: state.visitedPlaces
+                .toList()
+                .map((place) => SightCardInVisitedList(
+                      place,
+                      onRemove: (place) {
+                        bloc.add(
+                          VisitedPlacesRemoveFromVisitedEvent(place: place),
+                        );
+                      },
+                    ))
+                .toList(),
+            emptyScreen: const _EmptyScreen(
+              iconAssetName: AppAssets.iconVisitedEmpty,
+              description: AppStrings.emptyVisitedDescription,
+            ),
+            onMoveElement: (sourceElement, targetElement) {
+              //snapshot.data!.move(sourceElement, targetElement);
+            },
+            onRemove: (place) {
+              bloc.add(VisitedPlacesRemoveFromVisitedEvent(place: place));
+            },
+          );
+        } else if (state is VisitedPlacesErrorState) {
+          return const ErrorPlaceholder();
+        } else {
+          return const SizedBox.shrink();
+        }
       },
     );
   }

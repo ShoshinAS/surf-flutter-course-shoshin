@@ -5,6 +5,7 @@ import 'package:mobx/mobx.dart';
 import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/repository/place_repository.dart';
+import 'package:places/data/repository/user_data_repository.dart';
 import 'package:places/data/store/places_store.dart';
 import 'package:places/mocks.dart';
 import 'package:places/ui/screen/filters_screen.dart';
@@ -36,7 +37,10 @@ class _SightListScreenState extends State<SightListScreen> {
   @override
   void initState() {
     super.initState();
-    _store = PlacesStore(context.read<PlaceRepository>());
+    _store = PlacesStore(
+        context.read<PlaceRepository>(),
+        context.read<UserDataRepository>(),
+    );
     _store
       ..getPlaces(_filter)
       ..getFavorites();

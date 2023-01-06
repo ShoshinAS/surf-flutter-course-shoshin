@@ -1,16 +1,13 @@
 import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/repository/place_repository.dart';
+import 'package:places/data/repository/user_data_repository.dart';
 
 class PlaceInteractor {
   final PlaceRepository placeRepository;
+  final UserDataRepository userDataRepository;
 
-  final List<Place> _favoritesPlaces;
-  final List<Place> _visitedPlaces;
-
-  PlaceInteractor(this.placeRepository)
-      : _favoritesPlaces = [],
-        _visitedPlaces = [];
+  PlaceInteractor(this.placeRepository, this.userDataRepository);
 
   Future<List<Place>> getPlaces(Filter filter) async {
     final userLocation = filter.location;
@@ -27,33 +24,23 @@ class PlaceInteractor {
   }
 
   Future<List<Place>> getFavoritesPlaces() async {
-    return Future.value(_favoritesPlaces);
+    return userDataRepository.getFavoritesPlaces();
   }
 
   Future<void> addToFavorites(Place place) async {
-    _favoritesPlaces.add(place);
+    return userDataRepository.addToFavorites(place);
   }
 
   Future<void> removeFromFavorites(Place place) async {
-    _favoritesPlaces.removeWhere((element) => element.id == place.id);
+    await userDataRepository.removeFromFavorites(place);
   }
-
-  Future<void> moveOnFavorites(Place sourcePlace, Place? targetPlace) async {
-    _favoritesPlaces.removeWhere((element) => element.id == sourcePlace.id);
-    if (targetPlace != null) {
-      final targetIndex = _favoritesPlaces.indexWhere((element) => element.id == targetPlace.id);
-      _favoritesPlaces.insert(targetIndex, sourcePlace);
-    } else {
-      _favoritesPlaces.add(sourcePlace);
-    }
-  }
-
+  
   Future<List<Place>> getVisitPlaces() async {
-    return _visitedPlaces;
+    return userDataRepository.getVisitedPlaces();
   }
 
   Future<void> addToVisitingPlaces(Place place) async {
-    _visitedPlaces.add(place);
+    await userDataRepository.addToVisitedPlaces(place);
   }
 
   Future<Place> addNewPlace(Place place) async {
