@@ -1,11 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/data/interactor/place_interactor.dart';
+import 'package:mobx/mobx.dart';
 import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place.dart';
-import 'package:places/domain/exceptions/network_exception.dart';
+import 'package:places/data/repository/place_repository.dart';
+import 'package:places/data/store/places_store.dart';
 import 'package:places/mocks.dart';
 import 'package:places/ui/screen/filters_screen.dart';
 import 'package:places/ui/screen/res/assets.dart';
@@ -31,24 +31,15 @@ class SightListScreen extends StatefulWidget {
 class _SightListScreenState extends State<SightListScreen> {
   final Filter _filter = Filter(location: MockLocations.location3);
 
-  final _placesStreamController = StreamController<List<Place>>();
-  final _favoritesStreamController = StreamController<List<Place>>();
-
-  late final PlaceInteractor _placeInteractor;
+  late final PlacesStore _store;
 
   @override
   void initState() {
     super.initState();
-    _placeInteractor = context.read<PlaceInteractor>();
-    updatePlaces();
-    updateFavorites();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _placesStreamController.close();
-    _favoritesStreamController.close();
+    _store = PlacesStore(context.read<PlaceRepository>());
+    _store
+      ..getPlaces(_filter)
+      ..getFavorites();
   }
 
   @override
@@ -94,7 +85,7 @@ class _SightListScreenState extends State<SightListScreen> {
                     filter: _filter,
                     onFilterChange: (newFilter) {
                       _filter.load(newFilter);
-                      updatePlaces();
+                      _store.getPlaces(_filter);
                     },
                   ),
                   focusNode: searchBarFocusNode,
@@ -109,23 +100,19 @@ class _SightListScreenState extends State<SightListScreen> {
                 ),
               ]),
             ),
-            StreamBuilder<List<Place>>(
-              stream: _placesStreamController.stream,
-              builder: (_, snapshotPlaceList) {
-                return StreamBuilder<List<Place>>(
-                  stream: _favoritesStreamController.stream,
-                  builder: (_, snapshotFavorites) {
-                    final favoritesId = snapshotFavorites.hasData
-                        ? snapshotFavorites.data!.map((e) => e.id).toSet()
+            Observer(
+              builder: (_) {
+                    final favoritesId = _store.favoritesFuture!.status == FutureStatus.fulfilled
+                        ? _store.favoritesFuture!.value!.map((e) => e.id).toSet()
                         : <String>{};
 
-                    if (snapshotPlaceList.hasError ||
-                        snapshotFavorites.hasError) {
+                    if (_store.placesFuture!.status == FutureStatus.rejected ||
+                      _store.favoritesFuture!.status == FutureStatus.rejected) {
                       return const SliverFillRemaining(
                           child: ErrorPlaceholder(),
                       );
-                    } else if (!snapshotPlaceList.hasData ||
-                        !snapshotFavorites.hasData) {
+                    } else if (_store.placesFuture!.status == FutureStatus.pending ||
+                        _store.favoritesFuture!.status == FutureStatus.pending) {
                       return const SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.all(18),
@@ -139,27 +126,23 @@ class _SightListScreenState extends State<SightListScreen> {
                     }
 
                     return SightList(
-                      children: snapshotPlaceList.data!
+                      children: _store.placesFuture!.value!
                           .map(
                             (e) => SightCardInList(
                               e,
                               inFavorites: favoritesId.contains(e.id),
                               onAddToFavorites: (place) {
-                                _placeInteractor.addToFavorites(place);
-                                updateFavorites();
+                                _store.addToFavorites(place);
                               },
                               onRemoveFromFavorites: (place) {
-                                _placeInteractor.removeFromFavorites(place);
-                                updateFavorites();
+                                _store.removeFromFavorites(place);
                               },
                             ),
                           )
                           .toList(),
                     );
                   },
-                );
-              },
-            ),
+                ),
           ],
         ),
       ),
@@ -169,29 +152,11 @@ class _SightListScreenState extends State<SightListScreen> {
       resizeToAvoidBottomInset: false,
       floatingActionButton: _NewSightButton(
         onAddPlace: (newPlace) {
-          updatePlaces();
+          _store.getPlaces(_filter);
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
-  }
-
-  Future<void> updatePlaces() async {
-    try {
-      _placesStreamController.sink
-          .add(await _placeInteractor.getPlaces(_filter));
-    } on NetworkException catch (e) {
-      _placesStreamController.sink.addError(e);
-    }
-  }
-
-  Future<void> updateFavorites() async {
-    try {
-      _favoritesStreamController.sink
-          .add(await _placeInteractor.getFavoritesPlaces());
-    } on NetworkException catch (e) {
-      _placesStreamController.sink.addError(e);
-    }
   }
 }
 
